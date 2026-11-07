@@ -1,20 +1,62 @@
 import {
   COURSE_META,
   SUBJECTS,
+  MANDATORY_SUBJECT_IDS,
+  ELECTIVE_SUBJECT_IDS,
+  DEFAULT_SELECTED_ELECTIVES,
   OFFICIAL_DOCUMENTS,
   ENVIOS_LIST,
   CALENDAR_EVENTS,
   ERRATA_LIST,
 } from './data/courseData.js';
-import { WEEKS_PLAN, getDailySchedule } from './data/scheduleData.js';
+import {
+  WEEKS_PLAN,
+  getDailySchedule,
+  computeSubjectHoursSummary,
+  shiftDateStr,
+  daysBetweenStr,
+} from './data/scheduleData.js';
 import { buildGoogleCalendarUrl, downloadIcsFile } from './utils/calendarExport.js';
 
-const STORAGE_KEY = 'ags_study_hub_state_v2';
+const STORAGE_KEY = 'ags_study_hub_state_v3';
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('ags_study_hub_state_v2');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        theme: parsed.theme || 'light',
+        activeTab: parsed.activeTab || 'daily',
+        selectedDate: parsed.selectedDate || '2026-11-07',
+        calMonth: parsed.calMonth || '2026-11',
+        calFilter: parsed.calFilter || 'all',
+        weekEvalFilter: parsed.weekEvalFilter || 'all',
+        weekSubjFilter: parsed.weekSubjFilter || 'all',
+        activeSubjectId: parsed.activeSubjectId || 'mates',
+        showAllCatalogSubjects: Boolean(parsed.showAllCatalogSubjects),
+        selectedElectives:
+          Array.isArray(parsed.selectedElectives) && parsed.selectedElectives.length >= 2
+            ? parsed.selectedElectives
+            : [...DEFAULT_SELECTED_ELECTIVES],
+        extraThirdElective: parsed.extraThirdElective || '',
+        subjectShiftDays: parsed.subjectShiftDays || {},
+        subjectStartDates: parsed.subjectStartDates || {},
+        loggedMinutes: parsed.loggedMinutes || {},
+        rescheduledBlocks: parsed.rescheduledBlocks || {},
+        completedBlocks: parsed.completedBlocks || {},
+        completedWeekSubj: parsed.completedWeekSubj || {},
+        completedUnits: parsed.completedUnits || {},
+        envioStatus: parsed.envioStatus || {},
+        dayNotes: parsed.dayNotes || {},
+        grades: parsed.grades || {},
+        unlockedSolutions: parsed.unlockedSolutions || {},
+        readerModalUrl: null,
+        readerModalTitle: '',
+        solutionConfirmModal: null, // { subjectId, unitNum, title, fileUrl, fileName }
+        activeSolutionPage: null, // { subjectId, unitNum, highlightUrl }
+      };
+    }
   } catch (e) {
     console.error('Failed to load state', e);
   }
@@ -27,14 +69,24 @@ function loadState() {
     weekEvalFilter: 'all',
     weekSubjFilter: 'all',
     activeSubjectId: 'mates',
+    showAllCatalogSubjects: false,
+    selectedElectives: [...DEFAULT_SELECTED_ELECTIVES], // По умолчанию ['fisica', 'ingles']
+    extraThirdElective: '', // Опционально можно включить 'tecno' как 3-й спецпредмет
+    subjectShiftDays: {},
+    subjectStartDates: {},
+    loggedMinutes: {},
+    rescheduledBlocks: {},
     completedBlocks: {},
     completedWeekSubj: {},
     completedUnits: {},
     envioStatus: {},
     dayNotes: {},
     grades: {},
+    unlockedSolutions: {},
     readerModalUrl: null,
     readerModalTitle: '',
+    solutionConfirmModal: null,
+    activeSolutionPage: null,
   };
 }
 
@@ -42,7 +94,12 @@ const state = loadState();
 
 function saveState() {
   try {
-    const toSave = { ...state, readerModalUrl: null, readerModalTitle: '' };
+    const toSave = {
+      ...state,
+      readerModalUrl: null,
+      readerModalTitle: '',
+      solutionConfirmModal: null,
+    };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   } catch (e) {
     console.error('Failed to save state', e);
@@ -53,6 +110,23 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme || 'light');
 }
 
+// Возвращает массив активных спецпредметов (2 обязательных по выбору + 1 опциональный)
+function getActiveElectivesList() {
+  const e1 = state.selectedElectives?.[0] || 'fisica';
+  const e2 = state.selectedElectives?.[1] || 'ingles';
+  const list = [e1, e2];
+  if (state.extraThirdElective && !list.includes(state.extraThirdElective)) {
+    list.push(state.extraThirdElective);
+  }
+  return list;
+}
+
+// Возвращает список активных предметов курса (3 обязательных Competencias + выбранные Específicas)
+function getActiveSubjects() {
+  const activeIds = new Set([...MANDATORY_SUBJECT_IDS, ...getActiveElectivesList()]);
+  return SUBJECTS.filter((s) => activeIds.has(s.id));
+}
+
 function getSubject(id) {
   return (
     SUBJECTS.find((s) => s.id === id) || {
@@ -60,6 +134,7 @@ function getSubject(id) {
       code: 'AGS',
       shortName: 'Общее',
       name: 'Общий организационный блок',
+      units: [],
     }
   );
 }
@@ -88,51 +163,45 @@ function formatRuDate(dateStr) {
   return `${d} ${months[(m || 1) - 1]} ${y}`;
 }
 
-function daysBetween(fromStr, toStr) {
-  const d1 = new Date(`${fromStr}T00:00:00`);
-  const d2 = new Date(`${toStr}T00:00:00`);
-  return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-}
-
-function shiftDate(dateStr, deltaDays) {
-  const d = new Date(`${dateStr}T12:00:00`);
-  d.setDate(d.getDate() + deltaDays);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
 function getSprintDates() {
   const list = [];
   let cur = '2026-11-07';
   while (cur <= '2026-12-17') {
     list.push(cur);
-    cur = shiftDate(cur, 1);
+    cur = shiftDateStr(cur, 1);
   }
   return list;
 }
 
 function calculateOverallProgress() {
-  let totalWeekCells = WEEKS_PLAN.length * SUBJECTS.length;
-  let doneWeekCells = Object.values(state.completedWeekSubj || {}).filter(Boolean).length;
-  let doneBlocks = Object.values(state.completedBlocks || {}).filter(Boolean).length;
-  let doneEnvios = Object.values(state.envioStatus || {}).filter((v) => v === 'submitted' || v === 'ready').length;
+  const activeSubjects = getActiveSubjects();
+  const activeIds = new Set(activeSubjects.map((s) => s.id));
+  const totalWeekCells = WEEKS_PLAN.length * activeSubjects.length;
+  const doneWeekCells = Object.entries(state.completedWeekSubj || {}).filter(([k, v]) => {
+    const [, sId] = k.split(':');
+    return v && activeIds.has(sId);
+  }).length;
+  const doneBlocks = Object.values(state.completedBlocks || {}).filter(Boolean).length;
+  const activeEnvios = ENVIOS_LIST.filter((e) => activeIds.has(e.subjectId));
+  const doneEnvios = activeEnvios.filter(
+    (e) => state.envioStatus?.[e.id] === 'submitted' || state.envioStatus?.[e.id] === 'ready'
+  ).length;
   return {
     doneWeekCells,
     totalWeekCells,
     doneBlocks,
     doneEnvios,
-    totalEnvios: ENVIOS_LIST.length,
+    totalEnvios: activeEnvios.length,
   };
 }
 
 function renderTopbar() {
   const tabs = [
-    { id: 'daily', label: '1. План по дням (Сегодня)' },
+    { id: 'daily', label: '1. План по дням и Часы' },
     { id: 'weeks', label: '2. Недели W01–W30' },
     { id: 'calendar', label: '3. Календарь и Тутории' },
     { id: 'subjects', label: '4. Предметы и Файлы' },
+    { id: 'solutions', label: '🔒 Решения (Solucionarios)' },
     { id: 'envios', label: '5. Сдачи Envío и Ловушки' },
     { id: 'grades', label: '6. Калькулятор оценок' },
   ];
@@ -170,25 +239,100 @@ function renderTopbar() {
   `;
 }
 
-function renderHeroBanner() {
-  const refDate = '2026-11-07';
-  const dEnvio1 = daysBetween(refDate, '2026-12-02');
-  const dExam1 = daysBetween(refDate, '2026-12-15');
-  const dEnvio2 = daysBetween(refDate, '2027-03-03');
-  const dExam2 = daysBetween(refDate, '2027-03-16');
-  const dEnvio3 = daysBetween(refDate, '2027-05-19');
-  const dExam3 = daysBetween(refDate, '2027-06-01');
-  const stats = calculateOverallProgress();
+// Панель выбора предметов: 3 обязательных (Lengua, Matemáticas, Digital) + 2 на выбор по дропдауну (+ 1 опциональный)
+function renderSubjectSelectorBar() {
+  const e1 = state.selectedElectives?.[0] || 'fisica';
+  const e2 = state.selectedElectives?.[1] || 'ingles';
+  const e3 = state.extraThirdElective || '';
+
+  const electiveSubjects = SUBJECTS.filter((s) => ELECTIVE_SUBJECT_IDS.includes(s.id));
 
   return `
+    <section class="subject-selector-bar" aria-label="Выбор предметов курса">
+      <div class="selector-row">
+        <div class="mandatory-group">
+          <span class="selector-label">🔒 3 Обязательных (Competencias):</span>
+          <span class="subj-pill subj-lengua">1. Lengua Castellana</span>
+          <span class="subj-pill subj-mates">2. Matemáticas</span>
+          <span class="subj-pill subj-digital">3. Comp. Digital</span>
+        </div>
+
+        <div class="elective-group">
+          <span class="selector-label">🎯 2 Предмета на выбор (Específicas):</span>
+          <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600;">
+            <span>Выбор 1:</span>
+            <select id="select-elective-1" class="select-dropdown" aria-label="Первый предмет по выбору">
+              ${electiveSubjects
+                .map(
+                  (s) => `
+                <option value="${s.id}" ${s.id === e1 ? 'selected' : ''} ${s.id === e2 ? 'disabled' : ''}>
+                  ${s.shortName} (${s.examTime}) ${s.hasFullFiles ? '✓ Файлы Drive' : '· База расписания'}
+                </option>
+              `
+                )
+                .join('')}
+            </select>
+          </label>
+
+          <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600;">
+            <span>Выбор 2:</span>
+            <select id="select-elective-2" class="select-dropdown" aria-label="Второй предмет по выбору">
+              ${electiveSubjects
+                .map(
+                  (s) => `
+                <option value="${s.id}" ${s.id === e2 ? 'selected' : ''} ${s.id === e1 ? 'disabled' : ''}>
+                  ${s.shortName} (${s.examTime}) ${s.hasFullFiles ? '✓ Файлы Drive' : '· База расписания'}
+                </option>
+              `
+                )
+                .join('')}
+            </select>
+          </label>
+
+          <label style="display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted);" title="Если вы дополнительно изучаете 3-й спецпредмет (например, Tecnología II)">
+            <span>+ Доп. 3-й:</span>
+            <select id="select-elective-3" class="select-dropdown" style="border-color:var(--line-strong); font-weight:500;">
+              <option value="" ${e3 === '' ? 'selected' : ''}>Нет (стандарт: 5 предметов)</option>
+              ${electiveSubjects
+                .map(
+                  (s) => `
+                <option value="${s.id}" ${s.id === e3 ? 'selected' : ''} ${s.id === e1 || s.id === e2 ? 'disabled' : ''}>
+                  + ${s.shortName} (${s.examTime})
+                </option>
+              `
+                )
+                .join('')}
+            </select>
+          </label>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderHeroBanner() {
+  const refDate = state.selectedDate || '2026-11-07';
+  const dEnvio1 = daysBetweenStr(refDate, '2026-12-02');
+  const dExam1 = daysBetweenStr(refDate, '2026-12-15');
+  const dEnvio2 = daysBetweenStr(refDate, '2027-03-03');
+  const dExam2 = daysBetweenStr(refDate, '2027-03-16');
+  const dEnvio3 = daysBetweenStr(refDate, '2027-05-19');
+  const dExam3 = daysBetweenStr(refDate, '2027-06-01');
+  const stats = calculateOverallProgress();
+  const activeSubjects = getActiveSubjects();
+  const activeNames = activeSubjects.map((s) => s.shortName).join(' · ');
+
+  return `
+    ${renderSubjectSelectorBar()}
+
     <section class="hero-banner">
       <div class="hero-top">
         <div>
           <div class="eyebrow">Актуализированная программа · Сдвиг старта на 07.11.2026</div>
           <h1 class="hero-title">${COURSE_META.title}</h1>
           <p class="hero-subtitle">
-            Все даты пересчитаны от <b>Субботы, 7 ноября 2026</b> под официальный график 3 триместров CPEPA Miguel Hernández (Huesca).
-            Главный приоритет сейчас — 25-дневный спринт до <b>2 декабря 2026</b> (сдача всех <i>Actividades de envío</i> 1-й оценки) и очные экзамены <b>15 и 17 декабря</b>.
+            Активный учебный профиль (<b>${activeSubjects.length} предм.</b>): <b>${activeNames}</b>.<br/>
+            При смене предметов в дропдаунах выше или при изменении отработанных часов программа, календарь туторий, экзамены и нагрузка по дням <b>автоматически пересчитываются</b>.
           </p>
         </div>
         <div class="hero-stats">
@@ -211,19 +355,19 @@ function renderHeroBanner() {
         <div class="cd-card urgent">
           <div class="cd-head">
             <span class="cd-tag">🔥 1ª Evaluación · Дедлайн Envío</span>
-            <span class="cd-days">через ${dEnvio1} дн.</span>
+            <span class="cd-days">${dEnvio1 >= 0 ? `через ${dEnvio1} дн.` : 'прошёл'}</span>
           </div>
           <div class="cd-title">Среда, 2 декабря 2026 (до 23:59)</div>
-          <div class="cd-sub">Lengua U1-2 · Mates U1-2 · Digital U1 · Inglés U1-3 · Física UD1-2</div>
+          <div class="cd-sub">${activeNames} (1ª Evaluación)</div>
         </div>
 
         <div class="cd-card urgent">
           <div class="cd-head">
             <span class="cd-tag">🎯 1ª Evaluación · Очные экзамены</span>
-            <span class="cd-days">через ${dExam1} дн.</span>
+            <span class="cd-days">${dExam1 >= 0 ? `через ${dExam1} дн.` : 'прошёл'}</span>
           </div>
           <div class="cd-title">Вт 15 декабря и Чт 17 декабря 2026</div>
-          <div class="cd-sub">15.12 (Lengua, Mates, Digital) · 17.12 (Inglés, Física, Tecnología)</div>
+          <div class="cd-sub">15.12 (Lengua, Mates, Digital) · 17.12 (Выбранные Específicas)</div>
         </div>
 
         <div class="cd-card">
@@ -232,7 +376,7 @@ function renderHeroBanner() {
             <span class="cd-days">${dEnvio2} / ${dExam2} дн.</span>
           </div>
           <div class="cd-title">Сдача: 3 марта · Экзамены: 16 и 18 марта 2027</div>
-          <div class="cd-sub">Unidades 3 y 4 (Inglés U4–U6, Digital Tema 2)</div>
+          <div class="cd-sub">Unidades 3 y 4 (Inglés/Empresa U4–U6, Digital Tema 2, Biología U3)</div>
         </div>
 
         <div class="cd-card">
@@ -241,7 +385,7 @@ function renderHeroBanner() {
             <span class="cd-days">${dEnvio3} / ${dExam3} дн.</span>
           </div>
           <div class="cd-title">Сдача: 19 мая · Экзамены: 1 и 3 июня 2027</div>
-          <div class="cd-sub">Unidades 5 y 6 (Inglés U7–U9, Física UD5, Digital Tema 3)</div>
+          <div class="cd-sub">Финальные разделы курса + возможность пересдачи 1ª и 2ª Eval</div>
         </div>
       </div>
     </section>
@@ -252,24 +396,152 @@ function renderHeroBanner() {
         Согласно <i>Instrucciones estudiar en Aeducar AGS 26-27.pdf</i> (п. 9), отсутствие зарегистрированной активности в платформе Aeducar в течение 3 недель ведёт к автоматическому отчислению (<i>baja de oficio</i>). Заходите в <a href="https://aula2.aeducar.es/" target="_blank" rel="noopener">aula2.aeducar.es</a> минимум 2–3 раза в неделю!
       </div>
       <div class="alert-box danger">
-        <strong>🛡️ Обнаружены скрытые анти-ИИ ловушки в PDF заданий!</strong>
-        В файлах <i>Actividades de envío</i> по <b>Matemáticas (U1, U2, U3)</b> и <b>Competencia Digital (Tema 1)</b> преподаватели спрятали белый невидимый текст (например, подмену чисел и требование написать профессию «астронавт»). Полный список разобран во вкладке <a href="#envios" data-action="switch-tab" data-tab="envios">«5. Сдачи Envío и Ловушки»</a>.
+        <strong>🛡️ Скрытые анти-ИИ ловушки в PDF + Защита решений (Solucionarios)</strong>
+        В файлах <i>Actividades de envío</i> по <b>Matemáticas</b> и <b>Competencia Digital</b> обнаружен скрытый белый текст (подмена чисел и «профессия астронавт»). А все ответы (<i>Solucionarios</i>) скрыты за подтверждением, чтобы тренировать самостоятельное решение.
       </div>
     </div>
   `;
 }
 
+// Панель гибкого сдвига дат и автоматического пересчёта часов по каждому предмету
+function renderHoursAndShiftRecalculator(hoursSummary) {
+  const activeSubjects = getActiveSubjects();
+
+  return `
+    <section class="recalc-panel" aria-label="Пересчёт часов и сдвиг дат по предметам">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+        <div>
+          <h3 style="margin:0 0 4px; font:700 16.5px/1.3 var(--f-display);">
+            ⏱️ Адаптивный сдвиг дат и пересчёт часов по предметам
+          </h3>
+          <p style="margin:0; font-size:13.5px; color:var(--muted);">
+            Если в один день вы позанимались <b>1 час вместо 2 часов</b> (или наоборот <b>4 часа</b>), введите фактические минуты в карточке задачи ниже или сдвиньте дату старта предмета здесь — система автоматически пересчитает, сколько минут нужно заниматься этим предметом в следующие дни до дедлайна!
+          </p>
+        </div>
+        <button type="button" class="btn btn-sm" id="btn-reset-all-shifts">
+          🔄 Сбросить все сдвиги и часы
+        </button>
+      </div>
+
+      <div class="recalc-grid">
+        ${activeSubjects
+          .map((subj) => {
+            const st = hoursSummary[subj.id] || {
+              shiftDays: 0,
+              plannedTotalMins: 0,
+              plannedPastMins: 0,
+              actualLoggedMins: 0,
+              remainingSessions: 0,
+              deltaMins: 0,
+              extraMinsPerFutureSession: 0,
+            };
+            const shiftDays = Number(state.subjectShiftDays?.[subj.id] || 0);
+            const subjStartDate = shiftDateStr('2026-11-07', shiftDays);
+            const deltaHrs = (st.deltaMins / 60).toFixed(1);
+            const isDeficit = st.deltaMins < 0;
+            const isSurplus = st.deltaMins > 0;
+
+            return `
+              <div class="recalc-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                  <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
+                  <span style="font:700 11.5px/1 var(--f-mono); color:${
+                    isDeficit ? 'var(--err)' : isSurplus ? 'var(--ok)' : 'var(--muted)'
+                  };">
+                    ${
+                      st.deltaMins === 0
+                        ? 'По графику (0 ч)'
+                        : isDeficit
+                        ? `Долг: ${deltaHrs} ч (${st.deltaMins} м)`
+                        : `Запас: +${deltaHrs} ч (+${st.deltaMins} м)`
+                    }
+                  </span>
+                </div>
+
+                <div class="recalc-stat-line">
+                  <span style="color:var(--muted);">Отработано / План на дату:</span>
+                  <strong style="font-family:var(--f-mono);">${(st.actualLoggedMins / 60).toFixed(1)} ч / ${(st.plannedPastMins / 60).toFixed(1)} ч</strong>
+                </div>
+
+                <div class="recalc-stat-line">
+                  <span style="color:var(--muted);">Пересчёт на след. занятия (${st.remainingSessions}):</span>
+                  <strong style="font-family:var(--f-mono); color:${
+                    st.extraMinsPerFutureSession > 0
+                      ? 'var(--warn)'
+                      : st.extraMinsPerFutureSession < 0
+                      ? 'var(--ok)'
+                      : 'var(--ink)'
+                  };">
+                    ${
+                      st.extraMinsPerFutureSession > 0
+                        ? `+${st.extraMinsPerFutureSession} мин/зан.`
+                        : st.extraMinsPerFutureSession < 0
+                        ? `${st.extraMinsPerFutureSession} мин/зан.`
+                        : 'Без изменений'
+                    }
+                  </strong>
+                </div>
+
+                <div style="padding-top:6px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:12px; color:var(--muted); display:flex; justify-content:space-between; align-items:center;">
+                    <span>Сдвиг старта предмета:</span>
+                    <b style="font-family:var(--f-mono); color:var(--accent);">${shiftDays > 0 ? `+${shiftDays} дн.` : `${shiftDays} дн.`}</b>
+                  </label>
+                  <div style="display:flex; gap:4px; align-items:center;">
+                    <button type="button" class="btn btn-sm" style="padding:4px 7px;" data-action="shift-subj-days" data-subj="${subj.id}" data-delta="-1" title="Сдвинуть на 1 день раньше">−1д</button>
+                    <input
+                      type="date"
+                      class="btn btn-sm"
+                      style="flex:1; padding:4px 6px; font-size:12px;"
+                      data-action="pick-subj-start-date"
+                      data-subj="${subj.id}"
+                      value="${subjStartDate}"
+                      min="2026-10-15"
+                      max="2027-05-25"
+                      title="Выберите дату начала/сдвига для предмета ${subj.shortName}"
+                    />
+                    <button type="button" class="btn btn-sm" style="padding:4px 7px;" data-action="shift-subj-days" data-subj="${subj.id}" data-delta="1" title="Сдвинуть на 1 день позже">+1д</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join('')}
+      </div>
+    </section>
+  `;
+}
+
 function renderDailyTab() {
-  const sched = getDailySchedule(state.selectedDate);
+  const activeElectives = getActiveElectivesList();
+  const sched = getDailySchedule(state.selectedDate, {
+    ...state,
+    selectedElectives: activeElectives,
+  });
   const sprintDates = getSprintDates();
-  const totalMins = sched.blocks.reduce((acc, b) => acc + b.mins, 0);
+
+  const totalPlannedMins = sched.blocks.reduce((acc, b) => acc + (b.adjustedMins ?? b.mins), 0);
+  const totalActualMins = sched.blocks.reduce((acc, b) => {
+    const hasLog = state.loggedMinutes?.[b.id] !== undefined && state.loggedMinutes?.[b.id] !== '';
+    if (hasLog) return acc + Number(state.loggedMinutes[b.id]);
+    if (state.completedBlocks?.[b.id]) return acc + (b.adjustedMins ?? b.mins);
+    return acc;
+  }, 0);
+
   const doneCount = sched.blocks.filter((b) => state.completedBlocks[b.id]).length;
   const pct = sched.blocks.length ? Math.round((doneCount / sched.blocks.length) * 100) : 0;
 
-  const dayEvents = CALENDAR_EVENTS.filter((e) => e.date === state.selectedDate);
-  const upcomingEvents = CALENDAR_EVENTS.filter((e) => e.date >= state.selectedDate).slice(0, 6);
+  const activeSubjIds = new Set(['all', ...getActiveSubjects().map((s) => s.id)]);
+  const dayEvents = CALENDAR_EVENTS.filter(
+    (e) => e.date === state.selectedDate && activeSubjIds.has(e.subjectId)
+  );
+  const upcomingEvents = CALENDAR_EVENTS.filter(
+    (e) => e.date >= state.selectedDate && activeSubjIds.has(e.subjectId)
+  ).slice(0, 6);
 
   return `
+    ${renderHoursAndShiftRecalculator(sched.hoursSummary)}
+
     <div class="day-navigator">
       <div class="day-controls">
         <div class="day-title-group">
@@ -280,19 +552,20 @@ function renderDailyTab() {
           <span class="day-current-date">${sched.dayName}, ${formatRuDate(state.selectedDate)}</span>
           <span class="badge-mono">${sched.badge}</span>
         </div>
-        <div>
-          <span class="time-pill">Нагрузка дня: ~${totalMins} мин (${(totalMins / 60).toFixed(1)} ч)</span>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="time-pill">План (с пересчётом): <b>${totalPlannedMins} мин (${(totalPlannedMins / 60).toFixed(1)} ч)</b></span>
+          <span class="time-pill" style="border-color:var(--ok); color:var(--ok);">Факт за день: <b>${totalActualMins} мин (${(totalActualMins / 60).toFixed(1)} ч)</b></span>
         </div>
       </div>
 
       <div class="sprint-strip-label">
         <span>Навигатор 41-дневного спринта 1ª Evaluación (07.11 — 02.12 Дедлайн Envío — 15/17.12 Экзамены):</span>
-        <span>Кликните на любой день для просмотра задач</span>
+        <span>Кликните на любой день для просмотра и корректировки часов</span>
       </div>
       <div class="sprint-days-strip">
         ${sprintDates
           .map((dStr, idx) => {
-            const dSchedule = getDailySchedule(dStr);
+            const dSchedule = getDailySchedule(dStr, { ...state, selectedElectives: activeElectives });
             const allDone =
               dSchedule.blocks.length > 0 &&
               dSchedule.blocks.every((b) => state.completedBlocks[b.id]);
@@ -320,7 +593,7 @@ function renderDailyTab() {
         <div class="section-header">
           <div>
             <h2>Учебные блоки на ${formatRuDate(state.selectedDate)}</h2>
-            <p>Отмечайте выполненные блоки — прогресс автоматически сохраняется в браузере.</p>
+            <p>Отмечайте выполнение, вводите реально отработанные часы/минуты или переносите задачу на другую дату.</p>
           </div>
           <span class="badge-mono">Выполнено: ${doneCount} из ${sched.blocks.length} (${pct}%)</span>
         </div>
@@ -351,6 +624,23 @@ function renderDailyTab() {
               const subj = getSubject(b.subjectId);
               const isDone = Boolean(state.completedBlocks[b.id]);
               const guideUnit = subj.units ? subj.units.find((u) => u.guideUrl) : null;
+              // Ищем файлы решений для этого предмета (чтобы предложить защищённую кнопку просмотра решения)
+              const solFiles = subj.units
+                ? subj.units.flatMap((u) =>
+                    (u.files || [])
+                      .filter((f) => f.type === 'sol')
+                      .map((f) => ({ ...f, unitNum: u.num, unitTitle: u.title }))
+                  )
+                : [];
+              const firstSol = solFiles[0] || null;
+
+              const loggedVal =
+                state.loggedMinutes?.[b.id] !== undefined && state.loggedMinutes?.[b.id] !== ''
+                  ? Number(state.loggedMinutes[b.id])
+                  : isDone
+                  ? b.adjustedMins ?? b.mins
+                  : '';
+
               return `
                 <article class="task-card ${isDone ? 'completed' : ''}">
                   <input
@@ -358,18 +648,68 @@ function renderDailyTab() {
                     class="task-check"
                     data-action="toggle-block"
                     data-block-id="${b.id}"
+                    data-default-mins="${b.adjustedMins ?? b.mins}"
                     ${isDone ? 'checked' : ''}
                     aria-label="Отметить выполнение: ${b.title}"
                   />
                   <div class="task-body">
                     <div class="task-meta">
                       <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
-                      <span class="time-pill">⏱ ${b.mins} мин</span>
-                      <span class="time-pill">${sched.weekObj.week} (${sched.weekObj.dates})</span>
+                      <span class="time-pill">⏱ База: ${b.baseMins ?? b.mins} мин (${((b.baseMins ?? b.mins) / 60).toFixed(1)} ч)</span>
+                      ${
+                        b.extraMins && b.extraMins !== 0
+                          ? `<span class="time-pill" style="border-color:${b.extraMins > 0 ? 'var(--warn)' : 'var(--ok)'}; color:${b.extraMins > 0 ? 'var(--warn)' : 'var(--ok)'}; font-weight:700;">
+                              🔄 С учётом пересчёта: ${b.adjustedMins} мин (${b.extraMins > 0 ? `+${b.extraMins}` : b.extraMins} мин)
+                            </span>`
+                          : ''
+                      }
+                      <span class="time-pill">${sched.weekObj.week}</span>
                     </div>
                     <h3 class="task-title">${b.title}</h3>
                     <p class="task-desc">${b.desc}</p>
-                    <div class="task-links">
+
+                    ${
+                      b.subjectId !== 'all'
+                        ? `
+                      <div class="task-hours-control">
+                        <div class="hours-input-group">
+                          <span style="font-size:12.5px; font-weight:600;">⏱ Отработано по факту (мин):</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="600"
+                            step="15"
+                            class="hours-num-input"
+                            placeholder="${b.adjustedMins ?? b.mins}"
+                            value="${loggedVal}"
+                            data-action="log-block-mins"
+                            data-block-id="${b.id}"
+                          />
+                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="60" title="Записать 1 час (60 мин)">1 ч</button>
+                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="120" title="Записать 2 часа (120 мин)">2 ч</button>
+                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="180" title="Записать 3 часа (180 мин)">3 ч</button>
+                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="240" title="Записать 4 часа (240 мин)">4 ч</button>
+                        </div>
+
+                        <div class="hours-input-group">
+                          <span style="font-size:12px; color:var(--muted);">📅 Перенести задачу на:</span>
+                          <input
+                            type="date"
+                            class="btn btn-sm"
+                            style="padding:3px 7px; font-size:12px;"
+                            value="${state.rescheduledBlocks?.[b.id] || state.selectedDate}"
+                            min="2026-11-07"
+                            max="2027-06-03"
+                            data-action="reschedule-block-date"
+                            data-block-id="${b.id}"
+                          />
+                        </div>
+                      </div>
+                    `
+                        : ''
+                    }
+
+                    <div class="task-links" style="margin-top:10px;">
                       ${
                         guideUnit && guideUnit.guideUrl
                           ? `<button type="button" class="btn btn-sm" data-action="open-reader" data-url="${guideUnit.guideUrl}" data-title="Конспект: ${subj.shortName}">📖 Открыть конспект U1</button>`
@@ -377,7 +717,23 @@ function renderDailyTab() {
                       }
                       ${
                         subj.id !== 'all'
-                          ? `<button type="button" class="btn btn-sm" data-action="open-subject" data-subj="${subj.id}">📂 Все файлы ${subj.shortName}</button>`
+                          ? `<button type="button" class="btn btn-sm" data-action="open-subject" data-subj="${subj.id}">📂 Все материалы ${subj.shortName}</button>`
+                          : ''
+                      }
+                      ${
+                        firstSol
+                          ? `<button
+                              type="button"
+                              class="btn btn-sm"
+                              style="border-color:var(--warn); color:var(--warn);"
+                              data-action="request-solution"
+                              data-subj="${subj.id}"
+                              data-unit="${firstSol.unitNum}"
+                              data-title="${subj.shortName} — ${firstSol.name}"
+                              data-url="${firstSol.isLocal ? firstSol.url : driveUrl(firstSol.id)}"
+                            >
+                              🔒 Посмотреть решение (Solucionario)
+                            </button>`
                           : ''
                       }
                     </div>
@@ -406,7 +762,7 @@ function renderDailyTab() {
           <textarea
             id="textarea-day-note"
             class="notes-area"
-            placeholder="Запишите вопросы к тутории, номера решённых задач или на чём остановились..."
+            placeholder="Запишите вопросы к тутории, номера решённых задач или почему сдвинули часы..."
           >${state.dayNotes[state.selectedDate] || ''}</textarea>
         </div>
 
@@ -434,6 +790,7 @@ function renderDailyTab() {
 }
 
 function renderWeeksTab() {
+  const activeSubjects = getActiveSubjects();
   const filteredWeeks = WEEKS_PLAN.filter((w) => {
     if (state.weekEvalFilter !== 'all' && String(w.eval) !== String(state.weekEvalFilter)) {
       return false;
@@ -445,7 +802,7 @@ function renderWeeksTab() {
     <div class="section-header">
       <div>
         <h2>Понедельный учебный план: 30 недель (07.11.2026 – 03.06.2027)</h2>
-        <p>Весь курс разбит на 3 официальных триместра (1ª, 2ª и 3ª Evaluación). Отмечайте закрытые темы по каждому предмету.</p>
+        <p>Отображаются 3 обязательных предмета и выбранные вами спецпредметы (${activeSubjects.map((s) => s.shortName).join(', ')}).</p>
       </div>
     </div>
 
@@ -457,14 +814,16 @@ function renderWeeksTab() {
     </div>
 
     <div class="filter-bar">
-      <button type="button" class="btn btn-sm ${state.weekSubjFilter === 'all' ? 'btn-primary' : ''}" data-action="filter-week-subj" data-subj="all">Все 6 предметов</button>
-      ${SUBJECTS.map(
-        (s) => `
+      <button type="button" class="btn btn-sm ${state.weekSubjFilter === 'all' ? 'btn-primary' : ''}" data-action="filter-week-subj" data-subj="all">Все выбранные предметы (${activeSubjects.length})</button>
+      ${activeSubjects
+        .map(
+          (s) => `
         <button type="button" class="btn btn-sm ${state.weekSubjFilter === s.id ? 'btn-primary' : ''}" data-action="filter-week-subj" data-subj="${s.id}">
           ${s.shortName}
         </button>
       `
-      ).join('')}
+        )
+        .join('')}
     </div>
 
     <div class="weeks-list">
@@ -472,8 +831,8 @@ function renderWeeksTab() {
         .map((w) => {
           const subjectsToShow =
             state.weekSubjFilter === 'all'
-              ? SUBJECTS
-              : SUBJECTS.filter((s) => s.id === state.weekSubjFilter);
+              ? activeSubjects
+              : activeSubjects.filter((s) => s.id === state.weekSubjFilter);
 
           return `
             <article class="week-card ${w.week === 'W01' ? 'current-week' : ''} ${w.isExamWeek ? 'exam-week' : ''}">
@@ -496,6 +855,7 @@ function renderWeeksTab() {
                   .map((s) => {
                     const cellKey = `${w.week}:${s.id}`;
                     const isDone = Boolean(state.completedWeekSubj[cellKey]);
+                    const shiftDays = Number(state.subjectShiftDays?.[s.id] || 0);
                     return `
                       <label class="week-subj-cell ${isDone ? 'done' : ''}">
                         <input
@@ -506,8 +866,9 @@ function renderWeeksTab() {
                           ${isDone ? 'checked' : ''}
                         />
                         <div>
-                          <div style="margin-bottom:4px;">
+                          <div style="margin-bottom:4px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                             <span class="subj-pill subj-${s.id}">${s.shortName}</span>
+                            ${shiftDays !== 0 ? `<span class="badge-mono" style="font-size:10px;">Сдвиг: ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн.</span>` : ''}
                           </div>
                           <div style="font-size:13.5px; color:var(--ink-secondary);">
                             ${w.subjects[s.id] || '—'}
@@ -527,6 +888,12 @@ function renderWeeksTab() {
 }
 
 function renderCalendarTab() {
+  const activeSubjects = getActiveSubjects();
+  const activeSubjIds = new Set(['all', ...activeSubjects.map((s) => s.id)]);
+
+  // Фильтруем события календаря под выбранные пользователем предметы
+  const activeCalendarEvents = CALENDAR_EVENTS.filter((e) => activeSubjIds.has(e.subjectId));
+
   const months = [
     { key: '2026-11', label: 'Ноябрь 2026' },
     { key: '2026-12', label: 'Декабрь 2026 (1ª Eval)' },
@@ -541,7 +908,6 @@ function renderCalendarTab() {
   const [yearNum, monthNum] = state.calMonth.split('-').map(Number);
   const firstDay = new Date(yearNum, monthNum - 1, 1);
   const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
-  // Понедельник = 0 .. Воскресенье = 6
   const startOffset = (firstDay.getDay() + 6) % 7;
 
   const cells = [];
@@ -551,7 +917,7 @@ function renderCalendarTab() {
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${yearNum}-${String(monthNum).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const evs = CALENDAR_EVENTS.filter((e) => e.date === dateStr);
+    const evs = activeCalendarEvents.filter((e) => e.date === dateStr);
     const isSelected = state.selectedDate === dateStr;
     cells.push(`
       <div class="cal-cell ${isSelected ? 'selected' : ''}" data-action="cal-select-date" data-date="${dateStr}">
@@ -574,7 +940,7 @@ function renderCalendarTab() {
     `);
   }
 
-  const filteredEvents = CALENDAR_EVENTS.filter((ev) => {
+  const filteredEvents = activeCalendarEvents.filter((ev) => {
     if (state.calFilter === 'all') return true;
     return ev.type === state.calFilter;
   });
@@ -583,20 +949,20 @@ function renderCalendarTab() {
     <div class="section-header">
       <div>
         <h2>Календарь экзаменов, дедлайнов Envío и онлайн-туторий (2026–2027)</h2>
-        <p>Все даты перенесены из официальных PDF CPEPA Miguel Hernández. Добавьте их в свой Google / Apple Calendar одним нажатием.</p>
+        <p>Автоматически отфильтровано под ваши выбранные предметы: <b>${activeSubjects.map((s) => s.shortName).join(', ')}</b>.</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn btn-primary btn-sm" data-action="download-ics" data-filter="all">
-          📥 Скачать весь календарь (.ics)
+          📥 Скачать мой календарь (.ics)
         </button>
         <button type="button" class="btn btn-sm" data-action="download-ics" data-filter="exam">
-          📥 Только экзамены (.ics)
+          📥 Только мои экзамены (.ics)
         </button>
         <button type="button" class="btn btn-sm" data-action="download-ics" data-filter="deadline">
           📥 Только дедлайны Envío (.ics)
         </button>
         <button type="button" class="btn btn-sm" data-action="download-ics" data-filter="tutoria">
-          📥 Только онлайн-тутории (.ics)
+          📥 Только мои тутории (.ics)
         </button>
       </div>
     </div>
@@ -630,7 +996,7 @@ function renderCalendarTab() {
 
       <div class="panel-card" style="max-height: 620px; overflow-y: auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-          <h3 style="margin:0;">Список событий (${filteredEvents.length})</h3>
+          <h3 style="margin:0;">События ваших предметов (${filteredEvents.length})</h3>
           <div style="display:flex; gap:4px; flex-wrap:wrap;">
             <button type="button" class="btn btn-sm ${state.calFilter === 'all' ? 'btn-primary' : ''}" data-action="filter-cal-type" data-type="all">Все</button>
             <button type="button" class="btn btn-sm ${state.calFilter === 'deadline' ? 'btn-primary' : ''}" data-action="filter-cal-type" data-type="deadline">Дедлайны</button>
@@ -665,7 +1031,7 @@ function renderCalendarTab() {
     <div style="margin-top:26px;">
       <div class="section-header">
         <div>
-          <h2>Сводное расписание экзаменов и консультаций преподавателей (Tutorías)</h2>
+          <h2>Полный справочник всех 10 предметов центра CPEPA Miguel Hernández (Tutorías и Экзамены)</h2>
           <p>Из официальных документов <i>TUTORÍAS GRUPALES AGS Calendario 2026-27.pdf</i> и <i>tutorías_gs INDIVIDUALES 26-27.pdf</i>. Телефон центра: <b>974 241 504</b>.</p>
         </div>
       </div>
@@ -675,6 +1041,7 @@ function renderCalendarTab() {
           <thead>
             <tr>
               <th>Предмет</th>
+              <th>Статус в вашем плане</th>
               <th>Преподаватель</th>
               <th>Групповая онлайн-тутория (раз в 2 недели)</th>
               <th>Индивидуальные часы приёма (телефон / Aeducar)</th>
@@ -682,17 +1049,27 @@ function renderCalendarTab() {
             </tr>
           </thead>
           <tbody>
-            ${SUBJECTS.map(
-              (s) => `
-              <tr>
-                <td><span class="subj-pill subj-${s.id}">${s.name}</span></td>
-                <td><b>${s.teacher}</b></td>
-                <td>${s.groupTutoria}</td>
-                <td>${s.individualTutoria.join('<br/>')}</td>
-                <td><b>${s.examDay}</b></td>
-              </tr>
-            `
-            ).join('')}
+            ${SUBJECTS.map((s) => {
+              const isSelected = activeSubjIds.has(s.id);
+              return `
+                <tr style="${isSelected ? '' : 'opacity:0.65;'}">
+                  <td><span class="subj-pill subj-${s.id}">${s.name}</span></td>
+                  <td>
+                    ${
+                      s.isMandatory
+                        ? '<span class="badge-mono">🔒 Обязательный</span>'
+                        : isSelected
+                        ? '<span class="new-tag">✓ Выбран вами</span>'
+                        : '<span style="font-size:12px; color:var(--muted);">В резерве (доступен в дропдауне)</span>'
+                    }
+                  </td>
+                  <td><b>${s.teacher}</b></td>
+                  <td>${s.groupTutoria}</td>
+                  <td>${s.individualTutoria.join('<br/>')}</td>
+                  <td><b>${s.examDay}</b></td>
+                </tr>
+              `;
+            }).join('')}
           </tbody>
         </table>
       </div>
@@ -701,52 +1078,89 @@ function renderCalendarTab() {
 }
 
 function renderSubjectsTab() {
-  const activeSubj = SUBJECTS.find((s) => s.id === state.activeSubjectId) || SUBJECTS[0];
+  const activeSubjects = getActiveSubjects();
+  const subjectsList = state.showAllCatalogSubjects ? SUBJECTS : activeSubjects;
+  const activeSubj =
+    subjectsList.find((s) => s.id === state.activeSubjectId) || subjectsList[0] || SUBJECTS[0];
 
   return `
     <div class="section-header">
       <div>
-        <h2>Предметы, учебные материалы, новые файлы и конспекты</h2>
-        <p>Все файлы синхронизированы с вашей папкой Google Drive <code>curso-grado-superior</code> (включая обновления от 7 ноября 2026).</p>
+        <h2>Предметы, структура курса, учебные файлы и конспекты</h2>
+        <p>Все файлы синхронизированы с вашей папкой Google Drive. Решения (<i>Solucionarios</i>) защищены модальным окном подтверждения.</p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm ${state.showAllCatalogSubjects ? 'btn-primary' : ''}" id="btn-toggle-all-catalog">
+          ${state.showAllCatalogSubjects ? 'Показать только мои выбранные предметы' : 'Показать все 10 предметов базы (вкл. Химию, Биологию, Географию, Бизнес)'}
+        </button>
       </div>
     </div>
 
     <div class="subjects-nav">
-      ${SUBJECTS.map((s) => {
-        const doneUnits = s.units.filter((u) => state.completedUnits[`${s.id}:U${u.num}`]).length;
-        return `
-          <button
-            type="button"
-            class="subj-tab-card ${s.id === activeSubj.id ? 'active' : ''}"
-            data-action="select-subject"
-            data-subj="${s.id}"
-          >
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span class="subj-pill subj-${s.id}">${s.code}</span>
-              <span style="font:600 11.5px/1 var(--f-mono); color:var(--muted);">${doneUnits}/${s.units.length} тем</span>
-            </div>
-            <div style="font-weight:700; font-size:14.5px;">${s.shortName}</div>
-            <div style="font-size:12px; color:var(--muted); margin-top:2px;">${s.teacher}</div>
-          </button>
-        `;
-      }).join('')}
+      ${subjectsList
+        .map((s) => {
+          const doneUnits = s.units.filter((u) => state.completedUnits[`${s.id}:U${u.num}`]).length;
+          return `
+            <button
+              type="button"
+              class="subj-tab-card ${s.id === activeSubj.id ? 'active' : ''}"
+              data-action="select-subject"
+              data-subj="${s.id}"
+            >
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span class="subj-pill subj-${s.id}">${s.code}</span>
+                <span style="font:600 11.5px/1 var(--f-mono); color:var(--muted);">${doneUnits}/${s.units.length} тем</span>
+              </div>
+              <div style="font-weight:700; font-size:14.5px;">${s.shortName}</div>
+              <div style="font-size:12px; color:var(--muted); margin-top:2px;">${s.teacher}</div>
+            </button>
+          `;
+        })
+        .join('')}
     </div>
 
     <div class="panel-card" style="margin-bottom:18px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
         <div>
-          <span class="subj-pill subj-${activeSubj.id}">${activeSubj.category === 'competencia' ? 'COMPETENCIA BÁSICA (Экзамен во вторник)' : 'MATERIA ESPECÍFICA (Экзамен в четверг)'}</span>
+          <span class="subj-pill subj-${activeSubj.id}">
+            ${activeSubj.category === 'competencia' ? '🔒 COMPETENCIA BÁSICA (Обязательный · Экзамен во вторник)' : '🎯 MATERIA ESPECÍFICA (По выбору · Экзамен в четверг)'}
+          </span>
           <h3 style="font-size:21px; margin:8px 0 4px;">${activeSubj.name}</h3>
           <p style="margin:0; color:var(--muted); font-size:14px;">
             Преподаватель: <b>${activeSubj.teacher}</b> · Групповая тутория: <b>${activeSubj.groupTutoria}</b> · Время экзамена: <b>${activeSubj.examDay}</b>
           </p>
         </div>
-        ${
-          activeSubj.externalResource
-            ? `<a href="${activeSubj.externalResource.url}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">🎬 ${activeSubj.externalResource.label} ↗</a>`
-            : ''
-        }
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          ${
+            activeSubj.externalResource
+              ? `<a href="${activeSubj.externalResource.url}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">🎬 ${activeSubj.externalResource.label} ↗</a>`
+              : ''
+          }
+          <button
+            type="button"
+            class="btn btn-sm"
+            style="border-color:var(--warn); color:var(--warn);"
+            data-action="request-solution"
+            data-subj="${activeSubj.id}"
+            data-unit="all"
+            data-title="Все решения предмета ${activeSubj.shortName}"
+            data-url=""
+          >
+            🔒 Страница решений предмета (${activeSubj.shortName})
+          </button>
+        </div>
       </div>
+
+      ${
+        !activeSubj.hasFullFiles
+          ? `
+        <div class="alert-box warn" style="margin-top:14px;">
+          <strong>📦 Предмет из резервного каталога (${activeSubj.shortName})</strong>
+          Для этого предмета уже заложены официальное расписание экзаменов, календарь двухнедельных онлайн-туторий, часы консультаций преподавателя (<b>${activeSubj.teacher}</b>), распределение разделов по 3 триместрам и автоматический пересчёт часов. Когда вы загрузите PDF-файлы учебников этого предмета, они появятся в карточках Unidades ниже.
+        </div>
+      `
+          : ''
+      }
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line);">
         <div>
@@ -773,6 +1187,9 @@ function renderSubjectsTab() {
         .map((u) => {
           const uKey = `${activeSubj.id}:U${u.num}`;
           const isDone = Boolean(state.completedUnits[uKey]);
+          const regularFiles = (u.files || []).filter((f) => f.type !== 'sol');
+          const solutionFiles = (u.files || []).filter((f) => f.type === 'sol');
+
           return `
             <article class="unit-card">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
@@ -800,20 +1217,13 @@ function renderSubjectsTab() {
               </div>
 
               ${
-                u.files && u.files.length > 0
+                regularFiles.length > 0 || solutionFiles.length > 0
                   ? `
                 <div class="files-grid">
-                  ${u.files
+                  ${regularFiles
                     .map((f) => {
                       const href = f.isLocal ? f.url : driveUrl(f.id);
-                      const icon =
-                        f.type === 'html'
-                          ? '📖'
-                          : f.type === 'envio'
-                          ? '📝'
-                          : f.type === 'sol'
-                          ? '✅'
-                          : '📄';
+                      const icon = f.type === 'html' ? '📖' : f.type === 'envio' ? '📝' : '📄';
                       return `
                         <a href="${href}" target="_blank" rel="noopener" class="file-link-card">
                           <span>${icon} ${f.name}</span>
@@ -822,9 +1232,29 @@ function renderSubjectsTab() {
                       `;
                     })
                     .join('')}
+
+                  ${solutionFiles
+                    .map((sol) => {
+                      const solUrl = sol.isLocal ? sol.url : driveUrl(sol.id);
+                      return `
+                        <button
+                          type="button"
+                          class="sol-locked-card"
+                          data-action="request-solution"
+                          data-subj="${activeSubj.id}"
+                          data-unit="${u.num}"
+                          data-title="${activeSubj.shortName} (${u.title}) — ${sol.name}"
+                          data-url="${solUrl}"
+                        >
+                          <span>🔒 Решение скрыто: ${sol.name}</span>
+                          <span class="badge-mono" style="background:var(--warn-soft); color:var(--warn);">Посмотреть?</span>
+                        </button>
+                      `;
+                    })
+                    .join('')}
                 </div>
               `
-                  : `<p style="margin:10px 0 0; font-size:13px; color:var(--muted);">Материалы этого раздела будут опубликованы преподавателем в Aeducar к началу соответствующего триместра.</p>`
+                  : `<p style="margin:10px 0 0; font-size:13px; color:var(--muted);">Учебные файлы этого раздела будут добавлены из Aeducar / Google Drive по мере прохождения триместра.</p>`
               }
             </article>
           `;
@@ -856,12 +1286,156 @@ function renderSubjectsTab() {
   `;
 }
 
+// Специальная страница решений данной тематики (открывается после подтверждения в модалке «Вы уверены, что хотите посмотреть решение?»)
+function renderSolutionsTab() {
+  const targetSubjId = state.activeSolutionPage?.subjectId || state.activeSubjectId || 'mates';
+  const targetUnitNum = state.activeSolutionPage?.unitNum || 'all';
+  const highlightUrl = state.activeSolutionPage?.highlightUrl || '';
+
+  const subj = getSubject(targetSubjId);
+  const isUnlockedForSubj = Boolean(state.unlockedSolutions?.[targetSubjId]);
+
+  // Собираем все решения по предмету
+  const allSolItems = [];
+  for (const u of subj.units || []) {
+    for (const f of u.files || []) {
+      if (f.type === 'sol') {
+        allSolItems.push({
+          unitNum: u.num,
+          eval: u.eval,
+          unitTitle: u.title,
+          name: f.name,
+          url: f.isLocal ? f.url : driveUrl(f.id),
+        });
+      }
+    }
+  }
+
+  return `
+    <div class="section-header">
+      <div>
+        <h2>🔒 Страница решений и ответов (Solucionarios) — ${subj.name}</h2>
+        <p>Здесь собраны официальные ключи самопроверки, ответы к моделям экзаменов и пошаговые решения задач по выбранной тематике.</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        ${SUBJECTS.filter((s) => s.hasFullFiles)
+          .map(
+            (s) => `
+          <button
+            type="button"
+            class="btn btn-sm ${s.id === subj.id ? 'btn-primary' : ''}"
+            data-action="request-solution"
+            data-subj="${s.id}"
+            data-unit="all"
+            data-title="Раздел решений: ${s.shortName}"
+            data-url=""
+          >
+            🔒 ${s.shortName}
+          </button>
+        `
+          )
+          .join('')}
+      </div>
+    </div>
+
+    ${
+      !isUnlockedForSubj
+        ? `
+      <div class="panel-card" style="text-align:center; padding:36px 24px;">
+        <div style="font-size:40px; margin-bottom:10px;">🔒</div>
+        <h3 style="font-size:20px; margin-bottom:8px;">Решения по предмету «${subj.shortName}» скрыты</h3>
+        <p style="max-width:60ch; margin:0 auto 18px; color:var(--muted);">
+          Чтобы не подглядывать в ответы случайно во время учёбы, доступ к странице решений закрыт подтверждением. Нажмите кнопку ниже, если вы уже попробовали решить задания самостоятельно и хотите сверить ответ.
+        </p>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-action="request-solution"
+          data-subj="${subj.id}"
+          data-unit="all"
+          data-title="Все решения по предмету ${subj.shortName}"
+          data-url=""
+        >
+          🔓 Подтвердить и открыть решения по ${subj.shortName}
+        </button>
+      </div>
+    `
+        : `
+      <div class="alert-box warn" style="margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div>
+          <strong>✅ Доступ к решениям «${subj.shortName}» открыт ${targetUnitNum !== 'all' ? `(Раздел: Unidad ${targetUnitNum})` : ''}</strong>
+          Сверяйте не только конечное число, но и оформление промежуточных шагов и единиц измерения СИ.
+        </div>
+        <button type="button" class="btn btn-sm" data-action="lock-solutions" data-subj="${subj.id}">
+          🔒 Снова скрыть решения
+        </button>
+      </div>
+
+      ${
+        highlightUrl
+          ? `
+        <div class="panel-card" style="border:2px solid var(--ok); margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div>
+              <span class="new-tag">ВЫБРАННОЕ РЕШЕНИЕ ТЕМАТИКИ</span>
+              <h3 style="margin:6px 0 4px;">${state.activeSolutionPage?.title || 'Файл решения'}</h3>
+              <p style="margin:0; font-size:13.5px; color:var(--muted);">Вы подтвердили просмотр этого решения. Нажмите кнопку справа, чтобы открыть PDF с ответами в Google Drive.</p>
+            </div>
+            <a href="${highlightUrl}" target="_blank" rel="noopener" class="btn btn-primary">
+              📄 Открыть документ решения ↗
+            </a>
+          </div>
+        </div>
+      `
+          : ''
+      }
+
+      ${
+        allSolItems.length > 0
+          ? `
+        <div class="weeks-list">
+          ${allSolItems.map((item) => {
+            const isHighlighted = targetUnitNum !== 'all' && String(item.unitNum) === String(targetUnitNum);
+            return `
+              <div class="panel-card" style="${isHighlighted ? 'border:2px solid var(--accent);' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                  <div>
+                    <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
+                    <span class="badge-mono" style="margin-left:6px;">${item.eval}ª Evaluación · ${item.unitTitle}</span>
+                    <h3 style="margin:8px 0 4px; font-size:16.5px;">✅ ${item.name}</h3>
+                  </div>
+                  <a href="${item.url}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+                    Открыть решение в Drive ↗
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `
+          : `
+        <div class="panel-card">
+          <p style="margin:0; color:var(--muted);">
+            Для предмета <b>${subj.shortName}</b> отдельные файлы <i>Solucionario</i> не выделены преподавателем в общую папку, но разбор типовых задач и контрольных цифр для <i>Actividades de envío</i> доступен во вкладке <a href="#envios" data-action="switch-tab" data-tab="envios">«5. Сдачи Envío и Ловушки»</a>.
+          </p>
+        </div>
+      `
+      }
+    `
+    }
+  `;
+}
+
 function renderEnviosTab() {
+  const activeSubjects = getActiveSubjects();
+  const activeIds = new Set(activeSubjects.map((s) => s.id));
+  const filteredEnvios = ENVIOS_LIST.filter((env) => activeIds.has(env.subjectId));
+
   return `
     <div class="section-header">
       <div>
         <h2>Трекер обязательных работ (Actividades de Envío) и Защита от анти-ИИ ловушек</h2>
-        <p>Все обязательные работы курса с точными требованиями к формату и разбором скрытых ловушек, обнаруженных в PDF преподавателей.</p>
+        <p>Отображаются работы для выбранных вами предметов. Эталонные решения скрыты за подтверждением.</p>
       </div>
     </div>
 
@@ -871,47 +1445,65 @@ function renderEnviosTab() {
     </div>
 
     <div class="weeks-list">
-      ${ENVIOS_LIST.map((env) => {
-        const subj = getSubject(env.subjectId);
-        const currentStatus = state.envioStatus[env.id] || 'todo';
-        return `
-          <article class="week-card" style="border-left: 4px solid ${
-            currentStatus === 'submitted'
-              ? 'var(--ok)'
-              : currentStatus === 'ready'
-              ? 'var(--accent)'
-              : 'var(--warn)'
-          };">
-            <div class="week-card-head">
-              <div>
-                <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
-                <span class="badge-mono" style="margin-left:6px;">${env.eval}ª Evaluación · Дедлайн: ${formatRuDate(env.deadline)}</span>
-                <h3 style="margin:8px 0 2px; font-size:17px;">${env.title}</h3>
-                <div style="font-size:13px; color:var(--muted);">
-                  Рекомендуемая дата готовности по нашему плану: <b>${formatRuDate(env.recommendedDate)}</b> · Формат: <b>${env.format}</b>
+      ${filteredEnvios
+        .map((env) => {
+          const subj = getSubject(env.subjectId);
+          const currentStatus = state.envioStatus[env.id] || 'todo';
+          return `
+            <article class="week-card" style="border-left: 4px solid ${
+              currentStatus === 'submitted'
+                ? 'var(--ok)'
+                : currentStatus === 'ready'
+                ? 'var(--accent)'
+                : 'var(--warn)'
+            };">
+              <div class="week-card-head">
+                <div>
+                  <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
+                  <span class="badge-mono" style="margin-left:6px;">${env.eval}ª Evaluación · Дедлайн: ${formatRuDate(env.deadline)}</span>
+                  <h3 style="margin:8px 0 2px; font-size:17px;">${env.title}</h3>
+                  <div style="font-size:13px; color:var(--muted);">
+                    Рекомендуемая дата готовности: <b>${formatRuDate(env.recommendedDate)}</b> · Формат: <b>${env.format}</b>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <select class="btn btn-sm" data-action="change-envio-status" data-id="${env.id}">
+                    <option value="todo" ${currentStatus === 'todo' ? 'selected' : ''}>⏳ Не начато</option>
+                    <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>✍️ В черновике</option>
+                    <option value="ready" ${currentStatus === 'ready' ? 'selected' : ''}>✅ Чистовик готов</option>
+                    <option value="submitted" ${currentStatus === 'submitted' ? 'selected' : ''}>🚀 Сдано в Aeducar</option>
+                  </select>
+                  <a href="${driveUrl(env.fileId)}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
+                    Открыть задание в Drive ↗
+                  </a>
+                  ${
+                    env.solutionFileId
+                      ? `<button
+                          type="button"
+                          class="btn btn-sm"
+                          style="border-color:var(--warn); color:var(--warn);"
+                          data-action="request-solution"
+                          data-subj="${subj.id}"
+                          data-unit="${env.eval}"
+                          data-title="${subj.shortName} — ${env.solutionFileName}"
+                          data-url="${driveUrl(env.solutionFileId)}"
+                        >
+                          🔒 Посмотреть решения по теме
+                        </button>`
+                      : ''
+                  }
                 </div>
               </div>
-              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <select class="btn btn-sm" data-action="change-envio-status" data-id="${env.id}">
-                  <option value="todo" ${currentStatus === 'todo' ? 'selected' : ''}>⏳ Не начато</option>
-                  <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>✍️ В черновике</option>
-                  <option value="ready" ${currentStatus === 'ready' ? 'selected' : ''}>✅ Чистовик готов</option>
-                  <option value="submitted" ${currentStatus === 'submitted' ? 'selected' : ''}>🚀 Сдано в Aeducar</option>
-                </select>
-                <a href="${driveUrl(env.fileId)}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
-                  Открыть задание в Drive ↗
-                </a>
-              </div>
-            </div>
 
-            <p style="margin:0 0 10px; font-size:14.2px;"><b>Содержание и реальные данные задач:</b> ${env.summary}</p>
-            <div class="alert-box warn" style="margin:0;">
-              <strong>🔍 Контроль оформления и анти-ловушек:</strong>
-              ${env.antiAiWarning}
-            </div>
-          </article>
-        `;
-      }).join('')}
+              <p style="margin:0 0 10px; font-size:14.2px;"><b>Содержание и реальные данные задач:</b> ${env.summary}</p>
+              <div class="alert-box warn" style="margin:0;">
+                <strong>🔍 Контроль оформления и анти-ловушек:</strong>
+                ${env.antiAiWarning}
+              </div>
+            </article>
+          `;
+        })
+        .join('')}
     </div>
 
     <div style="margin-top:26px;">
@@ -1024,16 +1616,17 @@ function computeSubjectGrade(subjId) {
 }
 
 function renderGradesTab() {
-  const finals = SUBJECTS.map((s) => computeSubjectGrade(s.id).final).filter((v) => v !== null);
+  const activeSubjects = getActiveSubjects();
+  const finals = activeSubjects.map((s) => computeSubjectGrade(s.id).final).filter((v) => v !== null);
   const courseAvg = finals.length ? (finals.reduce((a, b) => a + b, 0) / finals.length).toFixed(2) : '—';
 
   return `
     <div class="section-header">
       <div>
         <h2>Калькулятор оценок по официальным критериям (Criterios de calificación)</h2>
-        <p>Введите полученные или планируемые оценки за Actividades de envío (Nota A) и очные экзамены (Nota E) по каждому триместру.</p>
+        <p>Расчёт среднего балла по вашим выбранным предметам (${activeSubjects.map((s) => s.shortName).join(', ')}). Для зачёта курса в каждой дисциплине итоговая оценка должна быть ≥ 5,0.</p>
       </div>
-      <div style="display:flex; gap:8px; align-items:center;">
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <span class="badge-mono" style="font-size:14px; padding:8px 12px;">Средний балл курса: ${courseAvg}</span>
         <button type="button" class="btn btn-sm" id="btn-export-json">💾 Экспорт прогресса (JSON)</button>
         <label class="btn btn-sm" style="margin:0;">
@@ -1044,67 +1637,69 @@ function renderGradesTab() {
     </div>
 
     <div class="grades-grid">
-      ${SUBJECTS.map((s) => {
-        const g = state.grades[s.id] || {};
-        const res = computeSubjectGrade(s.id);
-        return `
-          <div class="panel-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span class="subj-pill subj-${s.id}">${s.shortName}</span>
-              <strong style="font:700 16px/1 var(--f-mono); color:${res.final !== null && res.final >= 5 ? 'var(--ok)' : 'var(--ink)'}">
-                Итог: ${res.final !== null ? res.final.toFixed(2) : '—'}
-              </strong>
-            </div>
-            <p style="font-size:12.5px; color:var(--muted); margin:0 0 12px;">${s.gradingFormula}</p>
-
-            <div class="grade-input-row" style="font-weight:700; color:var(--muted); font-size:12px;">
-              <span>Триместр</span>
-              <span style="text-align:center;">Envío (A)</span>
-              <span style="text-align:center;">Examen (E)</span>
-            </div>
-
-            ${[1, 2, 3]
-              .map(
-                (evNum) => `
-              <div class="grade-input-row">
-                <span><b>${evNum}ª Evaluación</b> ${res[`n${evNum}`] !== null ? `<small style="color:var(--muted)">(${res[`n${evNum}`].toFixed(2)})</small>` : ''}</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                  class="grade-input"
-                  placeholder="0–10"
-                  data-action="grade-input"
-                  data-subj="${s.id}"
-                  data-field="a${evNum}"
-                  value="${g[`a${evNum}`] ?? ''}"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                  class="grade-input"
-                  placeholder="0–10"
-                  data-action="grade-input"
-                  data-subj="${s.id}"
-                  data-field="e${evNum}"
-                  value="${g[`e${evNum}`] ?? ''}"
-                />
+      ${activeSubjects
+        .map((s) => {
+          const g = state.grades[s.id] || {};
+          const res = computeSubjectGrade(s.id);
+          return `
+            <div class="panel-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span class="subj-pill subj-${s.id}">${s.shortName}</span>
+                <strong style="font:700 16px/1 var(--f-mono); color:${res.final !== null && res.final >= 5 ? 'var(--ok)' : 'var(--ink)'}">
+                  Итог: ${res.final !== null ? res.final.toFixed(2) : '—'}
+                </strong>
               </div>
-            `
-              )
-              .join('')}
+              <p style="font-size:12.5px; color:var(--muted); margin:0 0 12px;">${s.gradingFormula}</p>
 
-            ${
-              res.warning
-                ? `<div style="margin-top:8px; font-size:12.5px; color:var(--err); font-weight:600;">${res.warning}</div>`
-                : ''
-            }
-          </div>
-        `;
-      }).join('')}
+              <div class="grade-input-row" style="font-weight:700; color:var(--muted); font-size:12px;">
+                <span>Триместр</span>
+                <span style="text-align:center;">Envío (A)</span>
+                <span style="text-align:center;">Examen (E)</span>
+              </div>
+
+              ${[1, 2, 3]
+                .map(
+                  (evNum) => `
+                <div class="grade-input-row">
+                  <span><b>${evNum}ª Evaluación</b> ${res[`n${evNum}`] !== null ? `<small style="color:var(--muted)">(${res[`n${evNum}`].toFixed(2)})</small>` : ''}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    class="grade-input"
+                    placeholder="0–10"
+                    data-action="grade-input"
+                    data-subj="${s.id}"
+                    data-field="a${evNum}"
+                    value="${g[`a${evNum}`] ?? ''}"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    class="grade-input"
+                    placeholder="0–10"
+                    data-action="grade-input"
+                    data-subj="${s.id}"
+                    data-field="e${evNum}"
+                    value="${g[`e${evNum}`] ?? ''}"
+                  />
+                </div>
+              `
+                )
+                .join('')}
+
+              ${
+                res.warning
+                  ? `<div style="margin-top:8px; font-size:12.5px; color:var(--err); font-weight:600;">${res.warning}</div>`
+                  : ''
+              }
+            </div>
+          `;
+        })
+        .join('')}
     </div>
   `;
 }
@@ -1127,6 +1722,41 @@ function renderReaderModal() {
   `;
 }
 
+// Модальное окно подтверждения перед показом решения: «Вы уверены, что хотите посмотреть решение?»
+function renderSolutionConfirmModal() {
+  const modal = state.solutionConfirmModal;
+  if (!modal) return '';
+  const subj = getSubject(modal.subjectId);
+
+  return `
+    <div class="modal-backdrop" id="sol-confirm-backdrop">
+      <div class="confirm-modal-window" role="dialog" aria-modal="true" aria-labelledby="sol-modal-title">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
+          <span class="badge-mono" style="background:var(--warn-soft); color:var(--warn);">Защита от подглядывания</span>
+        </div>
+        <h3 id="sol-modal-title" style="font:700 19px/1.3 var(--f-display); margin:0 0 10px;">
+          Вы уверены, что хотите посмотреть решение?
+        </h3>
+        <p style="margin:0 0 12px; font-size:14.5px; color:var(--ink-secondary);">
+          Вы собираетесь перейти на страницу решений по теме: <b>«${modal.title}»</b>.
+        </p>
+        <div class="alert-box warn" style="margin-bottom:18px; font-size:13px;">
+          💡 На очных экзаменах (которые дают 90% оценки) справочные решения недоступны. Рекомендуется открывать <i>Solucionario</i> только после того, как вы попробовали решить задачу на черновике.
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn" id="btn-cancel-solution">
+            Нет, решать самостоятельно
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-confirm-solution">
+            Да, перейти к решению →
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderApp() {
   applyTheme();
   const root = document.getElementById('app');
@@ -1137,6 +1767,7 @@ function renderApp() {
   else if (state.activeTab === 'weeks') activeContent = renderWeeksTab();
   else if (state.activeTab === 'calendar') activeContent = renderCalendarTab();
   else if (state.activeTab === 'subjects') activeContent = renderSubjectsTab();
+  else if (state.activeTab === 'solutions') activeContent = renderSolutionsTab();
   else if (state.activeTab === 'envios') activeContent = renderEnviosTab();
   else if (state.activeTab === 'grades') activeContent = renderGradesTab();
 
@@ -1147,6 +1778,7 @@ function renderApp() {
       ${activeContent}
     </main>
     ${renderReaderModal()}
+    ${renderSolutionConfirmModal()}
   `;
 
   attachEvents();
@@ -1157,6 +1789,198 @@ function attachEvents() {
   if (btnTheme) {
     btnTheme.addEventListener('click', () => {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      saveState();
+      renderApp();
+    });
+  }
+
+  // Дропдауны выбора 2 основных спецпредметов (Electivas) + 1 опционального
+  const selE1 = document.getElementById('select-elective-1');
+  if (selE1) {
+    selE1.addEventListener('change', (e) => {
+      const newVal = e.target.value;
+      const curE2 = state.selectedElectives?.[1] || 'ingles';
+      state.selectedElectives = [newVal, curE2 === newVal ? 'ingles' : curE2];
+      if (state.extraThirdElective === newVal) state.extraThirdElective = '';
+      saveState();
+      renderApp();
+    });
+  }
+
+  const selE2 = document.getElementById('select-elective-2');
+  if (selE2) {
+    selE2.addEventListener('change', (e) => {
+      const newVal = e.target.value;
+      const curE1 = state.selectedElectives?.[0] || 'fisica';
+      state.selectedElectives = [curE1 === newVal ? 'fisica' : curE1, newVal];
+      if (state.extraThirdElective === newVal) state.extraThirdElective = '';
+      saveState();
+      renderApp();
+    });
+  }
+
+  const selE3 = document.getElementById('select-elective-3');
+  if (selE3) {
+    selE3.addEventListener('change', (e) => {
+      state.extraThirdElective = e.target.value || '';
+      saveState();
+      renderApp();
+    });
+  }
+
+  // Сдвиг дат по предмету (+/- 1 день или выбор даты старта предмета)
+  document.querySelectorAll('[data-action="shift-subj-days"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const subj = el.getAttribute('data-subj');
+      const delta = Number(el.getAttribute('data-delta') || 0);
+      if (!state.subjectShiftDays) state.subjectShiftDays = {};
+      state.subjectShiftDays[subj] = Number(state.subjectShiftDays[subj] || 0) + delta;
+      saveState();
+      renderApp();
+    });
+  });
+
+  document.querySelectorAll('[data-action="pick-subj-start-date"]').forEach((el) => {
+    el.addEventListener('change', (e) => {
+      const subj = el.getAttribute('data-subj');
+      const pickedDate = e.target.value;
+      if (pickedDate) {
+        const diff = daysBetweenStr('2026-11-07', pickedDate);
+        if (!state.subjectShiftDays) state.subjectShiftDays = {};
+        state.subjectShiftDays[subj] = diff;
+        saveState();
+        renderApp();
+      }
+    });
+  });
+
+  const btnResetAllShifts = document.getElementById('btn-reset-all-shifts');
+  if (btnResetAllShifts) {
+    btnResetAllShifts.addEventListener('click', () => {
+      state.subjectShiftDays = {};
+      state.loggedMinutes = {};
+      state.rescheduledBlocks = {};
+      saveState();
+      renderApp();
+    });
+  }
+
+  // Ввод фактически отработанных минут по блоку (для автоматического пересчёта будущих дней)
+  document.querySelectorAll('[data-action="log-block-mins"]').forEach((el) => {
+    el.addEventListener('change', (e) => {
+      const blockId = el.getAttribute('data-block-id');
+      const val = e.target.value;
+      if (!state.loggedMinutes) state.loggedMinutes = {};
+      if (val === '' || val === null) {
+        delete state.loggedMinutes[blockId];
+      } else {
+        state.loggedMinutes[blockId] = Math.max(0, Number(val));
+      }
+      saveState();
+      renderApp();
+    });
+  });
+
+  document.querySelectorAll('[data-action="quick-log-mins"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const blockId = el.getAttribute('data-block-id');
+      const mins = Number(el.getAttribute('data-mins') || 60);
+      if (!state.loggedMinutes) state.loggedMinutes = {};
+      state.loggedMinutes[blockId] = mins;
+      saveState();
+      renderApp();
+    });
+  });
+
+  // Ручной перенос конкретного блока на другую выбранную дату
+  document.querySelectorAll('[data-action="reschedule-block-date"]').forEach((el) => {
+    el.addEventListener('change', (e) => {
+      const blockId = el.getAttribute('data-block-id');
+      const targetDate = e.target.value;
+      if (targetDate) {
+        if (!state.rescheduledBlocks) state.rescheduledBlocks = {};
+        state.rescheduledBlocks[blockId] = targetDate;
+        saveState();
+        renderApp();
+      }
+    });
+  });
+
+  // Запрос просмотра решения -> открывает модальное окно «Вы уверены, что хотите посмотреть решение?»
+  document.querySelectorAll('[data-action="request-solution"]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const subjectId = el.getAttribute('data-subj') || 'mates';
+      const unitNum = el.getAttribute('data-unit') || 'all';
+      const title = el.getAttribute('data-title') || 'Решение задания';
+      const fileUrl = el.getAttribute('data-url') || '';
+
+      state.solutionConfirmModal = {
+        subjectId,
+        unitNum,
+        title,
+        fileUrl,
+      };
+      renderApp();
+    });
+  });
+
+  const btnCancelSol = document.getElementById('btn-cancel-solution');
+  if (btnCancelSol) {
+    btnCancelSol.addEventListener('click', () => {
+      state.solutionConfirmModal = null;
+      renderApp();
+    });
+  }
+
+  const solBackdrop = document.getElementById('sol-confirm-backdrop');
+  if (solBackdrop) {
+    solBackdrop.addEventListener('click', (e) => {
+      if (e.target === solBackdrop) {
+        state.solutionConfirmModal = null;
+        renderApp();
+      }
+    });
+  }
+
+  const btnConfirmSol = document.getElementById('btn-confirm-solution');
+  if (btnConfirmSol) {
+    btnConfirmSol.addEventListener('click', () => {
+      const modal = state.solutionConfirmModal;
+      if (modal) {
+        if (!state.unlockedSolutions) state.unlockedSolutions = {};
+        state.unlockedSolutions[modal.subjectId] = true;
+        state.activeSolutionPage = {
+          subjectId: modal.subjectId,
+          unitNum: modal.unitNum,
+          title: modal.title,
+          highlightUrl: modal.fileUrl,
+        };
+        state.activeSubjectId = modal.subjectId;
+        state.activeTab = 'solutions';
+        state.solutionConfirmModal = null;
+        saveState();
+        renderApp();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-action="lock-solutions"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const subj = el.getAttribute('data-subj');
+      if (state.unlockedSolutions && subj) {
+        delete state.unlockedSolutions[subj];
+      }
+      saveState();
+      renderApp();
+    });
+  });
+
+  const btnToggleAllCatalog = document.getElementById('btn-toggle-all-catalog');
+  if (btnToggleAllCatalog) {
+    btnToggleAllCatalog.addEventListener('click', () => {
+      state.showAllCatalogSubjects = !state.showAllCatalogSubjects;
       saveState();
       renderApp();
     });
@@ -1174,7 +1998,7 @@ function attachEvents() {
   const btnPrev = document.getElementById('btn-prev-day');
   if (btnPrev) {
     btnPrev.addEventListener('click', () => {
-      const next = shiftDate(state.selectedDate, -1);
+      const next = shiftDateStr(state.selectedDate, -1);
       if (next >= '2026-11-07') {
         state.selectedDate = next;
         saveState();
@@ -1186,7 +2010,7 @@ function attachEvents() {
   const btnNext = document.getElementById('btn-next-day');
   if (btnNext) {
     btnNext.addEventListener('click', () => {
-      const next = shiftDate(state.selectedDate, 1);
+      const next = shiftDateStr(state.selectedDate, 1);
       if (next <= '2027-06-03') {
         state.selectedDate = next;
         saveState();
@@ -1337,13 +2161,15 @@ function attachEvents() {
   document.querySelectorAll('[data-action="download-ics"]').forEach((el) => {
     el.addEventListener('click', () => {
       const filter = el.getAttribute('data-filter') || 'all';
+      const activeSubjIds = new Set(['all', ...getActiveSubjects().map((s) => s.id)]);
+      const activeEvents = CALENDAR_EVENTS.filter((e) => activeSubjIds.has(e.subjectId));
       const names = {
         all: 'ags-calendario-completo-2026-2027.ics',
         exam: 'ags-examenes-presenciales-2026-2027.ics',
         deadline: 'ags-entregas-envio-2026-2027.ics',
         tutoria: 'ags-tutorias-grupales-2026-2027.ics',
       };
-      downloadIcsFile(CALENDAR_EVENTS, filter, names[filter] || 'ags-calendario.ics');
+      downloadIcsFile(activeEvents, filter, names[filter] || 'ags-calendario.ics');
     });
   });
 
@@ -1405,12 +2231,12 @@ function attachEvents() {
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const parsed = JSON.parse(String(reader.result));
-          Object.assign(state, parsed);
+          const imported = JSON.parse(String(reader.result));
+          Object.assign(state, imported);
           saveState();
           renderApp();
         } catch (err) {
-          alert('Ошибка чтения JSON файла резервной копии.');
+          alert('Ошибка чтения JSON файла бэкапа.');
         }
       };
       reader.readAsText(file);

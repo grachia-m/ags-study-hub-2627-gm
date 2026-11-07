@@ -1032,3 +1032,159 @@ tr:last-child td {
   font: 600 13.5px/1.2 var(--f-mono);
   text-align: center;
 }
+
+/* Дополнительные цвета для предметов по выбору (Química, Biología, Geografía, Empresa) */
+.subj-quimica { background: #f3e8ff; color: #9333ea; }
+.subj-biologia { background: #dcfce7; color: #16a34a; }
+.subj-geografia { background: #fef3c7; color: #b45309; }
+.subj-empresa { background: #ffe4e6; color: #e11d48; }
+
+:root[data-theme='dark'] .subj-quimica { background: #2e1945; color: #c084fc; }
+:root[data-theme='dark'] .subj-biologia { background: #133120; color: #4ade80; }
+:root[data-theme='dark'] .subj-geografia { background: #362812; color: #fbbf24; }
+:root[data-theme='dark'] .subj-empresa { background: #3b1623; color: #fb7185; }
+
+/* Панель выбора предметов (3 обязательных + 2 по выбору через дропдаун) */
+.subject-selector-bar {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.selector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mandatory-group,
+.elective-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.selector-label {
+  font: 600 11.5px/1.2 var(--f-mono);
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.select-dropdown {
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Панель пересчёта часов и сдвига дат по предметам */
+.recalc-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.recalc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.recalc-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recalc-stat-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.8px;
+}
+
+/* Контролы фактического времени и переноса даты внутри карточки задачи */
+.task-hours-control {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hours-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hours-num-input {
+  width: 72px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  font: 700 13px/1.2 var(--f-mono);
+  text-align: center;
+}
+
+/* Кнопки скрытых решений (Solucionarios) и модальное окно подтверждения */
+.sol-locked-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--warn);
+  background: color-mix(in srgb, var(--warn-soft) 45%, var(--bg));
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.sol-locked-card:hover {
+  border-style: solid;
+  background: var(--warn-soft);
+}
+
+.confirm-modal-window {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--warn);
+  border-radius: var(--radius-lg);
+  width: min(520px, 100%);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+

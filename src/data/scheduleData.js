@@ -1,7 +1,32 @@
-// Детальный учебный план по неделям (W01–W30: 07.11.2026 – 03.06.2027) и по дням
-// Полностью синхронизирован с официальным календарём CPEPA Miguel Hernández (Huesca) 2026-2027
+// Детальный учебный план по неделям (W01–W30: 07.11.2026 – 03.06.2027) и адаптивный генератор расписания по дням
+// Поддерживает динамическую замену спецпредметов (Electivas), сдвиг дат по каждому предмету и пересчёт часов
 
-export const WEEKS_PLAN = [
+import { MANDATORY_SUBJECT_IDS, SUBJECTS } from './courseData.js';
+
+const GENERIC_ELECTIVE_WEEK_TOPICS = {
+  quimica: {
+    1: 'U1–U2 · Строение атома, периодическая система, химическая связь, неорганическая номенклатура и количество вещества (моль, газы, растворы) → подготовка Envío 1ª Eval (до 2 дек)',
+    2: 'U3–U4 · Стехиометрия реакций, термохимия, химическая кинетика и химическое равновесие (Kc, Kp, принцип Ле Шателье) → подготовка Envío 2ª Eval (до 3 мар)',
+    3: 'U5–U6 · Кислотно-основные реакции (pH), окислительно-восстановительные реакции (ОВР) и органическая химия → подготовка Envío 3ª Eval (до 19 мая)',
+  },
+  biologia: {
+    1: 'U1–U2 · Биоэлементы, биомолекулы (углеводы, липиды, белки, нуклеиновые кислоты), прокариотическая и эукариотическая клетка, митоз и мейоз → Envío 1ª Eval (до 2 дек)',
+    2: 'U3 · Клеточный метаболизм (ферменты, клеточное дыхание, брожение, фотосинтез) и законы генетики Менделя → Envío 2ª Eval (до 3 мар)',
+    3: 'U4–U5 · Молекулярная генетика (репликация, транскрипция, трансляция), мутации, биотехнология, микробиология и иммунология → Envío 3ª Eval (до 19 мая)',
+  },
+  geografia: {
+    1: 'U1–U2 · Географическое пространство Испании и Арагона: морфоструктуры рельефа, климатические области, климограммы, гидрография и растительность → Envío 1ª Eval (до 2 дек)',
+    2: 'U3–U4 · Демография Испании, миграции, система расселения и урбанизация, аграрный сектор и промышленность → Envío 2ª Eval (до 3 мар)',
+    3: 'U5 · Третичный сектор экономики (транспорт, туризм, торговля), территориальная организация Испании и роль в ЕС → Envío 3ª Eval (до 19 мая)',
+  },
+  empresa: {
+    1: 'U1–U3 · Предприятие и предприниматель, организационно-правовые формы (SL, SA), налогообложение, среда компании (DAFO, Портер) и стратегия → Envío 1ª Eval (до 2 дек)',
+    2: 'U4–U6 · Управление персоналом (RRHH), производственная функция, постоянные и переменные издержки, точка безубыточности (punto muerto) и маркетинг-микс → Envío 2ª Eval (до 3 мар)',
+    3: 'U7–U9 · Бухгалтерский баланс (Activo, Pasivo, Patrimonio Neto), отчёт о прибылях и убытках, финансовые коэффициенты и оценка инвестиций (Payback, VAN, TIR) → Envío 3ª Eval (до 19 мая)',
+  },
+};
+
+const BASE_WEEKS_PLAN = [
   // ==================== 1ª EVALUACIÓN (W01 – W06: 07.11.2026 – 20.12.2026) ====================
   {
     week: 'W01',
@@ -11,7 +36,7 @@ export const WEEKS_PLAN = [
     startDate: '2026-11-07',
     endDate: '2026-11-15',
     isSprint: true,
-    deliverable: 'Вход в Aeducar (сброс таймера 3 недель) + старт U1 по всем 6 предметам',
+    deliverable: 'Вход в Aeducar (сброс таймера 3 недель) + старт U1 по всем выбранным предметам',
     subjects: {
       mates: 'U1 §1–4 · Целые числа, дроби («del resto»), проценты (индексы изменения), пропорции (прямая/обратная/сложная) + конспект teoria-mates-1',
       fisica: 'UD1 ч.1 · Инструменты (СИ, перевод единиц, векторы, тригонометрия) + MRU, MRUA, свободное падение + конспект teoria-fisica-1',
@@ -19,6 +44,10 @@ export const WEEKS_PLAN = [
       lengua: 'U1 · Коммуникация, 9 частей речи (CUADRO MORFOLOGÍA), наклонения глагола, объективность/субъективность, модальность + конспект teoria-espanol-1',
       ingles: 'U1 + U2 (нач.) · Present Simple/Continuous, Pronouns, Adverbs of frequency, вопросы + Past Simple/Continuous + Autoevaluación U1',
       digital: 'Tema 1 · Операторы поиска (AND, OR, NOT, site:, filetype:), метод SIFT, ИИ-промпты, лицензии Creative Commons, стили Word',
+      quimica: 'U1 · Модели атома, электронная конфигурация, периодическая таблица и неорганическая номенклатура',
+      biologia: 'U1 · Биоэлементы, вода, минеральные соли, углеводы и липиды (структура и функции)',
+      geografia: 'U1 · Географическое положение Испании и морфоструктурные единицы рельефа Иберийского полуострова',
+      empresa: 'U1 · Понятие предприятия, функции предпринимателя, элементы компании и КСО',
     },
   },
   {
@@ -37,6 +66,10 @@ export const WEEKS_PLAN = [
       lengua: 'U1 §5–6 (типы текстов: гуманитарные и научно-технические, литература) + сверка с SOLUCIONARIO U-1 + старт U2 (функции языка, синтагмы)',
       ingles: 'U2 · Present Perfect (Simple/Continuous), Past Perfect, used to, Rephrasing + Modelo Examen U1 и U2 + старт U3 (Future forms)',
       digital: 'Сборка и проверка файла Martirosian_Grachia_ActividadEnvio1.docx по всем 9 пунктам чек-листа (без скрытой ловушки про астронавта!)',
+      quimica: 'U2 ч.1 · Химическая связь (ионная, ковалентная, металлическая) и свойства веществ + задачи Envío U1',
+      biologia: 'U1 ч.2 + U2 нач. · Белки, ферменты, ДНК/РНК + строение прокариотической и эукариотической клетки',
+      geografia: 'U1 ч.2 + U2 нач. · Рельеф Арагона и архипелагов + климатические факторы Испании',
+      empresa: 'U2 · Организационно-правовые формы предприятий (ИП, SL, SA, кооперативы) и налоги',
     },
   },
   {
@@ -47,7 +80,7 @@ export const WEEKS_PLAN = [
     startDate: '2026-11-23',
     endDate: '2026-11-29',
     isSprint: true,
-    deliverable: 'Готовы: Matemáticas Envío U2 + Física Envío 1 + Lengua Envío 1ª Eval + Inglés Primer Envío (.doc)',
+    deliverable: 'Готовы: Matemáticas Envío U2 + Lengua Envío 1ª Eval + Envío по 2 выбранным спецпредметам',
     subjects: {
       mates: 'U2 §4–8 · Системы 2×2 и 3×3 (метод Гаусса), текстовые алгебраические задачи → чистовик Actividades de envío U2 (5 задач)',
       fisica: 'UD2 Dinámica · Законы Ньютона, трение, наклонная плоскость, равновесие на тросах, связанные тела с блоком → задачи №4–6 из Envío 1',
@@ -55,6 +88,10 @@ export const WEEKS_PLAN = [
       lengua: 'U2 · Пассивный/безличный залог (EXPLICACIONES CLASE 26_10), свойства текста (adecuación, coherencia, cohesión) → выполнение ACTIVIDAD DE ENVÍO 1º EVAL.docx',
       ingles: 'U3 · Future Continuous/Perfect, time clauses, indirect questions + Modelo Examen U3 → выполнение ACFGS INGLÉS ACTIVIDAD PRIMER ENVÍO.docx',
       digital: 'Финальная вычитка и загрузка работы Tema 1 в Aeducar + повторение теории Tema 1 к тесту',
+      quimica: 'U2 ч.2 · Законы идеальных газов, концентрация растворов и молярность → чистовик Envío 1ª Eval (U1–U2)',
+      biologia: 'U2 · Органоиды клетки, клеточный цикл, митоз и мейоз → чистовик Envío 1ª Eval (U1–U2)',
+      geografia: 'U2 · Анализ климограмм, речные бассейны и биогеография Испании → чистовик Envío 1ª Eval (U1–U2)',
+      empresa: 'U3 · Анализ внешней среды (DAFO, 5 сил Портера) и стратегия роста → чистовик Envío 1ª Eval (U1–U3)',
     },
   },
   {
@@ -65,7 +102,7 @@ export const WEEKS_PLAN = [
     startDate: '2026-11-30',
     endDate: '2026-12-06',
     isSprint: true,
-    deliverable: '🔥 СРЕДА, 2 ДЕКАБРЯ (до 23:59): Загрузка всех 6 комплектов Actividades de Envío 1ª Evaluación в Aeducar!',
+    deliverable: '🔥 СРЕДА, 2 ДЕКАБРЯ (до 23:59): Загрузка всех Actividades de Envío 1ª Evaluación в Aeducar!',
     subjects: {
       mates: 'Пн–Ср: проверка и отправка Envío U1 и U2. Чт–Вс: тренировка экзаменационных задач U1–U2 на время (проценты, пропорции, уравнения, Гаусс)',
       fisica: 'Пн–Ср: отправка Envío 1 (UD1+UD2). Чт–Вс: решение задач без формуляра (встречное движение, парабола, наклонная плоскость с трением)',
@@ -83,7 +120,7 @@ export const WEEKS_PLAN = [
     startDate: '2026-12-07',
     endDate: '2026-12-13',
     isSprint: true,
-    deliverable: 'Полные пробные экзамены (Simulacros) по всем 6 предметам на время',
+    deliverable: 'Полные пробные экзамены (Simulacros) по всем выбранным предметам на время',
     subjects: {
       mates: 'Simulacro 1ª Eval (U1 + U2): 90 минут без подсказок, разбор ошибок в дробях, процентах и системах 3×3',
       fisica: 'Simulacro 1ª Eval (UD1 + UD2): 90 минут + онлайн-тутория в среду 09.12 (18:15)',
@@ -101,7 +138,7 @@ export const WEEKS_PLAN = [
     startDate: '2026-12-14',
     endDate: '2026-12-20',
     isExamWeek: true,
-    deliverable: '🎯 ВТ 15.12 (16:00 Lengua, 17:30 Mates, 19:00 Digital) и ЧТ 17.12 (16:00 Inglés, 17:30 Física, 19:00 Tecnología)',
+    deliverable: '🎯 ВТ 15.12 (Competencias: 16:00 Lengua, 17:30 Mates, 19:00 Digital) и ЧТ 17.12 (Específicas: 16:00 / 17:30 / 19:00)',
     subjects: {
       mates: 'Пн 14.12: экспресс-повтор формул U1–U2. ВТ 15.12 в 17:30 — ОЧНЫЙ ЭКЗАМЕН!',
       fisica: 'Ср 16.12: экспресс-повтор формуляров UD1–UD2. ЧТ 17.12 в 17:30 — ОЧНЫЙ ЭКЗАМЕН!',
@@ -212,7 +249,7 @@ export const WEEKS_PLAN = [
       mates: 'U4 §2–3 · Многогранники (призмы, пирамиды, усечённые пирамиды): расчёт площади поверхности и объёма',
       fisica: 'UD4 §4–5 · Потенциальная энергия и электрический потенциал V, работа поля → решение задач №3 и №4 из Envío 2 Física',
       tecno: 'U4 §4–5 · Полимеры, древесина + механические испытания: растяжение (закон Гука σ = E·ε), твёрдость по Бринеллю/Виккерсу, ударная вязкость по Шарпи',
-      lengua: 'U4 · Сложносочинённые предложения (coordinadas copulativas,adversativas, disyuntivas, explicativas) и бессоюзные (yuxtapuestas)',
+      lengua: 'U4 · Сложносочинённые предложения (coordinadas copulativas, adversativas, disyuntivas, explicativas) и бессоюзные (yuxtapuestas)',
       ingles: 'U5 ч.3 · Суффиксы деятеля (agent nouns), Autoevaluación U5 + прорешивание Modelo Examen U5',
       digital: 'Tema 2 §5 · Форматы файлов, авторское право, лицензии и правильное цитирование',
     },
@@ -224,7 +261,7 @@ export const WEEKS_PLAN = [
     dates: '01.02 – 07.02.2027',
     startDate: '2027-02-01',
     endDate: '2027-02-07',
-    deliverable: 'Полный разбор Tecnología U4 по Soluciones',
+    deliverable: 'Полный разбор второго спецпредмета и геометрии U4',
     subjects: {
       mates: 'U4 §4–5 · Тела вращения (цилиндр, конус, шар) и прикладные геометрические задачи с плотностью и вместимостью',
       fisica: 'UD4 §6–7 · Магнитное поле, сила Лоренца на движущийся заряд (F = q·v·B·sinα), движение заряда по окружности в магнитном поле',
@@ -254,7 +291,7 @@ export const WEEKS_PLAN = [
   {
     week: 'W15',
     eval: 2,
-    phase: '2ª Evaluación: Сборка чистовиков Física Envío 2 и Inglés Segundo Envío',
+    phase: '2ª Evaluación: Сборка чистовиков спецпредметов',
     dates: '15.02 – 21.02.2027',
     startDate: '2027-02-15',
     endDate: '2027-02-21',
@@ -275,7 +312,7 @@ export const WEEKS_PLAN = [
     dates: '22.02 – 28.02.2027',
     startDate: '2027-02-22',
     endDate: '2027-02-28',
-    deliverable: 'Готов чистовик Inglés Segundo Envío (.doc/.docx) — все работы 2ª Eval готовы к отправке!',
+    deliverable: 'Все работы 2ª Evaluación готовы к отправке!',
     subjects: {
       mates: 'Проверка обоих сканов PDF (Envío U3 и Envío U4) перед загрузкой в Aeducar',
       fisica: 'Проверка PDF Envío 2 (все 7 задач с чертежами и единицами СИ)',
@@ -309,7 +346,7 @@ export const WEEKS_PLAN = [
     dates: '08.03 – 14.03.2027',
     startDate: '2027-03-08',
     endDate: '2027-03-14',
-    deliverable: 'Пробные экзамены 2ª Evaluación по всем 6 предметам',
+    deliverable: 'Пробные экзамены 2ª Evaluación по всем выбранным предметам',
     subjects: {
       mates: 'Simulacro 2ª Eval (U3 + U4) + онлайн-тутория Ср 10.03 (19:15)',
       fisica: 'Simulacro 2ª Eval (UD3 + UD4): 4 задачи на время (энергия, горки, электростатика, магнетизм/индукция)',
@@ -327,7 +364,7 @@ export const WEEKS_PLAN = [
     startDate: '2027-03-15',
     endDate: '2027-03-21',
     isExamWeek: true,
-    deliverable: '🎯 ВТ 16.03 (16:00 Lengua, 17:30 Mates, 19:00 Digital) и ЧТ 18.03 (16:00 Inglés, 17:30 Física, 19:00 Tecnología)',
+    deliverable: '🎯 ВТ 16.03 (Competencias) и ЧТ 18.03 (Materias Específicas)',
     subjects: {
       mates: 'Пн 15.03: повтор формул геометрии и тригонометрии. ВТ 16.03 в 17:30 — ОЧНЫЙ ЭКЗАМЕН!',
       fisica: 'Ср 17.03 (18:15 тутория): повтор формуляров UD3–UD4. ЧТ 18.03 в 17:30 — ОЧНЫЙ ЭКЗАМЕН!',
@@ -365,7 +402,7 @@ export const WEEKS_PLAN = [
     startDate: '2027-03-29',
     endDate: '2027-04-04',
     isHoliday: true,
-    deliverable: 'Закрепление U5 Matemáticas, UD5 Física и U7 Inglés',
+    deliverable: 'Закрепление первых тем 3ª Evaluación',
     subjects: {
       mates: 'U5 §3 · Параметры централизации (среднее, медиана, мода, квартили/перцентили) и разброса (дисперсия, σ, коэффициент вариации)',
       fisica: 'UD5 §3 · Уравнение бегущей гармонической волны y(x,t) = A·sen(ωt ∓ kx + φ₀) → разбор задач №1–3 из Envío 3 Física',
@@ -382,7 +419,7 @@ export const WEEKS_PLAN = [
     dates: '05.04 – 11.04.2027',
     startDate: '2027-04-05',
     endDate: '2027-04-11',
-    deliverable: 'Полный разбор Tecnología U5 (Electrónica Digital)',
+    deliverable: 'Глубокая проработка тем 3-го триместра',
     subjects: {
       mates: 'U5 §4 · Двумерная статистика, ковариация, корреляция и регрессия + чистовик Envío U5 + тутория Ср 07.04 (19:15)',
       fisica: 'UD5 §4–6 · Интенсивность звука и громкость в децибелах (дБ), отражение, преломление света (закон Снеллиуса) и предельный угол + тутория Ср 07.04 (18:15)',
@@ -412,11 +449,11 @@ export const WEEKS_PLAN = [
   {
     week: 'W24',
     eval: 3,
-    phase: '3ª Evaluación: Завершение U6 по Математике и Технологии + Модальные глаголы (Inglés U9)',
+    phase: '3ª Evaluación: Завершение U6 по Математике + Модальные глаголы (Inglés U9)',
     dates: '19.04 – 25.04.2027',
     startDate: '2027-04-19',
     endDate: '2027-04-25',
-    deliverable: 'Разбор всех задач Tecnología U6 по Soluciones',
+    deliverable: 'Закрытие теории всех предметов курса',
     subjects: {
       mates: 'U6 §4–6 · Диаграммы дерева (diagramas de árbol) и таблицы сопряжённости (tablas de contingencia) + тутория Ср 21.04 (19:15)',
       fisica: 'Закрепление всех типов задач UD5 (колебания, уравнение волны, акустика, оптика) + тутория Ср 21.04 (18:15)',
@@ -450,7 +487,7 @@ export const WEEKS_PLAN = [
     dates: '03.05 – 09.05.2027',
     startDate: '2027-05-03',
     endDate: '2027-05-09',
-    deliverable: 'Готов чистовик Inglés Tercer Envío (.doc/.docx) — все работы курса завершены!',
+    deliverable: 'Все работы 3ª Evaluación полностью готовы!',
     subjects: {
       mates: 'Тренировка комбинированных вариантов U5–U6 + тутория Ср 05.05 (19:15)',
       fisica: 'Проверка чистовика Envío 3 + тутория Ср 05.05 (18:15)',
@@ -519,7 +556,7 @@ export const WEEKS_PLAN = [
     startDate: '2027-05-31',
     endDate: '2027-06-03',
     isExamWeek: true,
-    deliverable: '🎓 ВТ 01.06 (16:00 Lengua, 17:30 Mates, 19:00 Digital) и ЧТ 03.06 (16:00 Inglés, 17:30 Física, 19:00 Tecnología)',
+    deliverable: '🎓 ВТ 01.06 (Competencias) и ЧТ 03.06 (Materias Específicas)',
     subjects: {
       mates: 'Пн 31.05: лёгкий повтор формул U5–U6. ВТ 01.06 в 17:30 — ФИНАЛЬНЫЙ ЭКЗАМЕН!',
       fisica: 'Ср 02.06: лёгкий повтор формуляра UD5. ЧТ 03.06 в 17:30 — ФИНАЛЬНЫЙ ЭКЗАМЕН!',
@@ -531,83 +568,42 @@ export const WEEKS_PLAN = [
   },
 ];
 
-// Детальное расписание по дням для 41-дневного спринта 1ª Evaluación (07.11.2026 – 17.12.2026)
-export const SPRINT_DAILY_OVERRIDES = {
-  '2026-11-07': {
-    badge: 'ДЕНЬ 1 · СТАРТ СПРИНТА',
-    blocks: [
-      { id: 'd-2026-11-07-1', subjectId: 'all', mins: 20, title: 'Оргмомент: Вход в Aeducar и проверка личного кабинета', desc: 'Зайти на https://aula2.aeducar.es/, открыть все 6 курсов (это фиксирует активность и защищает от отчисления по правилу 3 недель).' },
-      { id: 'd-2026-11-07-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U1 §1–2 + Конспект teoria-mates-1 (разделы 1–3)', desc: 'Изучить целые числа, порядок операций, дроби и ключевую ловушку задач типа «del resto» (остаток от остатка). Решить базовые примеры из апунтов U1.' },
-      { id: 'd-2026-11-07-3', subjectId: 'fisica', mins: 90, title: 'Física UD1: Инструменты физики (конспект teoria-fisica-1, разделы 1–5)', desc: 'Перевод единиц в СИ (км/ч → м/с через ÷3,6), научная нотация, выразить переменную из формулы (despejar), тригонометрия прямоугольного треугольника и проекции векторов.' },
-      { id: 'd-2026-11-07-4', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §1–2 + конспект teoria-espanol-1 (разделы 1–2)', desc: '6 элементов коммуникации (emisor, receptor, mensaje, canal, código, contexto/situación) и таблица 9 частей речи (CUADRO MORFOLOGÍA.pdf).' },
-    ],
-  },
-  '2026-11-08': {
-    badge: 'ДЕНЬ 2 · БАЗА U1',
-    blocks: [
-      { id: 'd-2026-11-08-1', subjectId: 'tecno', mins: 90, title: 'Tecnología II U1 §1–3 + конспект teoria-tecno-1', desc: 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, механическая работа W, мощность P и КПД (rendimiento η = P_útil / P_consumida).' },
-      { id: 'd-2026-11-08-2', subjectId: 'ingles', mins: 75, title: 'Inglés U1: Present Simple vs Continuous, Pronouns & Questions', desc: 'Прочитать теорию AGS INGLÉS Unidad 1.pdf, выполнить упражнения на самопроверку и сверить по solucionario autoevaluaciones unidad 1 ing.pdf.' },
-      { id: 'd-2026-11-08-3', subjectId: 'digital', mins: 60, title: 'Competencia Digital Tema 1: Поисковые операторы и метод SIFT', desc: 'Изучить Tema1_Búsqueda información.pdf (операторы AND, OR, NOT, кавычки, site:, filetype:, оценка источников SIFT, лицензии Creative Commons).' },
-      { id: 'd-2026-11-08-4', subjectId: 'mates', mins: 45, title: 'Matemáticas U1: Практика задач на дроби (Actividades de envío U1, задачи №1–2)', desc: 'Решить на черновике задачи №1 (завтрак на 153 чел.) и №2 (зарплата Надии) из Actividades de envío unidad 1.pdf.' },
-    ],
-  },
-  '2026-11-09': {
-    badge: 'ДЕНЬ 3 · ПРОЦЕНТЫ И ТЕКСТ',
-    blocks: [
-      { id: 'd-2026-11-09-1', subjectId: 'mates', mins: 75, title: 'Matemáticas U1 §3: Проценты и индексы изменения', desc: 'Изучить разделы 4–5 в teoria-mates-1 (цепочки скидок/наценок, возврат к исходной цене, tasa de variación). Решить задачи №3 и №4 из Envío U1 (смета Марты и масло).' },
-      { id: 'd-2026-11-09-2', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §3–4: Наклонения глагола, объективность/субъективность и модальность', desc: 'Изучить разделы 3–5 в teoria-espanol-1: маркеры субъективности и 6 модальностей высказывания (enunciativa, interrogativa, exclamativa, exhortativa, dubitativa, desiderativa).' },
-    ],
-  },
-  '2026-11-10': {
-    badge: 'ДЕНЬ 4 · MRU/MRUA И АНГЛИЙСКИЙ',
-    blocks: [
-      { id: 'd-2026-11-10-1', subjectId: 'fisica', mins: 75, title: 'Física UD1 §1–3: Прямолинейное движение MRU и MRUA', desc: 'Изучить разделы 6–8 в teoria-fisica-1 (уравнения движения, графики x(t) и v(t), задачи на встречу и догонялки). Решить задачу №1 из Envío 1 Física (велосипедистка).' },
-      { id: 'd-2026-11-10-2', subjectId: 'ingles', mins: 60, title: 'Inglés U1: Разбор правил чтения и Modelo de Examen U1', desc: 'Прочитать правила цитирования в consejos-para-realizar-actividades-de-envio.md и прорешать ACGS_Ingles_u1_mexamen26.pdf со сверкой по ответам.' },
-    ],
-  },
-  '2026-11-11': {
-    badge: 'ДЕНЬ 5 · ПРОПОРЦИИ + ТУТОРИЯ FÍSICA',
-    blocks: [
-      { id: 'd-2026-11-11-1', subjectId: 'mates', mins: 60, title: 'Matemáticas U1 §4: Прямая, обратная и сложная пропорциональность, распределения', desc: 'Изучить разделы 6–8 в teoria-mates-1. Решить задачи №5 (рынок: прямые и обратные пропорции) и №6 (оптоволокно) из Envío U1.' },
-      { id: 'd-2026-11-11-2', subjectId: 'tecno', mins: 50, title: 'Tecnología II U1 §4–7: Виды энергии, теплотворная способность и электростанции', desc: 'Разобрать формулы E_c, E_p, Q = m·c·ΔT, Q = m·P_c и схемы ТЭС/АЭС/ГЭС. Прорешать задачи из Soluciones U1 energía.' },
-      { id: 'd-2026-11-11-3', subjectId: 'fisica', mins: 45, title: '18:15 — Онлайн-тутория по Физике + Свободное падение', desc: 'Подключиться к групповой тутории Física в 18:15 (Catalina Pena Rufas) и разобрать раздел 9 конспекта (caída libre y lanzamiento vertical).' },
-    ],
-  },
-  '2026-11-12': {
-    badge: 'ДЕНЬ 6 · БРОСКИ + ТУТОРИЯ TECNOLOGÍA',
-    blocks: [
-      { id: 'd-2026-11-12-1', subjectId: 'fisica', mins: 65, title: 'Física UD1 §4: Горизонтальный и параболический бросок', desc: 'Разложить движение по осям X (MRU) и Y (MRUA с −g). Решить задачу №2 из Envío 1 Física (гаечный ключ с лесов 20 м).' },
-      { id: 'd-2026-11-12-2', subjectId: 'lengua', mins: 50, title: 'Lengua U1 §5–6: Гуманитарные и научно-технические тексты + самопроверка U1', desc: 'Изучить раздел 6 в teoria-espanol-1 и выполнить упражнения из UNIDAD 1.pdf, сверив их с SOLUCIONARIO U-1 AUTOCORRECCIÓN.pdf.' },
-      { id: 'd-2026-11-12-3', subjectId: 'tecno', mins: 45, title: '20:15 — Онлайн-тутория по Технологии', desc: 'Подключиться к групповой тутории Tecnología e Ingeniería в 20:15 (Aitor Alfonso Rodríguez).' },
-    ],
-  },
-  '2026-11-13': {
-    badge: 'ДЕНЬ 7 · ПЯТНИЦА: ЧИСТОВИК MAT U1 + DIGITAL',
-    blocks: [
-      { id: 'd-2026-11-13-1', subjectId: 'mates', mins: 65, title: 'Matemáticas: Сверка с Soluciones U1 и написание чистовика Envío U1', desc: 'Сверить тренировочные задачи с Soluciones ejercicios unidad 1.pdf и аккуратно переписать от руки все 6 задач Actividades de envío U1 (проверив видимые числа!).' },
-      { id: 'd-2026-11-13-2', subjectId: 'digital', mins: 65, title: 'Competencia Digital Envío 1: Таблица 8 поисковых запросов и 4 источников', desc: 'Создать файл Martirosian_Grachia_ActividadEnvio1.docx, оформить Actividad 1 (введение 80–120 слов про семью FP Informática y Comunicaciones + таблица 8 запросов с site:aragon.es / filetype:pdf + таблица 4 источников).' },
-    ],
-  },
-  '2026-11-14': {
-    badge: 'ДЕНЬ 8 · СУББОТА: MCU + АЛГЕБРА U2 + LENGUA U2',
-    blocks: [
-      { id: 'd-2026-11-14-1', subjectId: 'fisica', mins: 100, title: 'Física UD1 §5 (MCU) + Старт UD2 Dinámica', desc: 'Разобрать круговое движение MCU (ω = 2π/T, v = ω·R, a_n = v²/R) и решить задачу №3 из Envío 1 (колесо обозрения R=18 м, T=40 с). Начать чтение UD2 Dinámica.pdf (законы Ньютона, вес, нормальная реакция, трение).' },
-      { id: 'd-2026-11-14-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U2 §1–3: Многочлены, формулы сокращённого умножения и уравнения 1–2 степени', desc: 'Изучить U2 в Apuntes completos. Решить задачи №1 (пруд с дорожкой), №2 (телефонный счёт) и №3 (огород 96 м²) из Actividades de envío U2.' },
-      { id: 'd-2026-11-14-3', subjectId: 'lengua', mins: 75, title: 'Lengua U2 §1–3 + EXPLICACIONES CLASE 26_10.pdf', desc: 'Изучить функции языка, типы синтагм, страдательный залог (pasiva perifrástica vs pasiva refleja), безличные предложения с «se» и правило формулировки TEMA (<12 слов, без глагола).' },
-    ],
-  },
-  '2026-11-15': {
-    badge: 'ДЕНЬ 9 · ВОСКРЕСЕНЬЕ: МЕХАНИКА U2 + INGLÉS U2 + DIGITAL',
-    blocks: [
-      { id: 'd-2026-11-15-1', subjectId: 'tecno', mins: 100, title: 'Tecnología II U2 ч.1: Крутящий момент, шестерни, редукторы и шкивы', desc: 'Изучить первую половину unidad 2 mecánica v1.0.pdf (P = M·ω, передаточное отношение i = Z₁/Z₂ = N₂/N₁, червячная передача, ременные и цепные передачи).' },
-      { id: 'd-2026-11-15-2', subjectId: 'ingles', mins: 90, title: 'Inglés U2: Past Simple/Continuous, Present & Past Perfect, Used to', desc: 'Изучить AGS INGLÉS Unidad 2.pdf, сверить autoevaluaciones U2 и прорешать модель экзамена ACGS_Ingles_u2_mexamen26.pdf.' },
-      { id: 'd-2026-11-15-3', subjectId: 'digital', mins: 70, title: 'Competencia Digital Envío 1: Завершение Actividad 2 и Actividad 3 (.docx)', desc: 'Дописать в Martirosian_Grachia_ActividadEnvio1.docx раздел с ИИ-промптом и карточку семьи FP (со стилями Título 1/2, таблицей, картинкой CC, колонтитулом и нумерацией страниц; БЕЗ астронавта!).' },
-    ],
-  },
-};
+// Автоматически дополняем каждую неделю W01–W30 данными для всех 10 предметов (включая Química, Biología, Geografía, Empresa)
+export const WEEKS_PLAN = BASE_WEEKS_PLAN.map((w) => {
+  const enrichedSubjects = { ...w.subjects };
+  for (const subjId of ['quimica', 'biologia', 'geografia', 'empresa']) {
+    if (!enrichedSubjects[subjId]) {
+      if (w.isExamWeek) {
+        const subjObj = SUBJECTS.find((s) => s.id === subjId);
+        enrichedSubjects[subjId] = `Пн–Ср: экспресс-повтор формул и конспектов ${w.eval}ª Evaluación. ЧТ в ${subjObj?.examTime || '17:30'} — ОЧНЫЙ ЭКЗАМЕН!`;
+      } else {
+        enrichedSubjects[subjId] = `${w.week} (${w.eval}ª Eval) · ${GENERIC_ELECTIVE_WEEK_TOPICS[subjId][w.eval]}`;
+      }
+    }
+  }
+  return {
+    ...w,
+    subjects: enrichedSubjects,
+  };
+});
 
 const RU_DAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
 const RU_DAYS_SHORT = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+export function shiftDateStr(dateStr, deltaDays) {
+  const d = new Date(`${dateStr}T12:00:00`);
+  d.setDate(d.getDate() + deltaDays);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function daysBetweenStr(fromStr, toStr) {
+  const d1 = new Date(`${fromStr}T12:00:00`);
+  const d2 = new Date(`${toStr}T12:00:00`);
+  return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+}
 
 export function findWeekForDate(dateStr) {
   return (
@@ -616,29 +612,245 @@ export function findWeekForDate(dateStr) {
   );
 }
 
-// Генерирует структурированный план на любой выбранный день с 07.11.2026 по 03.06.2027
-export function getDailySchedule(dateStr) {
+// Базовые блоки по предметам для первых 9 дней спринта (динамически адаптируются под выбранные спецпредметы E1 и E2)
+function getSprintOverrideBlocks(dateStr, elective1, elective2, elective3) {
+  const e1 = elective1 || 'fisica';
+  const e2 = elective2 || 'ingles';
+  const e3 = elective3 || null; // Опциональный 3-й спецпредмет (например, tecno)
+
+  const getSubjTitleDesc = (subjId, defaultTitle, defaultDesc, weekObj) => {
+    const s = SUBJECTS.find((x) => x.id === subjId);
+    if (!s) return { title: defaultTitle, desc: defaultDesc };
+    if (defaultTitle && (subjId === 'fisica' || subjId === 'ingles' || subjId === 'tecno' || MANDATORY_SUBJECT_IDS.includes(subjId))) {
+      return { title: defaultTitle, desc: defaultDesc };
+    }
+    return {
+      title: `${s.shortName}: ${s.units[0]?.title || 'Unidad 1'} (${weekObj.week})`,
+      desc: weekObj.subjects[subjId] || s.evalBreakdown.eval1,
+    };
+  };
+
+  const w1 = WEEKS_PLAN[0];
+
+  const map = {
+    '2026-11-07': {
+      badge: 'ДЕНЬ 1 · СТАРТ СПРИНТА',
+      blocks: [
+        { id: 'd-2026-11-07-1', subjectId: 'all', mins: 20, title: 'Оргмомент: Вход в Aeducar и проверка личного кабинета', desc: 'Зайти на https://aula2.aeducar.es/, открыть все выбранные курсы (это фиксирует активность и защищает от отчисления по правилу 3 недель).' },
+        { id: 'd-2026-11-07-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U1 §1–2 + Конспект teoria-mates-1 (разделы 1–3)', desc: 'Изучить целые числа, порядок операций, дроби и ключевую ловушку задач типа «del resto» (остаток от остатка). Решить базовые примеры из апунтов U1.' },
+        {
+          id: `d-2026-11-07-3-${e1}`,
+          subjectId: e1,
+          mins: 90,
+          ...getSubjTitleDesc(
+            e1,
+            e1 === 'fisica' ? 'Física UD1: Инструменты физики (конспект teoria-fisica-1, разделы 1–5)' : e1 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
+            e1 === 'fisica'
+              ? 'Перевод единиц в СИ (км/ч → м/с через ÷3,6), научная нотация, выразить переменную из формулы (despejar), тригонометрия прямоугольного треугольника и проекции векторов.'
+              : e1 === 'tecno'
+              ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, механическая работа W, мощность P и КПД (rendimiento η = P_útil / P_consumida).'
+              : null,
+            w1
+          ),
+        },
+        { id: 'd-2026-11-07-4', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §1–2 + конспект teoria-espanol-1 (разделы 1–2)', desc: '6 элементов коммуникации (emisor, receptor, mensaje, canal, código, contexto/situación) и таблица 9 частей речи (CUADRO MORFOLOGÍA.pdf).' },
+      ],
+    },
+    '2026-11-08': {
+      badge: 'ДЕНЬ 2 · БАЗА U1',
+      blocks: [
+        {
+          id: `d-2026-11-08-1-${e2}`,
+          subjectId: e2,
+          mins: 90,
+          ...getSubjTitleDesc(
+            e2,
+            e2 === 'ingles' ? 'Inglés U1: Present Simple vs Continuous, Pronouns & Questions' : e2 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
+            e2 === 'ingles'
+              ? 'Прочитать теорию AGS INGLÉS Unidad 1.pdf, выполнить упражнения на самопроверку и сверить по solucionario autoevaluaciones unidad 1 ing.pdf.'
+              : e2 === 'tecno'
+              ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, механическая работа W, мощность P и КПД.'
+              : null,
+            w1
+          ),
+        },
+        { id: 'd-2026-11-08-2', subjectId: 'digital', mins: 60, title: 'Competencia Digital Tema 1: Поисковые операторы и метод SIFT', desc: 'Изучить Tema1_Búsqueda información.pdf (операторы AND, OR, NOT, кавычки, site:, filetype:, оценка источников SIFT, лицензии Creative Commons).' },
+        { id: 'd-2026-11-08-3', subjectId: 'mates', mins: 60, title: 'Matemáticas U1: Практика задач на дроби (Actividades de envío U1, задачи №1–2)', desc: 'Решить на черновике задачи №1 (завтрак на 153 чел.) и №2 (зарплата Надии) из Actividades de envío unidad 1.pdf.' },
+        ...(e3
+          ? [
+              {
+                id: `d-2026-11-08-4-${e3}`,
+                subjectId: e3,
+                mins: 75,
+                ...getSubjTitleDesc(
+                  e3,
+                  e3 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
+                  e3 === 'tecno' ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, работа, мощность и КПД.' : null,
+                  w1
+                ),
+              },
+            ]
+          : []),
+      ],
+    },
+    '2026-11-09': {
+      badge: 'ДЕНЬ 3 · ПРОЦЕНТЫ И ТЕКСТ',
+      blocks: [
+        { id: 'd-2026-11-09-1', subjectId: 'mates', mins: 75, title: 'Matemáticas U1 §3: Проценты и индексы изменения', desc: 'Изучить разделы 4–5 в teoria-mates-1 (цепочки скидок/наценок, возврат к исходной цене, tasa de variación). Решить задачи №3 и №4 из Envío U1 (смета Марты и масло).' },
+        { id: 'd-2026-11-09-2', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §3–4: Наклонения глагола, объективность/субъективность и модальность', desc: 'Изучить разделы 3–5 в teoria-espanol-1: маркеры субъективности и 6 модальностей высказывания (enunciativa, interrogativa, exclamativa, exhortativa, dubitativa, desiderativa).' },
+      ],
+    },
+    '2026-11-10': {
+      badge: 'ДЕНЬ 4 · СПЕЦПРЕДМЕТЫ (TEORÍA + PRÁCTICA)',
+      blocks: [
+        {
+          id: `d-2026-11-10-1-${e1}`,
+          subjectId: e1,
+          mins: 75,
+          ...getSubjTitleDesc(
+            e1,
+            e1 === 'fisica' ? 'Física UD1 §1–3: Прямолинейное движение MRU и MRUA' : null,
+            e1 === 'fisica' ? 'Изучить разделы 6–8 в teoria-fisica-1 (уравнения движения, графики x(t) и v(t), задачи на встречу и догонялки). Решить задачу №1 из Envío 1 Física (велосипедистка).' : null,
+            w1
+          ),
+        },
+        {
+          id: `d-2026-11-10-2-${e2}`,
+          subjectId: e2,
+          mins: 60,
+          ...getSubjTitleDesc(
+            e2,
+            e2 === 'ingles' ? 'Inglés U1: Разбор правил чтения и Modelo de Examen U1' : null,
+            e2 === 'ingles' ? 'Прочитать правила цитирования в consejos-para-realizar-actividades-de-envio.md и прорешать ACGS_Ingles_u1_mexamen26.pdf.' : null,
+            w1
+          ),
+        },
+      ],
+    },
+    '2026-11-11': {
+      badge: 'ДЕНЬ 5 · ПРОПОРЦИИ И ПРАКТИКА',
+      blocks: [
+        { id: 'd-2026-11-11-1', subjectId: 'mates', mins: 65, title: 'Matemáticas U1 §4: Прямая, обратная и сложная пропорциональность, распределения', desc: 'Изучить разделы 6–8 в teoria-mates-1. Решить задачи №5 (рынок: прямые и обратные пропорции) и №6 (оптоволокно) из Envío U1.' },
+        {
+          id: `d-2026-11-11-2-${e1}`,
+          subjectId: e1,
+          mins: 65,
+          ...getSubjTitleDesc(
+            e1,
+            e1 === 'fisica' ? '18:15 — Онлайн-тутория по Физике + Свободное падение' : null,
+            e1 === 'fisica' ? 'Подключиться к групповой тутории Física в 18:15 (Catalina Pena Rufas) и разобрать раздел 9 конспекта (caída libre y lanzamiento vertical).' : null,
+            w1
+          ),
+        },
+      ],
+    },
+    '2026-11-12': {
+      badge: 'ДЕНЬ 6 · ЗАДАЧИ U1 И САМОПРОВЕРКА',
+      blocks: [
+        {
+          id: `d-2026-11-12-1-${e1}`,
+          subjectId: e1,
+          mins: 70,
+          ...getSubjTitleDesc(
+            e1,
+            e1 === 'fisica' ? 'Física UD1 §4: Горизонтальный и параболический бросок' : null,
+            e1 === 'fisica' ? 'Разложить движение по осям X (MRU) и Y (MRUA с −g). Решить задачу №2 из Envío 1 Física (гаечный ключ с лесов 20 м).' : null,
+            w1
+          ),
+        },
+        { id: 'd-2026-11-12-2', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §5–6: Гуманитарные и научно-технические тексты + самопроверка U1', desc: 'Изучить раздел 6 в teoria-espanol-1 и выполнить упражнения из UNIDAD 1.pdf.' },
+      ],
+    },
+    '2026-11-13': {
+      badge: 'ДЕНЬ 7 · ПЯТНИЦА: ЧИСТОВИК MAT U1 + DIGITAL',
+      blocks: [
+        { id: 'd-2026-11-13-1', subjectId: 'mates', mins: 65, title: 'Matemáticas: Написание чистовика Envío U1', desc: 'Аккуратно переписать от руки все 6 задач Actividades de envío U1 (проверив видимые числа!).' },
+        { id: 'd-2026-11-13-2', subjectId: 'digital', mins: 65, title: 'Competencia Digital Envío 1: Таблица 8 поисковых запросов и 4 источников', desc: 'Создать файл Martirosian_Grachia_ActividadEnvio1.docx, оформить Actividad 1 (введение 80–120 слов про семью FP + таблица 8 запросов + таблица 4 источников).' },
+      ],
+    },
+    '2026-11-14': {
+      badge: 'ДЕНЬ 8 · СУББОТА: ПЕРЕХОД К UNIDAD 2',
+      blocks: [
+        {
+          id: `d-2026-11-14-1-${e1}`,
+          subjectId: e1,
+          mins: 100,
+          ...getSubjTitleDesc(
+            e1,
+            e1 === 'fisica' ? 'Física UD1 §5 (MCU) + Старт UD2 Dinámica' : null,
+            e1 === 'fisica' ? 'Разобрать круговое движение MCU (ω = 2π/T, v = ω·R, a_n = v²/R) и решить задачу №3 из Envío 1 (колесо обозрения R=18 м, T=40 с). Начать чтение UD2 Dinámica.pdf.' : null,
+            w1
+          ),
+        },
+        { id: 'd-2026-11-14-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U2 §1–3: Многочлены, формулы сокращённого умножения и уравнения 1–2 степени', desc: 'Изучить U2 в Apuntes completos. Решить задачи №1 (пруд с дорожкой), №2 (телефонный счёт) и №3 (огород 96 м²) из Actividades de envío U2.' },
+        { id: 'd-2026-11-14-3', subjectId: 'lengua', mins: 75, title: 'Lengua U2 §1–3 + EXPLICACIONES CLASE 26_10.pdf', desc: 'Изучить функции языка, типы синтагм, страдательный залог (pasiva perifrástica vs pasiva refleja), безличные предложения с «se» и правило формулировки TEMA (<12 слов, без глагола).' },
+      ],
+    },
+    '2026-11-15': {
+      badge: 'ДЕНЬ 9 · ВОСКРЕСЕНЬЕ: U2 + DIGITAL ENVÍO',
+      blocks: [
+        {
+          id: `d-2026-11-15-1-${e2}`,
+          subjectId: e2,
+          mins: 100,
+          ...getSubjTitleDesc(
+            e2,
+            e2 === 'ingles' ? 'Inglés U2: Past Simple/Continuous, Present & Past Perfect, Used to' : null,
+            e2 === 'ingles' ? 'Изучить AGS INGLÉS Unidad 2.pdf, выполнить autoevaluaciones U2 и прорешать модель экзамена ACGS_Ingles_u2_mexamen26.pdf.' : null,
+            w1
+          ),
+        },
+        { id: 'd-2026-11-15-2', subjectId: 'digital', mins: 80, title: 'Competencia Digital Envío 1: Завершение Actividad 2 и Actividad 3 (.docx)', desc: 'Дописать в Martirosian_Grachia_ActividadEnvio1.docx раздел с ИИ-промптом и карточку семьи FP (со стилями Título 1/2, таблицей, картинкой CC, колонтитулом и нумерацией страниц; БЕЗ астронавта!).' },
+        ...(e3
+          ? [
+              {
+                id: `d-2026-11-15-3-${e3}`,
+                subjectId: e3,
+                mins: 85,
+                ...getSubjTitleDesc(
+                  e3,
+                  e3 === 'tecno' ? 'Tecnología II U2 ч.1: Крутящий момент, шестерни, редукторы и шкивы' : null,
+                  e3 === 'tecno' ? 'Изучить первую половину unidad 2 mecánica v1.0.pdf (P = M·ω, передаточное отношение i = Z₁/Z₂ = N₂/N₁).' : null,
+                  w1
+                ),
+              },
+            ]
+          : []),
+      ],
+    },
+  };
+
+  return map[dateStr] || null;
+}
+
+// Базовый генератор блоков на конкретную дату (без учёта сдвигов по предметам)
+export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingles']) {
   const d = new Date(`${dateStr}T12:00:00`);
   const dow = d.getDay(); // 0=Sun .. 6=Sat
   const dayName = RU_DAYS[dow];
   const dayShort = RU_DAYS_SHORT[dow];
   const weekObj = findWeekForDate(dateStr);
 
-  if (SPRINT_DAILY_OVERRIDES[dateStr]) {
-    const ov = SPRINT_DAILY_OVERRIDES[dateStr];
+  const e1 = activeElectives[0] || 'fisica';
+  const e2 = activeElectives[1] || 'ingles';
+  const e3 = activeElectives[2] || null;
+
+  const sprintOv = getSprintOverrideBlocks(dateStr, e1, e2, e3);
+  if (sprintOv) {
     return {
       dateStr,
       dayName,
       dayShort,
       weekObj,
-      badge: ov.badge,
-      blocks: ov.blocks,
+      badge: sprintOv.badge,
+      blocks: sprintOv.blocks,
     };
   }
 
   // Специальные дни дедлайнов и очных экзаменов
   if (dateStr === '2026-12-02' || dateStr === '2027-03-03' || dateStr === '2027-05-19') {
     const evalNum = dateStr === '2026-12-02' ? 1 : dateStr === '2027-03-03' ? 2 : 3;
+    const s2 = SUBJECTS.find((s) => s.id === e2) || SUBJECTS[0];
     return {
       dateStr,
       dayName,
@@ -651,7 +863,7 @@ export function getDailySchedule(dateStr) {
           subjectId: 'all',
           mins: 60,
           title: `Контрольная проверка и загрузка всех Actividades de Envío (${evalNum}ª Evaluación) в Aeducar`,
-          desc: 'Проверить имена файлов, наличие ФИО внутри каждого документа, формат (.docx для Inglés и Digital, PDF-скан для Matemáticas и Física) и убедиться, что статус доставки в Aeducar — «Enviado para calificar».',
+          desc: 'Проверить имена файлов, наличие ФИО внутри каждого документа, формат и убедиться, что статус доставки в Aeducar — «Enviado para calificar».',
         },
         {
           id: `d-${dateStr}-2`,
@@ -661,11 +873,11 @@ export function getDailySchedule(dateStr) {
           desc: weekObj.subjects.mates,
         },
         {
-          id: `d-${dateStr}-3`,
-          subjectId: 'ingles',
+          id: `d-${dateStr}-3-${e2}`,
+          subjectId: e2,
           mins: 45,
-          title: 'Онлайн-тутория / Повторение Inglés',
-          desc: weekObj.subjects.ingles,
+          title: `Повторение и проверка: ${s2.shortName}`,
+          desc: weekObj.subjects[e2] || s2.evalBreakdown[`eval${evalNum}`],
         },
       ],
     };
@@ -689,65 +901,70 @@ export function getDailySchedule(dateStr) {
 
   if (dateStr === '2026-12-17' || dateStr === '2027-03-18' || dateStr === '2027-06-03') {
     const evalNum = dateStr === '2026-12-17' ? 1 : dateStr === '2027-03-18' ? 2 : 3;
+    const examElectives = [e1, e2, ...(e3 ? [e3] : [])].map((id) => SUBJECTS.find((s) => s.id === id)).filter(Boolean);
+    examElectives.sort((a, b) => (a.examTime || '17:30').localeCompare(b.examTime || '17:30'));
     return {
       dateStr,
       dayName,
       dayShort,
       weekObj,
       badge: `🎯 ДЕНЬ ОЧНЫХ ЭКЗАМЕНОВ (${evalNum}ª EVAL — MATERIAS ESPECÍFICAS)`,
-      blocks: [
-        { id: `d-${dateStr}-1`, subjectId: 'ingles', mins: 90, title: '16:00 — Очный экзамен: Lengua Extranjera II (Inglés)', desc: 'Писать полностью "True"/"False", цитировать строки в кавычках, в сочинении минимум 100 слов в 4 абзацах.' },
-        { id: `d-${dateStr}-2`, subjectId: 'fisica', mins: 90, title: '17:30 — Очный экзамен: Física', desc: 'Переводить все величины в СИ в начале задачи, делать чертёж сил/осей и подписывать единицы измерения в ответе.' },
-        { id: `d-${dateStr}-3`, subjectId: 'tecno', mins: 90, title: '19:00 — Очный экзамен: Tecnología e Ingeniería II', desc: 'Внимательно следить за размерностями (кВт·ч vs Дж, бар vs Па, мм² vs м²).' },
-      ],
+      blocks: examElectives.map((subj, idx) => ({
+        id: `d-${dateStr}-${idx + 1}-${subj.id}`,
+        subjectId: subj.id,
+        mins: 90,
+        title: `${subj.examTime} — Очный экзамен: ${subj.name}`,
+        desc: `Очный экзамен в Centro de Adultos (${subj.evalBreakdown[`eval${evalNum}`]}). Не забудьте паспорт/DNI и калькулятор (для расчётных предметов).`,
+      })),
     };
   }
 
-  // Шаблон распределения предметов по дням недели (Пн–Вс) внутри любой недели W01–W30
+  // Шаблон распределения предметов по дням недели (Пн–Вс) для активных 5 (или 6) предметов
   const isSprint = Boolean(weekObj.isSprint);
+  const sE1 = SUBJECTS.find((s) => s.id === e1) || SUBJECTS[3];
+  const sE2 = SUBJECTS.find((s) => s.id === e2) || SUBJECTS[4];
+  const sE3 = e3 ? SUBJECTS.find((s) => s.id === e3) : null;
+
   const templatesByDow = {
     1: [
-      // Понедельник
       { subjectId: 'mates', mins: isSprint ? 75 : 60, label: 'Matemáticas (теория и разбор примеров)' },
       { subjectId: 'lengua', mins: isSprint ? 60 : 45, label: 'Lengua Castellana (грамматика, текст и тутория)' },
     ],
     2: [
-      // Вторник
-      { subjectId: 'fisica', mins: isSprint ? 75 : 60, label: 'Física (теория и разбор формул)' },
-      { subjectId: 'ingles', mins: isSprint ? 60 : 45, label: 'Inglés (грамматика, Reading и лексика)' },
+      { subjectId: e1, mins: isSprint ? 75 : 60, label: `${sE1.shortName} (теория, формулы и разбор задач)` },
+      { subjectId: e2, mins: isSprint ? 65 : 50, label: `${sE2.shortName} (теория, упражнения и модели экзамена)` },
     ],
     3: [
-      // Среда
-      { subjectId: 'tecno', mins: isSprint ? 70 : 60, label: 'Tecnología e Ingeniería II (теория и расчёты)' },
-      { subjectId: 'mates', mins: isSprint ? 60 : 45, label: 'Matemáticas (практика задач и Envío)' },
+      ...(sE3
+        ? [{ subjectId: e3, mins: isSprint ? 70 : 55, label: `${sE3.shortName} (теория и расчётные задачи)` }]
+        : [{ subjectId: e2, mins: isSprint ? 65 : 50, label: `${sE2.shortName} (практика заданий и Envío)` }]),
+      { subjectId: 'mates', mins: isSprint ? 65 : 50, label: 'Matemáticas (практика задач и Envío)' },
     ],
     4: [
-      // Четверг
-      { subjectId: 'fisica', mins: isSprint ? 70 : 60, label: 'Física (решение задач и Envío)' },
+      { subjectId: e1, mins: isSprint ? 75 : 60, label: `${sE1.shortName} (решение задач и подготовка Envío)` },
       { subjectId: 'lengua', mins: isSprint ? 55 : 45, label: 'Lengua Castellana (практика комментария и синтаксиса)' },
     ],
     5: [
-      // Пятница
       { subjectId: 'mates', mins: isSprint ? 60 : 45, label: 'Matemáticas (контрольные задачи недели)' },
       { subjectId: 'digital', mins: isSprint ? 60 : 45, label: 'Competencia Digital (теория и практика Envío)' },
     ],
     6: [
-      // Суббота
-      { subjectId: 'fisica', mins: 100, label: 'Física (глубокий практикум и задачи Envío/экзамена)' },
+      { subjectId: e1, mins: 100, label: `${sE1.shortName} (глубокий практикум и задачи Envío/экзамена)` },
       { subjectId: 'mates', mins: 90, label: 'Matemáticas (большой блок решения задач)' },
       { subjectId: 'lengua', mins: 70, label: 'Lengua Castellana (письменная практика и самопроверка)' },
     ],
     0: [
-      // Воскресенье
-      { subjectId: 'tecno', mins: 100, label: 'Tecnología e Ingeniería II (практикум по задачам и Soluciones)' },
-      { subjectId: 'ingles', mins: 85, label: 'Inglés (Modelo de Examen, Rephrasing и Writing 100+ слов)' },
+      ...(sE3
+        ? [{ subjectId: e3, mins: 95, label: `${sE3.shortName} (практикум по задачам и Soluciones)` }]
+        : [{ subjectId: e1, mins: 75, label: `${sE1.shortName} (повторение и закрепление задач недели)` }]),
+      { subjectId: e2, mins: 90, label: `${sE2.shortName} (практикум, контрольный вариант и Envío)` },
       { subjectId: 'digital', mins: 55, label: 'Competencia Digital + Итоговое повторение недели' },
     ],
   };
 
   const dayTemplate = templatesByDow[dow] || templatesByDow[1];
   const blocks = dayTemplate.map((item, idx) => ({
-    id: `d-${dateStr}-${idx + 1}`,
+    id: `d-${dateStr}-${idx + 1}-${item.subjectId}`,
     subjectId: item.subjectId,
     mins: item.mins,
     title: `${item.label} · ${weekObj.week}`,
@@ -761,5 +978,203 @@ export function getDailySchedule(dateStr) {
     weekObj,
     badge: `${weekObj.week} · ${weekObj.phase}`,
     blocks,
+  };
+}
+
+// Вычисляет баланс часов по каждому предмету (План vs Факт) и коэффициент пересчёта на будущие дни
+export function computeSubjectHoursSummary(state, activeSubjectIds) {
+  const refDate = state.selectedDate || '2026-11-07';
+  const eval1End = '2026-12-17';
+  const eval2End = '2027-03-18';
+  const currentPeriodStart =
+    refDate <= eval1End ? '2026-11-07' : refDate <= eval2End ? '2026-12-18' : '2027-03-19';
+  const currentPeriodEnd =
+    refDate <= eval1End ? '2026-12-02' : refDate <= eval2End ? '2027-03-03' : '2027-05-19';
+
+  const summary = {};
+  for (const subjId of activeSubjectIds) {
+    summary[subjId] = {
+      subjectId: subjId,
+      shiftDays: Number(state.subjectShiftDays?.[subjId] || 0),
+      customStartDate: state.subjectStartDates?.[subjId] || '2026-11-07',
+      plannedTotalMins: 0,
+      plannedPastMins: 0,
+      actualLoggedMins: 0,
+      remainingSessions: 0,
+      remainingPlannedMins: 0,
+      deltaMins: 0, // >0 переработка (запас), <0 недоработка (долг часов)
+      extraMinsPerFutureSession: 0,
+    };
+  }
+
+  let cur = currentPeriodStart;
+  while (cur <= currentPeriodEnd) {
+    const raw = getRawDailySchedule(cur, state.selectedElectives || ['fisica', 'ingles']);
+    for (const b of raw.blocks) {
+      if (!summary[b.subjectId]) continue;
+      const st = summary[b.subjectId];
+      st.plannedTotalMins += b.mins;
+
+      const hasExplicitLog =
+        state.loggedMinutes && state.loggedMinutes[b.id] !== undefined && state.loggedMinutes[b.id] !== '';
+      const isChecked = Boolean(state.completedBlocks?.[b.id]);
+
+      if (cur <= refDate) {
+        st.plannedPastMins += b.mins;
+        if (hasExplicitLog) {
+          st.actualLoggedMins += Number(state.loggedMinutes[b.id]);
+        } else if (isChecked) {
+          st.actualLoggedMins += b.mins;
+        }
+      } else {
+        if (hasExplicitLog) {
+          st.actualLoggedMins += Number(state.loggedMinutes[b.id]);
+        } else if (isChecked) {
+          st.actualLoggedMins += b.mins;
+        } else {
+          st.remainingSessions += 1;
+          st.remainingPlannedMins += b.mins;
+        }
+      }
+    }
+    cur = shiftDateStr(cur, 1);
+  }
+
+  for (const subjId of Object.keys(summary)) {
+    const st = summary[subjId];
+    // Разница между фактически отработанным временем и планом на текущий момент
+    st.deltaMins = st.actualLoggedMins - st.plannedPastMins;
+    // Если есть недоработка (deltaMins < 0) или переработка (deltaMins > 0), распределяем её на оставшиеся занятия до дедлайна
+    if (st.remainingSessions > 0 && st.deltaMins !== 0) {
+      st.extraMinsPerFutureSession = Math.round(-st.deltaMins / st.remainingSessions);
+    } else {
+      st.extraMinsPerFutureSession = 0;
+    }
+  }
+
+  return summary;
+}
+
+// Главная функция получения расписания на день с учётом:
+// 1) Выбранных спецпредметов (2 или 3 по дропдауну)
+// 2) Индивидуального сдвига дат по конкретному предмету (subjectShiftDays / subjectStartDates)
+// 3) Ручного переноса конкретных блоков на другую дату (rescheduledBlocks)
+// 4) Автоматического пересчёта длительности занятий (adjustedMins) на основе фактически отработанных часов
+export function getDailySchedule(dateStr, state = {}) {
+  const activeElectives = state.selectedElectives || ['fisica', 'ingles'];
+  const activeSubjectIds = [...MANDATORY_SUBJECT_IDS, ...activeElectives.filter(Boolean)];
+  const raw = getRawDailySchedule(dateStr, activeElectives);
+  const hoursSummary = computeSubjectHoursSummary(state, activeSubjectIds);
+
+  const isExamOrDeadlineDay =
+    dateStr === '2026-12-02' ||
+    dateStr === '2027-03-03' ||
+    dateStr === '2027-05-19' ||
+    dateStr === '2026-12-15' ||
+    dateStr === '2027-03-16' ||
+    dateStr === '2027-06-01' ||
+    dateStr === '2026-12-17' ||
+    dateStr === '2027-03-18' ||
+    dateStr === '2027-06-03';
+
+  // Применяем индивидуальный сдвиг даты по предмету (если пользователь сдвинул дату старта/графика предмета)
+  const blocksAfterSubjectShift = raw.blocks
+    .map((b) => {
+      if (isExamOrDeadlineDay || b.subjectId === 'all') {
+        return { ...b, baseMins: b.mins, adjustedMins: b.mins, shiftApplied: 0 };
+      }
+      const shiftDays = Number(state.subjectShiftDays?.[b.subjectId] || 0);
+      let finalBlock = { ...b };
+
+      if (shiftDays !== 0) {
+        // Если расписание предмета сдвинуто на +N дней (позже), то на текущую дату dateStr подтягивается тема с даты (dateStr - shiftDays)
+        const sourceDate = shiftDateStr(dateStr, -shiftDays);
+        if (sourceDate < '2026-11-07') {
+          return {
+            ...b,
+            title: `${b.title} (Старт предмета сдвинут на ${shiftDateStr('2026-11-07', shiftDays)})`,
+            desc: `Вы сдвинули старт/график этого предмета на ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн. Нажмите «Сбросить сдвиг», если хотите начать сегодня.`,
+            baseMins: b.mins,
+            adjustedMins: 0,
+            shiftApplied: shiftDays,
+          };
+        }
+        const sourceRaw = getRawDailySchedule(sourceDate, activeElectives);
+        const matchingSourceBlock = sourceRaw.blocks.find((sb) => sb.subjectId === b.subjectId);
+        const sourceWeek = findWeekForDate(sourceDate);
+        if (matchingSourceBlock) {
+          finalBlock = {
+            ...b,
+            title: `${matchingSourceBlock.title} [Сдвиг графика: ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн.]`,
+            desc: matchingSourceBlock.desc,
+          };
+        } else {
+          finalBlock = {
+            ...b,
+            title: `${b.title} → тема из ${sourceWeek.week} [Сдвиг: ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн.]`,
+            desc: sourceWeek.subjects[b.subjectId] || b.desc,
+          };
+        }
+      }
+
+      // Если блок был вручную перенесён пользователем на другую дату, скрываем его со старой даты
+      const rescheduledTo = state.rescheduledBlocks?.[b.id];
+      if (rescheduledTo && rescheduledTo !== dateStr) {
+        return null;
+      }
+
+      // Пересчёт длительности (adjustedMins) для будущих/незакрытых дней с учётом недоработки или переработки часов
+      const subjStat = hoursSummary[b.subjectId];
+      const extra = subjStat ? subjStat.extraMinsPerFutureSession : 0;
+      const hasLogged =
+        state.loggedMinutes && state.loggedMinutes[b.id] !== undefined && state.loggedMinutes[b.id] !== '';
+      const isDone = Boolean(state.completedBlocks?.[b.id]);
+
+      const adjustedMins =
+        !isDone && !hasLogged && extra !== 0
+          ? Math.max(15, Math.min(240, b.mins + extra))
+          : b.mins;
+
+      return {
+        ...finalBlock,
+        baseMins: b.mins,
+        adjustedMins,
+        extraMins: adjustedMins - b.mins,
+        shiftApplied: shiftDays,
+      };
+    })
+    .filter(Boolean);
+
+  // Добавляем блоки, которые пользователь вручную перенёс НА эту дату (dateStr) с других дней
+  const incomingRescheduled = [];
+  if (state.rescheduledBlocks) {
+    for (const [blockId, targetDate] of Object.entries(state.rescheduledBlocks)) {
+      if (targetDate === dateStr) {
+        // Извлекаем исходную дату из id вида d-YYYY-MM-DD-...
+        const m = blockId.match(/^d-(\d{4}-\d{2}-\d{2})-/);
+        if (m && m[1] !== dateStr) {
+          const origDate = m[1];
+          const origRaw = getRawDailySchedule(origDate, activeElectives);
+          const origBlock = origRaw.blocks.find((x) => x.id === blockId);
+          if (origBlock) {
+            incomingRescheduled.push({
+              ...origBlock,
+              title: `📌 [Перенесено с ${origDate}] ${origBlock.title}`,
+              baseMins: origBlock.mins,
+              adjustedMins: origBlock.mins,
+              extraMins: 0,
+              isRescheduledHere: true,
+              origDate,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    ...raw,
+    blocks: [...blocksAfterSubjectShift, ...incomingRescheduled],
+    hoursSummary,
   };
 }
