@@ -1,0 +1,470 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Física: arranque</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#6D3FD9;--subj-soft:#EFE9FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#B69CFF;--subj-soft:#2A2046}}:root[data-theme="dark"]{--subj:#B69CFF;--subj-soft:#2A2046}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Física · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Física · Недели 0–4</div>
+  <h1>Инструменты физики и движение по прямой</h1>
+  <p class="lede">Этот конспект читается <b>до</b> апунтов UD1. Он закрывает математическую базу, без которой физика не идёт, и подробно разбирает MRU, MRUA и вертикальное движение. Термины даны по-испански, потому что экзамен на испанском.</p>
+  <ul class="toc">
+    <li><a href="#herramientas">1. Единицы и перевод</a></li>
+    <li><a href="#cientifica">2. Notación científica</a></li>
+    <li><a href="#despejar">3. Despejar</a></li>
+    <li><a href="#trigo">4. Тригонометрия</a></li>
+    <li><a href="#vectores">5. Векторы</a></li>
+    <li><a href="#conceptos">6. Понятия UD1</a></li>
+    <li><a href="#mru">7. MRU</a></li>
+    <li><a href="#mrua">8. MRUA</a></li>
+    <li><a href="#vertical">9. Caída libre</a></li>
+    <li><a href="#metodo">10. Метод решения</a></li>
+    <li><a href="#erratas">11. Опечатки в апунтах</a></li>
+    <li><a href="#glosario">12. Словарик</a></li>
+    <li><a href="#test">13. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="herramientas">
+  <span class="week">Неделя 0–1</span>
+  <h2>1. Magnitudes y unidades: всё переводим в СИ</h2>
+  <p><span class="es">Magnitud</span> — всё, что можно измерить. У каждой величины есть <span class="es">unidad</span>. Почти все формулы курса работают только в <b>Sistema Internacional (SI)</b>: если подставить км/ч или граммы, ответ будет неверным, даже если формула правильная.</p>
+  <div class="tbl"><table>
+    <tr><th>Magnitud</th><th>По-русски</th><th>Unidad SI</th><th>Символ</th></tr>
+    <tr><td>longitud / posición</td><td>длина / положение</td><td>metro</td><td>m</td></tr>
+    <tr><td>masa</td><td>масса</td><td>kilogramo</td><td>kg</td></tr>
+    <tr><td>tiempo</td><td>время</td><td>segundo</td><td>s</td></tr>
+    <tr><td>velocidad</td><td>скорость</td><td>metro por segundo</td><td>m/s</td></tr>
+    <tr><td>aceleración</td><td>ускорение</td><td>metro por segundo al cuadrado</td><td>m/s²</td></tr>
+    <tr><td>fuerza</td><td>сила</td><td>newton</td><td>N = kg·m/s²</td></tr>
+    <tr><td>energía, trabajo</td><td>энергия, работа</td><td>julio</td><td>J = N·m</td></tr>
+    <tr><td>potencia</td><td>мощность</td><td>vatio</td><td>W = J/s</td></tr>
+  </table></div>
+
+  <h3>Приставки (prefijos)</h3>
+  <div class="tbl"><table>
+    <tr><th>Prefijo</th><th>Símbolo</th><th class="num">Множитель</th><th>Пример</th></tr>
+    <tr><td>giga</td><td>G</td><td class="num">10⁹</td><td>5 GW = 5·10⁹ W</td></tr>
+    <tr><td>mega</td><td>M</td><td class="num">10⁶</td><td>3 MJ = 3·10⁶ J</td></tr>
+    <tr><td>kilo</td><td>k</td><td class="num">10³</td><td>2,5 km = 2500 m</td></tr>
+    <tr><td>centi</td><td>c</td><td class="num">10⁻²</td><td>35 cm = 0,35 m</td></tr>
+    <tr><td>mili</td><td>m</td><td class="num">10⁻³</td><td>450 mm = 0,45 m</td></tr>
+    <tr><td>micro</td><td>µ</td><td class="num">10⁻⁶</td><td>3 µC = 3·10⁻⁶ C</td></tr>
+    <tr><td>nano</td><td>n</td><td class="num">10⁻⁹</td><td>500 nm = 5·10⁻⁷ m</td></tr>
+  </table></div>
+
+  <h3>Factores de conversión — надёжный способ переводить</h3>
+  <p>Идея: умножаем на дробь, которая <b>равна единице</b> (сверху и снизу одно и то же, только в разных единицах). Ненужные единицы сокращаются, как буквы в алгебре.</p>
+  <div class="eq">72 <sup>km</sup>/<sub>h</sub> · <sup>1000 m</sup>/<sub>1 km</sub> · <sup>1 h</sup>/<sub>3600 s</sub> = 20 <sup>m</sup>/<sub>s</sub><small>km сокращается с km, h — с h. Остаётся m/s.</small></div>
+  <div class="box tip"><span class="lbl">Короткий путь</span><p>km/h → m/s: <b>разделить на 3,6</b>. m/s → km/h: <b>умножить на 3,6</b>. Проверка здравым смыслом: 20 m/s — это машина в городе на трассе (72 km/h), а не пешеход.</p></div>
+  <div class="box trap"><span class="lbl">Ловушка: площади и объёмы</span><p>1 m = 100 cm, но 1 m² = 100² = 10 000 cm², а 1 m³ = 1 000 000 cm³. Коэффициент возводится в ту же степень: 15 cm² = 15 · (1/100)² m² = 0,0015 m². И ещё: 1 L = 1 dm³ = 0,001 m³.</p></div>
+</section>
+
+<section id="cientifica">
+  <span class="week">Неделя 1</span>
+  <h2>2. Notación científica</h2>
+  <p>Очень большие и очень маленькие числа пишут как <span class="f"><i>a</i> · 10<sup><i>n</i></sup></span>, где 1 ≤ <i>a</i> &lt; 10. Показатель <i>n</i> — сколько раз сдвинули запятую: влево — плюс, вправо — минус.</p>
+  <div class="tbl"><table>
+    <tr><th>Обычная запись</th><th>Notación científica</th><th>Как думать</th></tr>
+    <tr><td>300 000 000 m/s</td><td>3·10⁸ m/s</td><td>запятую влево на 8 знаков</td></tr>
+    <tr><td>0,00034 m</td><td>3,4·10⁻⁴ m</td><td>запятую вправо на 4 знака</td></tr>
+    <tr><td>0,000 000 000 000 000 000 16 C</td><td>1,6·10⁻¹⁹ C</td><td>заряд электрона (UD4)</td></tr>
+  </table></div>
+  <p>Правила: при умножении показатели <b>складываются</b>, при делении — <b>вычитаются</b>: <span class="f">(2·10³)·(4·10⁻⁵) = 8·10⁻²</span>; <span class="f">(6·10⁴)/(3·10⁻²) = 2·10⁶</span>.</p>
+  <div class="box tip"><span class="lbl">Калькулятор</span><p>Вводи через клавишу <kbd>EXP</kbd> или <kbd>×10ˣ</kbd>: 1,6 <kbd>EXP</kbd> <kbd>(−)</kbd> 19. Не набирай «×10^» вручную: легко потерять скобки.</p></div>
+</section>
+
+<section id="despejar">
+  <span class="week">Неделя 1</span>
+  <h2>3. Despejar — выразить неизвестное</h2>
+  <p>В задачах почти всегда нужно выразить одну букву из формулы (<span class="es">despejar la incógnita</span>). Правило одно: <b>что делаешь с одной частью равенства — делай и с другой</b>. На практике: то, что прибавлено, переносим с минусом; на что умножено — на то делим; квадрат снимаем корнем.</p>
+  <ol class="steps">
+    <li><span class="f"><i>v</i> = <i>v</i><sub>0</sub> + <i>a·t</i></span> → вычесть <i>v</i><sub>0</sub>: <span class="f"><i>v</i> − <i>v</i><sub>0</sub> = <i>a·t</i></span> → разделить на <i>a</i>: <span class="f"><i>t</i> = (<i>v</i> − <i>v</i><sub>0</sub>)/<i>a</i></span>.</li>
+    <li><span class="f"><i>E</i><sub>c</sub> = ½·<i>m·v</i>²</span> → <span class="f"><i>v</i>² = 2<i>E</i><sub>c</sub>/<i>m</i></span> → <span class="f"><i>v</i> = √(2<i>E</i><sub>c</sub>/<i>m</i>)</span>.</li>
+    <li><span class="f">0 = 45 − 4,9·<i>t</i>²</span> → <span class="f">4,9·<i>t</i>² = 45</span> → <span class="f"><i>t</i> = √(45/4,9) = 3,03 s</span>.</li>
+  </ol>
+  <h3>Когда получается квадратное уравнение</h3>
+  <p>Если в уравнении есть и <i>t</i>², и <i>t</i> (например, бросок вверх с высоты), приводим к виду <span class="f"><i>a·t</i>² + <i>b·t</i> + <i>c</i> = 0</span> и решаем формулой (это же будет в Matemáticas U2):</p>
+  <div class="eq"><i>t</i> = ( −<i>b</i> ± √(<i>b</i>² − 4<i>ac</i>) ) / 2<i>a</i><small>Отрицательное время отбрасываем: у него нет физического смысла.</small></div>
+</section>
+
+<section id="trigo">
+  <span class="week">Неделя 1</span>
+  <h2>4. Тригонометрия, которая нужна физике</h2>
+  <p>В прямоугольном треугольнике (<span class="es">triángulo rectángulo</span>) самая длинная сторона — <span class="es">hipotenusa</span>. Два других катета называют относительно выбранного угла α: <span class="es">cateto opuesto</span> лежит напротив угла, <span class="es">cateto contiguo</span> — рядом с ним.</p>
+  <figure>
+    <svg viewBox="0 0 360 200" role="img" aria-label="Прямоугольный треугольник: гипотенуза, противолежащий и прилежащий катеты">
+      <path class="soft" d="M40 170 L300 170 L300 40 Z"/>
+      <path class="ln" stroke-width="2" d="M40 170 L300 170 L300 40 Z"/>
+      <path class="ln" stroke-width="1.5" d="M284 170 L284 154 L300 154"/>
+      <path class="ac" stroke-width="2" d="M92 170 A52 52 0 0 0 86.5 146.7"/>
+      <text x="100" y="160" font-size="15" font-style="italic">α</text>
+      <text x="150" y="92" font-size="14" transform="rotate(-26.6 150 92)">hipotenusa</text>
+      <text x="170" y="192" font-size="14" text-anchor="middle">cateto contiguo</text>
+      <text x="310" y="110" font-size="14">cateto</text>
+      <text x="310" y="128" font-size="14">opuesto</text>
+    </svg>
+    <figcaption>Названия катетов зависят от того, какой угол выбран.</figcaption>
+  </figure>
+  <div class="eqs">
+    <div class="eq">sen α = <sup>opuesto</sup>/<sub>hipotenusa</sub></div>
+    <div class="eq">cos α = <sup>contiguo</sup>/<sub>hipotenusa</sub></div>
+    <div class="eq">tg α = <sup>opuesto</sup>/<sub>contiguo</sub></div>
+  </div>
+  <p>И теорема Пифагора: <span class="f">hipotenusa² = cateto₁² + cateto₂²</span>.</p>
+  <div class="tbl"><table>
+    <tr><th>Ángulo</th><th class="num">0°</th><th class="num">30°</th><th class="num">45°</th><th class="num">60°</th><th class="num">90°</th></tr>
+    <tr><td>sen</td><td class="num">0</td><td class="num">0,5</td><td class="num">0,707</td><td class="num">0,866</td><td class="num">1</td></tr>
+    <tr><td>cos</td><td class="num">1</td><td class="num">0,866</td><td class="num">0,707</td><td class="num">0,5</td><td class="num">0</td></tr>
+  </table></div>
+  <div class="box trap"><span class="lbl">Ловушка: режим калькулятора</span><p>Калькулятор должен стоять в режиме <b>DEG</b> (градусы). В режиме RAD sen 30 = −0,988 вместо 0,5. Проверь: sen 30 должно дать ровно 0,5. Радианы нужны только в движении по окружности: 2π rad = 360°.</p></div>
+</section>
+
+<section id="vectores">
+  <span class="week">Неделя 1</span>
+  <h2>5. Vectores: модуль, направление, компоненты</h2>
+  <p>Скорость, ускорение и сила — <span class="es">magnitudes vectoriales</span>: кроме числа (<span class="es">módulo</span>) у них есть <span class="es">dirección</span> (линия) и <span class="es">sentido</span> (куда по этой линии). Масса, время, энергия — <span class="es">escalares</span>, у них только число.</p>
+  <figure>
+    <svg viewBox="0 0 360 210" role="img" aria-label="Вектор v и его компоненты vx и vy">
+      <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker>
+      <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ac2f" d="M0 0 L10 5 L0 10 Z"/></marker></defs>
+      <path class="ax" d="M40 180 H330 M40 180 V20"/>
+      <text x="334" y="184" font-size="13" class="mut">x</text><text x="34" y="16" font-size="13" class="mut">y</text>
+      <path class="ac2" stroke-width="2" stroke-dasharray="5 4" d="M40 180 H250" marker-end="url(#arr2)"/>
+      <path class="ac2" stroke-width="2" stroke-dasharray="5 4" d="M250 180 V62" marker-end="url(#arr2)"/>
+      <path class="ac" stroke-width="3" d="M40 180 L248 62" marker-end="url(#arr)"/>
+      <path class="ln" stroke-width="1.5" d="M95 180 A55 55 0 0 0 87.8 152.9"/>
+      <text x="100" y="171" font-size="15" font-style="italic">α</text>
+      <text x="130" y="110" font-size="16" font-weight="700" font-style="italic">v</text>
+      <text x="145" y="200" font-size="14" text-anchor="middle">vₓ = v · cos α</text>
+      <text x="258" y="125" font-size="14">vᵧ = v · sen α</text>
+    </svg>
+    <figcaption>Угол α отсчитываем от горизонтали. Тогда cos — к оси x, sen — к оси y.</figcaption>
+  </figure>
+  <div class="eqs">
+    <div class="eq"><i>v</i><sub>x</sub> = <i>v</i> · cos α<br><i>v</i><sub>y</sub> = <i>v</i> · sen α<small>разложить вектор</small></div>
+    <div class="eq"><i>v</i> = √(<i>v</i><sub>x</sub>² + <i>v</i><sub>y</sub>²)<br>tg α = <i>v</i><sub>y</sub>/<i>v</i><sub>x</sub><small>собрать вектор обратно</small></div>
+  </div>
+  <p>Запись через единичные векторы: <span class="f"><i>v⃗</i> = <i>v</i><sub>x</sub> <i>i⃗</i> + <i>v</i><sub>y</sub> <i>j⃗</i></span>, где <i>i⃗</i> смотрит вдоль оси x, <i>j⃗</i> — вдоль y. Складывать векторы удобно по компонентам: x с x, y с y.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Мяч бросили со скоростью 20 m/s под углом 30° к горизонту. Найти компоненты.</p>
+    <p><span class="f"><i>v</i><sub>x</sub> = 20·cos 30° = 20·0,866 = 17,32 m/s</span>; <span class="f"><i>v</i><sub>y</sub> = 20·sen 30° = 20·0,5 = 10 m/s</span>. Проверка: √(17,32² + 10²) = 20 ✓.</p>
+  </div>
+</section>
+
+<section id="conceptos">
+  <span class="week">Неделя 2 · UD1 §1–2</span>
+  <h2>6. Основные понятия кинематики</h2>
+  <p><span class="es">Cinemática</span> описывает <b>как</b> движется тело, не спрашивая почему (причины — силы — будут в UD2).</p>
+  <ul>
+    <li><span class="es">Sistema de referencia</span> — точка отсчёта O, оси x и y и правило знаков. Выбрал один раз — не меняй до конца задачи.</li>
+    <li><span class="es">Punto material</span> — тело считаем точкой, размер не важен.</li>
+    <li><span class="es">Posición</span> <span class="f"><i>r⃗</i> = <i>x i⃗</i> + <i>y j⃗</i></span> — где тело сейчас.</li>
+    <li><span class="es">Trayectoria</span> — линия, по которой тело прошло (прямая → <span class="es">rectilíneo</span>, кривая → <span class="es">curvilíneo</span>).</li>
+    <li><span class="es">Desplazamiento</span> <span class="f">Δ<i>r⃗</i> = <i>r⃗</i> − <i>r⃗</i><sub>0</sub></span> — стрелка от начала к концу.</li>
+    <li><span class="es">Distancia recorrida</span> — сколько метров реально пройдено по траектории.</li>
+  </ul>
+  <div class="box trap"><span class="lbl">Ловушка: desplazamiento ≠ distancia</span><p>Прошёл 30 m вперёд и 30 m назад: <span class="es">distancia recorrida</span> = 60 m, <span class="es">desplazamiento</span> = 0. Отсюда и <span class="es">velocidad media</span> = 0, хотя ты двигался.</p></div>
+  <div class="eqs">
+    <div class="eq"><i>v</i><sub>m</sub> = Δ<i>x</i>/Δ<i>t</i><small>velocidad media, m/s</small></div>
+    <div class="eq"><i>a</i><sub>m</sub> = Δ<i>v</i>/Δ<i>t</i><small>aceleración media, m/s²</small></div>
+  </div>
+  <p>Ускорение 2 m/s² значит: каждую секунду скорость меняется на 2 m/s. Разгоняется тело или тормозит — видно по знакам:</p>
+  <div class="tbl"><table>
+    <tr><th>Знаки v и a</th><th>Что происходит</th></tr>
+    <tr><td>одинаковые (+,+) или (−,−)</td><td><b>acelera</b> — модуль скорости растёт</td></tr>
+    <tr><td>разные (+,−) или (−,+)</td><td><b>frena</b> — модуль скорости уменьшается</td></tr>
+  </table></div>
+</section>
+
+<section id="mru">
+  <span class="week">Неделя 3 · UD1 §3.1</span>
+  <h2>7. MRU — movimiento rectilíneo uniforme</h2>
+  <p>Прямая траектория, скорость постоянна, ускорение ноль. За равные промежутки времени тело проходит равные расстояния.</p>
+  <div class="eq"><i>x</i> = <i>x</i><sub>0</sub> + <i>v</i>·<i>t</i><small>v = const, a = 0 (если отсчёт времени с t₀ = 0)</small></div>
+
+  <figure>
+    <svg viewBox="0 0 620 330" role="img" aria-label="Графики MRU и MRUA: x от t и v от t">
+      <g transform="translate(20 10)">
+        <text x="120" y="14" font-size="13" font-weight="700" text-anchor="middle">MRU · x–t</text>
+        <path class="ax" d="M30 130 H250 M30 130 V24"/>
+        <path class="ac" stroke-width="3" d="M30 110 L240 40"/>
+        <text x="254" y="134" font-size="12" class="mut">t</text><text x="18" y="30" font-size="12" class="mut">x</text>
+        <text x="40" y="104" font-size="12" class="mut">x₀</text>
+        <text x="140" y="150" font-size="12" text-anchor="middle" class="mut">прямая; наклон = v</text>
+      </g>
+      <g transform="translate(320 10)">
+        <text x="120" y="14" font-size="13" font-weight="700" text-anchor="middle">MRU · v–t</text>
+        <path class="ax" d="M30 130 H250 M30 130 V24"/>
+        <rect x="31" y="70" width="170" height="59" class="soft"/>
+        <path class="ac" stroke-width="3" d="M30 70 H240"/>
+        <path class="ax" stroke-dasharray="3 3" d="M201 70 V130"/>
+        <text x="254" y="134" font-size="12" class="mut">t</text><text x="18" y="30" font-size="12" class="mut">v</text>
+        <text x="116" y="106" font-size="12" text-anchor="middle">площадь = Δx</text>
+        <text x="140" y="150" font-size="12" text-anchor="middle" class="mut">горизонталь</text>
+      </g>
+      <g transform="translate(20 170)">
+        <text x="120" y="14" font-size="13" font-weight="700" text-anchor="middle">MRUA · x–t</text>
+        <path class="ax" d="M30 130 H250 M30 130 V24"/>
+        <path class="ac" stroke-width="3" d="M30 118 Q140 116 240 32"/>
+        <text x="254" y="134" font-size="12" class="mut">t</text><text x="18" y="30" font-size="12" class="mut">x</text>
+        <text x="140" y="150" font-size="12" text-anchor="middle" class="mut">парабола (a &gt; 0)</text>
+      </g>
+      <g transform="translate(320 170)">
+        <text x="120" y="14" font-size="13" font-weight="700" text-anchor="middle">MRUA · v–t</text>
+        <path class="ax" d="M30 130 H250 M30 130 V24"/>
+        <path class="soft" d="M31 105 L200 50 L200 129 L31 129 Z"/>
+        <path class="ac" stroke-width="3" d="M30 105 L240 37"/>
+        <path class="ax" stroke-dasharray="3 3" d="M200 50 V130"/>
+        <text x="254" y="134" font-size="12" class="mut">t</text><text x="18" y="30" font-size="12" class="mut">v</text>
+        <text x="40" y="100" font-size="12" class="mut">v₀</text>
+        <text x="130" y="112" font-size="12" text-anchor="middle">площадь = Δx</text>
+        <text x="140" y="150" font-size="12" text-anchor="middle" class="mut">прямая; наклон = a</text>
+      </g>
+    </svg>
+    <figcaption>На графике v–t площадь под линией всегда равна пройденному перемещению.</figcaption>
+  </figure>
+
+  <h3>Задачи на встречу (encuentro) и догонялки (persecución)</h3>
+  <p>Схема всегда одна: пишем уравнение <i>x(t)</i> для каждого тела в <b>одной</b> системе отсчёта, затем приравниваем <span class="f"><i>x</i><sub>A</sub>(<i>t</i>) = <i>x</i><sub>B</sub>(<i>t</i>)</span>.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · encuentro</span>
+    <p>Два города на расстоянии 300 km. Из A в сторону B выезжает машина со скоростью 90 km/h, одновременно из B навстречу — другая, 60 km/h. Когда и где встретятся?</p>
+    <p>Ось x от A к B. <span class="f"><i>x</i><sub>A</sub> = 90<i>t</i></span>; вторая едет влево, значит скорость со знаком минус: <span class="f"><i>x</i><sub>B</sub> = 300 − 60<i>t</i></span>.</p>
+    <p><span class="f">90<i>t</i> = 300 − 60<i>t</i> → 150<i>t</i> = 300 → <i>t</i> = 2 h</span>; <span class="f"><i>x</i> = 90·2 = 180 km</span> от A.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · persecución</span>
+    <p>Грузовик выехал со скоростью 80 km/h. Через полчаса из той же точки за ним выехала машина со скоростью 120 km/h. Когда она его догонит?</p>
+    <p>Время <i>t</i> считаем от старта машины. Грузовик к этому моменту уже в пути 0,5 h: <span class="f"><i>x</i><sub>G</sub> = 80(<i>t</i> + 0,5) = 80<i>t</i> + 40</span>; машина: <span class="f"><i>x</i><sub>C</sub> = 120<i>t</i></span>.</p>
+    <p><span class="f">120<i>t</i> = 80<i>t</i> + 40 → <i>t</i> = 1 h</span>, в 120 km от старта.</p>
+  </div>
+</section>
+
+<section id="mrua">
+  <span class="week">Неделя 3 · UD1 §3.2</span>
+  <h2>8. MRUA — movimiento rectilíneo uniformemente acelerado</h2>
+  <p>Прямая траектория, ускорение постоянно, скорость равномерно растёт или падает.</p>
+  <div class="eqs">
+    <div class="eq"><i>v</i> = <i>v</i><sub>0</sub> + <i>a·t</i></div>
+    <div class="eq"><i>x</i> = <i>x</i><sub>0</sub> + <i>v</i><sub>0</sub><i>t</i> + ½<i>a·t</i>²</div>
+  </div>
+  <p>Полезная третья формула, которая получается из двух первых, если исключить время. В апунтах её нет, но на экзамене ею пользоваться можно:</p>
+  <div class="eq"><i>v</i>² = <i>v</i><sub>0</sub>² + 2<i>a</i>·Δ<i>x</i><small>когда время не дано и не спрашивается</small></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · frenada</span>
+    <p>Машина едет 72 km/h и тормозит до остановки на пути 40 m. Найти ускорение и время торможения.</p>
+    <ol class="steps">
+      <li>Единицы: <span class="f"><i>v</i><sub>0</sub> = 72/3,6 = 20 m/s</span>, <span class="f"><i>v</i> = 0</span>, <span class="f">Δ<i>x</i> = 40 m</span>.</li>
+      <li><span class="f">0 = 20² + 2·<i>a</i>·40 → <i>a</i> = −400/80 = −5 m/s²</span>. Минус: скорость положительная, ускорение отрицательное — тормозит.</li>
+      <li><span class="f">0 = 20 − 5<i>t</i> → <i>t</i> = 4 s</span>.</li>
+    </ol>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: «parte del reposo»</span><p>Фразы <span class="es">parte del reposo</span>, <span class="es">se deja caer</span>, <span class="es">arranca</span> означают <i>v</i><sub>0</sub> = 0. <span class="es">Se detiene / hasta pararse</span> — конечная скорость <i>v</i> = 0. Эти нули в условии не пишут цифрами, их надо увидеть в словах.</p></div>
+</section>
+
+<section id="vertical">
+  <span class="week">Неделя 4 · UD1</span>
+  <h2>9. Caída libre y lanzamiento vertical</h2>
+  <p>Это MRUA по оси y с ускорением свободного падения <span class="f"><i>g</i> = 9,8 m/s²</span>, которое всегда направлено вниз. Удобное правило знаков: <b>вверх — плюс</b>, тогда <span class="f"><i>a</i> = −9,8 m/s²</span>.</p>
+  <div class="eqs">
+    <div class="eq"><i>v</i> = <i>v</i><sub>0</sub> − 9,8·<i>t</i></div>
+    <div class="eq"><i>y</i> = <i>y</i><sub>0</sub> + <i>v</i><sub>0</sub><i>t</i> − 4,9·<i>t</i>²</div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 360 250" role="img" aria-label="Бросок вверх: скорость уменьшается до нуля в верхней точке, затем тело падает">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker>
+      <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="waf" d="M0 0 L10 5 L0 10 Z"/></marker></defs>
+      <path class="ax" d="M30 230 H330"/>
+      <rect x="70" y="200" width="40" height="30" class="surf"/>
+      <text x="90" y="246" font-size="12" text-anchor="middle" class="mut">y₀</text>
+      <circle cx="90" cy="194" r="6" class="acf"/>
+      <path class="ac" stroke-width="2.5" d="M90 185 V135" marker-end="url(#a3)"/>
+      <text x="98" y="160" font-size="13">v₀ (+)</text>
+      <circle cx="90" cy="40" r="6" class="acf"/>
+      <path class="ax" stroke-dasharray="3 3" d="M90 46 V180"/>
+      <text x="104" y="36" font-size="13" font-weight="700">v = 0 → altura máxima</text>
+      <circle cx="230" cy="120" r="6" class="acf"/>
+      <path class="ac" stroke-width="2.5" d="M230 130 V175" marker-end="url(#a3)"/>
+      <text x="240" y="160" font-size="13">v (−)</text>
+      <path class="wa" stroke-width="2.5" d="M300 60 V110" marker-end="url(#a4)"/>
+      <text x="292" y="130" font-size="13" text-anchor="middle">g</text>
+      <text x="292" y="146" font-size="12" text-anchor="middle" class="mut">всегда вниз</text>
+    </svg>
+    <figcaption>В верхней точке скорость равна нулю, а ускорение — нет: g действует всё время.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>Что спрашивают</th><th>Какое условие ставить</th></tr>
+    <tr><td>altura máxima</td><td><i>v</i> = 0 → <i>t</i> = <i>v</i><sub>0</sub>/9,8, подставить в <i>y</i>(<i>t</i>)</td></tr>
+    <tr><td>tiempo en llegar al suelo</td><td><i>y</i> = 0 (если ось от земли)</td></tr>
+    <tr><td>velocidad de impacto</td><td>найденное время подставить в <i>v</i>(<i>t</i>)</td></tr>
+    <tr><td>se deja caer</td><td><i>v</i><sub>0</sub> = 0</td></tr>
+  </table></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · lanzamiento hacia arriba</span>
+    <p>С высоты 2 m мяч бросают вертикально вверх со скоростью 15 m/s. Найти максимальную высоту, время до земли и скорость удара.</p>
+    <ol class="steps">
+      <li>Ось y от земли вверх: <span class="f"><i>y</i><sub>0</sub> = 2 m, <i>v</i><sub>0</sub> = +15 m/s, <i>a</i> = −9,8 m/s²</span>.</li>
+      <li>Вершина: <span class="f">0 = 15 − 9,8<i>t</i> → <i>t</i> = 1,53 s</span>; <span class="f"><i>y</i> = 2 + 15·1,53 − 4,9·1,53² = 13,48 m</span>.</li>
+      <li>Земля: <span class="f">0 = 2 + 15<i>t</i> − 4,9<i>t</i>²</span> → <span class="f">4,9<i>t</i>² − 15<i>t</i> − 2 = 0</span> → <span class="f"><i>t</i> = (15 + √(225 + 39,2))/9,8 = 3,19 s</span> (второй корень отрицательный, отбрасываем).</li>
+      <li>Скорость удара: <span class="f"><i>v</i> = 15 − 9,8·3,19 = −16,25 m/s</span>. Минус означает «вниз», модуль 16,25 m/s.</li>
+    </ol>
+  </div>
+  <p>Дальше в неделе 5 (тиро горизонтальный и параболический) применяется та же идея, только по двум осям сразу: по x — MRU, по y — это же падение. Конспект к этой теме — следующий блок, попроси его в чате.</p>
+</section>
+
+<section id="metodo">
+  <h2>10. Метод решения любой задачи по кинематике</h2>
+  <ol class="steps">
+    <li><b>Рисунок</b>: тело, траектория, оси и направление «плюса».</li>
+    <li><b>Datos</b>: выписать <i>x</i><sub>0</sub>, <i>v</i><sub>0</sub>, <i>a</i> со знаками и в единицах СИ. Слова вроде «parte del reposo» → нули.</li>
+    <li><b>Tipo de movimiento</b>: MRU (<i>a</i> = 0) или MRUA (<i>a</i> = const). Выписать формулы и подставить данные.</li>
+    <li><b>Условие</b>: что происходит в искомый момент (<i>y</i> = 0, <i>v</i> = 0, <i>x</i><sub>A</sub> = <i>x</i><sub>B</sub>). Обычно сначала находится время, потом всё остальное.</li>
+    <li><b>Проверка</b>: единицы, знак, здравый смысл (машина не едет 900 m/s).</li>
+  </ol>
+</section>
+
+<section id="erratas">
+  <h2>11. Опечатки в апунтах курса</h2>
+  <div class="box errata"><span class="lbl">UD1 Cinemática</span>
+    <ul>
+      <li>§4: «se descomponen … en sus componentes horizontales (y) y verticales (x)» — наоборот: горизонтальная ось <b>x</b>, вертикальная <b>y</b>.</li>
+      <li>§4, nota: «siendo α el grado que forma respecto a la vertical» — формулы <i>v</i><sub>x</sub> = <i>v</i>·cos α, <i>v</i><sub>y</sub> = <i>v</i>·sen α верны, когда α отсчитан от <b>горизонтали</b>.</li>
+      <li>Tiro parabólico: «v = 17,32 i − 10 j» — начальная скорость направлена вверх, должно быть <b>+10 j</b>. Дальше в примере считается правильно.</li>
+      <li>Там же «30 + 10·t – 5 t²» — это округление 4,9 до 5; точнее писать 4,9.</li>
+    </ul>
+  </div>
+  <div class="box errata"><span class="lbl">UD5 Vibraciones y ondas (на будущее)</span>
+    <ul>
+      <li>§2: «v = A/T» — должно быть <b>v = λ/T</b> (длина волны, а не амплитуда).</li>
+      <li>§3: «sentido positivo del eje Y» — волна идёт вдоль оси <b>X</b>.</li>
+    </ul>
+  </div>
+  <div class="box trap"><span class="lbl">UD2 Dinámica</span><p>В папке по UD2 лежит только formulario (2 страницы), полной теории нет. Перед неделей 7 я напишу отдельный подробный конспект по динамике.</p></div>
+</section>
+
+<section id="glosario">
+  <h2>12. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>desplazamiento</td><td>перемещение</td><td>distancia recorrida</td><td>пройденный путь</td></tr>
+    <tr><td>trayectoria</td><td>траектория</td><td>rapidez</td><td>модуль скорости</td></tr>
+    <tr><td>velocidad media</td><td>средняя скорость</td><td>aceleración</td><td>ускорение</td></tr>
+    <tr><td>parte del reposo</td><td>начинает из покоя</td><td>frenar / se detiene</td><td>тормозить / останавливается</td></tr>
+    <tr><td>caída libre</td><td>свободное падение</td><td>lanzamiento vertical</td><td>бросок вертикально</td></tr>
+    <tr><td>altura máxima</td><td>максимальная высота</td><td>tiempo de vuelo</td><td>время полёта</td></tr>
+    <tr><td>alcance</td><td>дальность</td><td>impacto</td><td>удар, падение на землю</td></tr>
+    <tr><td>despejar</td><td>выразить из формулы</td><td>sustituir</td><td>подставить</td></tr>
+    <tr><td>módulo</td><td>модуль (величина)</td><td>sentido</td><td>направление (куда)</td></tr>
+    <tr><td>cateto / hipotenusa</td><td>катет / гипотенуза</td><td>seno, coseno, tangente</td><td>синус, косинус, тангенс</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>13. Проверь себя</h2>
+  <details class="q"><summary>Переведи 54 km/h в m/s и 12 m/s в km/h.</summary><div class="a">54/3,6 = 15 m/s; 12·3,6 = 43,2 km/h.</div></details>
+  <details class="q"><summary>Скорость 25 m/s под углом 37° к горизонту (cos 37° ≈ 0,8; sen 37° ≈ 0,6). Компоненты?</summary><div class="a"><i>v</i><sub>x</sub> = 25·0,8 = 20 m/s; <i>v</i><sub>y</sub> = 25·0,6 = 15 m/s.</div></details>
+  <details class="q"><summary>Тело прошло 400 m на север, потом 300 m на восток. Путь и модуль перемещения?</summary><div class="a">Путь 700 m. Перемещение — гипотенуза: √(400² + 300²) = 500 m.</div></details>
+  <details class="q"><summary>Мотоцикл «parte del reposo» и за 8 s разгоняется до 24 m/s. Ускорение и путь?</summary><div class="a"><i>a</i> = 24/8 = 3 m/s²; <i>x</i> = ½·3·8² = 96 m.</div></details>
+  <details class="q"><summary>Камень «se deja caer» с 80 m. Время падения и скорость удара?</summary><div class="a">0 = 80 − 4,9<i>t</i>² → <i>t</i> = √(80/4,9) = 4,04 s; <i>v</i> = −9,8·4,04 = −39,6 m/s (вниз).</div></details>
+  <p class="foot">Задачи из Envío 1 здесь специально не решены: это твоя самостоятельная работа. Решишь — пришли решение в чат, я проверю.</p>
+</section>
+</div>
+</body></html>

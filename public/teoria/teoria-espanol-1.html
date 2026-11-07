@@ -1,0 +1,346 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lengua U1: comunicación</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C0265F;--subj-soft:#FDE8EF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF8DB5;--subj-soft:#3B1726}}:root[data-theme="dark"]{--subj:#FF8DB5;--subj-soft:#3B1726}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Lengua castellana · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Lengua castellana · U1 · Недели 0–4</div>
+  <h1>Comunicación, gramática y modalidad</h1>
+  <p class="lede">Объяснение по-русски, все термины и примеры — по-испански, как на экзамене. В конце каждой темы есть готовые испанские фразы для ответа: их можно учить как шаблоны.</p>
+  <ul class="toc">
+    <li><a href="#comunicacion">1. Elementos de la comunicación</a></li>
+    <li><a href="#categorias">2. Categorías gramaticales</a></li>
+    <li><a href="#modos">3. Modo y tiempo verbal</a></li>
+    <li><a href="#objetividad">4. Objetividad / subjetividad</a></li>
+    <li><a href="#modalidades">5. Modalidades oracionales</a></li>
+    <li><a href="#tipos">6. Tipos de texto</a></li>
+    <li><a href="#literatura">7. Literatura</a></li>
+    <li><a href="#frases">8. Фразы для ответа</a></li>
+    <li><a href="#glosario">9. Словарик</a></li>
+    <li><a href="#test">10. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="comunicacion">
+  <span class="week">Неделя 0–1 · U1 §1</span>
+  <h2>1. Elementos de la comunicación</h2>
+  <p>Любое сообщение проходит путь от того, кто говорит, к тому, кто понимает. На экзамене типичное задание: описана ситуация, где коммуникация сорвалась, — назови, <b>какой элемент не сработал</b>.</p>
+  <figure>
+    <svg viewBox="0 0 600 230" role="img" aria-label="Схема коммуникации: emisor, mensaje, canal, código, receptor, contexto, ruido">
+      <defs><marker id="e1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker></defs>
+      <rect x="6" y="6" width="588" height="218" rx="10" class="soft"/>
+      <text x="300" y="28" font-size="13" text-anchor="middle" class="mut">CONTEXTO · situación comunicativa</text>
+      <rect x="24" y="84" width="110" height="52" rx="8" class="surf"/>
+      <text x="79" y="115" font-size="15" font-weight="700" text-anchor="middle">Emisor</text>
+      <rect x="466" y="84" width="110" height="52" rx="8" class="surf"/>
+      <text x="521" y="115" font-size="15" font-weight="700" text-anchor="middle">Receptor</text>
+      <path class="ac" stroke-width="2.5" d="M136 110 H462" marker-end="url(#e1)"/>
+      <rect x="236" y="92" width="128" height="36" rx="18" class="surf"/>
+      <text x="300" y="115" font-size="14" font-weight="700" text-anchor="middle">Mensaje</text>
+      <text x="300" y="72" font-size="13" text-anchor="middle">Código: la lengua, sus signos y reglas</text>
+      <text x="300" y="160" font-size="13" text-anchor="middle">Canal: aire, papel, teléfono, WhatsApp, pantalla…</text>
+      <path class="wa" stroke-width="2" stroke-dasharray="4 4" d="M400 196 L380 128"/>
+      <text x="420" y="210" font-size="13" style="fill:var(--warn)">Ruido: todo lo que interfiere</text>
+    </svg>
+    <figcaption>Контекст окружает всё: одна и та же фраза значит разное в разных ситуациях.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>Elemento</th><th>Что это</th><th>Сбой, если…</th></tr>
+    <tr><td>emisor</td><td>кто отправляет</td><td>забыл, что хотел сказать; не закончил мысль</td></tr>
+    <tr><td>receptor</td><td>кто получает и понимает</td><td>не прочитал письмо, не слушал</td></tr>
+    <tr><td>mensaje</td><td>сама информация</td><td>неполная, двусмысленная</td></tr>
+    <tr><td>canal</td><td>физический путь: воздух, бумага, сеть</td><td>письмо потерялось, связь прервалась, шум</td></tr>
+    <tr><td>código</td><td>язык и его правила, система знаков</td><td>собеседник не знает языка / жестов; нечитаемый шрифт</td></tr>
+    <tr><td>contexto</td><td>ситуация и общие знания</td><td>«встречаемся где обычно» — а «где обычно» у каждого своё</td></tr>
+  </table></div>
+  <div class="box trap"><span class="lbl">Ловушка: canal или código?</span><p><b>Canal</b> — «дошло ли физически» (шум стройки, пропал интернет, письмо не пришло). <b>Código</b> — «дошло, но непонятно, потому что знаки не общие» (другой язык, незнакомые жесты, профессиональный жаргон).</p></div>
+</section>
+
+<section id="categorias">
+  <span class="week">Неделя 2 · U1 §2</span>
+  <h2>2. Categorías gramaticales (части речи)</h2>
+  <div class="tbl"><table>
+    <tr><th>Categoría</th><th>По-русски</th><th>Как узнать</th><th>Ejemplo</th></tr>
+    <tr><td>sustantivo</td><td>существительное</td><td>можно поставить «el/la» перед ним</td><td>trabajo, Zaragoza, ansiedad</td></tr>
+    <tr><td>adjetivo</td><td>прилагательное</td><td>качество, согласуется в роде и числе</td><td>plazo urgente, mensajes claros</td></tr>
+    <tr><td>determinante</td><td>определитель (артикль, указательное…)</td><td>стоит <b>перед</b> существительным</td><td>el, una, este, mi, dos, algunos</td></tr>
+    <tr><td>pronombre</td><td>местоимение</td><td>стоит <b>вместо</b> существительного</td><td>ella, nosotros, eso, lo, le</td></tr>
+    <tr><td>verbo</td><td>глагол</td><td>действие/состояние, спрягается</td><td>enviar, estar, mejoramos</td></tr>
+    <tr><td>adverbio</td><td>наречие</td><td>как, где, когда, сколько; не изменяется</td><td>ayer, aquí, bien, mucho, rápidamente</td></tr>
+    <tr><td>preposición</td><td>предлог</td><td>связывает слова, не изменяется</td><td>a, con, de, en, para, por, sin</td></tr>
+    <tr><td>conjunción</td><td>союз</td><td>связывает слова или предложения</td><td>y, o, pero, porque, aunque, que</td></tr>
+  </table></div>
+  <p><b>Variables</b> (изменяемые): sustantivo, adjetivo, determinante, pronombre, verbo. <b>Invariables</b>: adverbio, preposición, conjunción.</p>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Adjetivo или adverbio?</span><p>Попробуй поставить во множественное число или женский род. Меняется — adjetivo (<i>rápido → rápidas</i>). Не меняется — adverbio (<i>despacio</i>, <i>lentamente</i>).</p></div>
+    <div class="box tip"><span class="lbl">Determinante или pronombre?</span><p>Есть существительное рядом — determinante: <i>«<b>Este</b> libro es mío»</i>. Стоит одно — pronombre: <i>«<b>Este</b> es mío»</i>.</p></div>
+  </div>
+  <h3>Adjetivos especificativos y valorativos</h3>
+  <p><b>Especificativo</b> — объективный признак, отличает предмет от других, обычно <b>после</b> существительного: <i>coche eléctrico, examen teórico</i>. <b>Valorativo</b> — оценка автора, признак субъективности: <i>una gestión nefasta, un discurso brillante</i>.</p>
+</section>
+
+<section id="modos">
+  <span class="week">Неделя 2 · U1 §2</span>
+  <h2>3. Modo y tiempo verbal</h2>
+  <p>Наклонение показывает <b>отношение говорящего</b> к тому, что он говорит. Для анализа текста это ключ: indicativo → факты и объективность; subjuntivo → желание, сомнение, оценка; imperativo → призыв к читателю.</p>
+  <div class="tbl"><table>
+    <tr><th>Modo</th><th>Значение</th><th>Ejemplo</th></tr>
+    <tr><td>indicativo</td><td>реальность, уверенность</td><td>El Gobierno <b>aprobó</b> la medida.</td></tr>
+    <tr><td>subjuntivo</td><td>желание, сомнение, гипотеза, оценка</td><td>Ojalá <b>reconsideren</b> su postura. Es posible que <b>fracase</b>.</td></tr>
+    <tr><td>imperativo</td><td>приказ, просьба, совет</td><td><b>Exijamos</b> transparencia. <b>Apaga</b> la luz.</td></tr>
+  </table></div>
+  <h3>Что «включает» subjuntivo</h3>
+  <div class="tbl"><table>
+    <tr><th>+ indicativo (уверенность)</th><th>+ subjuntivo (сомнение, желание)</th></tr>
+    <tr><td>Sé que / Creo que <b>viene</b></td><td>No creo que / Dudo que <b>venga</b></td></tr>
+    <tr><td>Es verdad que <b>trabaja</b> aquí</td><td>Es posible que / Puede que <b>trabaje</b> aquí</td></tr>
+    <tr><td>Está claro que <b>hablamos</b> mañana</td><td>Ojalá / Espero que <b>hablemos</b> mañana</td></tr>
+    <tr><td>Quizá <b>llega</b> tarde (более уверенно)</td><td>Quizá / Tal vez <b>llegue</b> tarde (менее уверенно)</td></tr>
+  </table></div>
+  <h3>Presente de subjuntivo — как образовать</h3>
+  <p>Берём форму «yo» настоящего времени, убираем -o, и меняем гласную: <b>-ar → e</b>, <b>-er/-ir → a</b>.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>hablar</th><th>comer</th><th>vivir</th><th>tener (tengo)</th></tr>
+    <tr><td>yo</td><td>hable</td><td>coma</td><td>viva</td><td>tenga</td></tr>
+    <tr><td>tú</td><td>hables</td><td>comas</td><td>vivas</td><td>tengas</td></tr>
+    <tr><td>él/ella/usted</td><td>hable</td><td>coma</td><td>viva</td><td>tenga</td></tr>
+    <tr><td>nosotros</td><td>hablemos</td><td>comamos</td><td>vivamos</td><td>tengamos</td></tr>
+    <tr><td>vosotros</td><td>habléis</td><td>comáis</td><td>viváis</td><td>tengáis</td></tr>
+    <tr><td>ellos/ustedes</td><td>hablen</td><td>coman</td><td>vivan</td><td>tengan</td></tr>
+  </table></div>
+  <div class="box trap"><span class="lbl">Ловушка: отрицательный imperativo</span><p>Утвердительный для tú: <i>habla, come, vive</i>. Отрицательный берётся из subjuntivo: <i>no <b>hables</b>, no <b>comas</b>, no <b>vivas</b></i>. «No habla» — это indicativo (он не говорит), а не приказ.</p></div>
+  <h3>Tiempos en el texto</h3>
+  <ul>
+    <li><b>Presente atemporal</b> — истина всегда: <i>El agua hierve a 100 °C</i>. Даёт тексту вид объективной истины.</li>
+    <li><b>Presente actual</b> — прямо сейчас: <i>Hoy asistimos a…</i>. Создаёт актуальность.</li>
+    <li><b>Pretérito perfecto simple</b> — законченный факт: <i>Ocurrió en 2020</i>. Повествование о событиях.</li>
+    <li><b>Pretérito imperfecto</b> — фон, привычка в прошлом: <i>Antes pensábamos que…</i>. Сравнение «раньше — сейчас».</li>
+  </ul>
+</section>
+
+<section id="objetividad">
+  <span class="week">Неделя 3 · U1 §3</span>
+  <h2>4. Objetividad y subjetividad</h2>
+  <p><b>Objetivo</b> — проверяемые факты, автора не видно. <b>Subjetivo</b> — мнение, эмоции, оценка автора. Экзаменационные вопросы: «¿Es un texto objetivo o subjetivo? Justifica» и «Reescribe de forma objetiva».</p>
+  <div class="tbl"><table>
+    <tr><th>Marcas de subjetividad</th><th>Marcas de objetividad</th></tr>
+    <tr><td>1-е лицо: <i>yo creo, nosotros pensamos</i></td><td>3-е лицо, безличные: <i>se considera</i></td></tr>
+    <tr><td>adjetivos valorativos: <i>nefasto, brillante</i></td><td>adjetivos especificativos: <i>eléctrico, anual</i></td></tr>
+    <tr><td>exclamaciones, preguntas retóricas</td><td>oraciones enunciativas</td></tr>
+    <tr><td>subjuntivo de deseo: <i>ojalá</i></td><td>indicativo, presente atemporal</td></tr>
+    <tr><td>diminutivos, aumentativos, ironía</td><td>datos, cifras, tecnicismos</td></tr>
+    <tr><td>léxico connotativo: <i>sablazo, desastre</i></td><td>léxico denotativo, preciso</td></tr>
+  </table></div>
+  <h3>Три конструкции, которые «прячут» автора</h3>
+  <div class="tbl"><table>
+    <tr><th>Estructura</th><th>Формула</th><th>Ejemplo</th></tr>
+    <tr><td>impersonal con «se»</td><td>se + verbo en 3ª sing.</td><td><i>Se habla de un acuerdo.</i></td></tr>
+    <tr><td>pasiva refleja</td><td>se + verbo, согласован с предметом</td><td><i>Se tomaron las medidas necesarias.</i></td></tr>
+    <tr><td>pasiva perifrástica</td><td>ser + participio (+ por…)</td><td><i>La ley fue aprobada por el pleno.</i></td></tr>
+  </table></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · reescritura objetiva</span>
+    <p><i>«Nosotros revisamos todos los contratos el lunes.»</i></p>
+    <p>→ Pasiva refleja: <i>«<b>Se revisaron</b> todos los contratos el lunes.»</i> (глагол во множественном, потому что <i>contratos</i>).</p>
+    <p>→ Pasiva perifrástica: <i>«Todos los contratos <b>fueron revisados</b> el lunes.»</i> (participio согласуется: <i>revisados</i>).</p>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка согласования</span><p><i>Se vende<b>n</b> pisos</i>, а не «se vende pisos»: в pasiva refleja глагол согласуется с предметом. <i>La medida fue aprobad<b>a</b></i>: participio согласуется в роде и числе.</p></div>
+</section>
+
+<section id="modalidades">
+  <span class="week">Неделя 3 · U1 §4</span>
+  <h2>5. Modalidades oracionales</h2>
+  <p>В апунтах тема дана одной строкой. Вот полная таблица: смотри на <b>намерение</b> говорящего и на <b>маркеры</b>.</p>
+  <div class="tbl"><table>
+    <tr><th>Modalidad</th><th>Намерение</th><th>Маркеры</th><th>Ejemplo</th></tr>
+    <tr><td>enunciativa afirmativa / negativa</td><td>сообщить факт</td><td>точка; «no» в отрицательной</td><td><i>Las temperaturas bajaron. No hemos recibido el pedido.</i></td></tr>
+    <tr><td>interrogativa directa</td><td>спросить</td><td>¿…?</td><td><i>¿Vendrán a la fiesta?</i></td></tr>
+    <tr><td>interrogativa indirecta</td><td>спросить, без знаков вопроса</td><td>preguntar / saber + si, qué, cuándo…</td><td><i>Me pregunto si vendrán a la fiesta.</i></td></tr>
+    <tr><td>exclamativa</td><td>эмоция</td><td>¡…!, qué, cuánto</td><td><i>¡Qué alegría verte!</i></td></tr>
+    <tr><td>imperativa (exhortativa)</td><td>приказ, просьба</td><td>imperativo; no + subjuntivo; por favor</td><td><i>Apaga la luz. No hagas ruido.</i></td></tr>
+    <tr><td>desiderativa</td><td>желание</td><td>ojalá, que + subjuntivo, así</td><td><i>Ojalá apruebe el examen.</i></td></tr>
+    <tr><td>dubitativa</td><td>сомнение, вероятность</td><td>quizá(s), tal vez, a lo mejor, probablemente</td><td><i>Tal vez vayamos de excursión.</i></td></tr>
+  </table></div>
+  <div class="box trap"><span class="lbl">Ловушка: interrogativa indirecta</span><p><i>«Me pregunto si vendrán»</i> заканчивается точкой, но по намерению это вопрос — <b>interrogativa indirecta</b>. Так и пиши, с объяснением: «aunque no lleva signos de interrogación, el hablante formula una pregunta».</p></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · transformar la modalidad</span>
+    <p>Base: <i>«Terminas el informe hoy.»</i> (enunciativa)</p>
+    <ul>
+      <li>Interrogativa: <i>¿Terminas el informe hoy?</i></li>
+      <li>Imperativa: <i>Termina el informe hoy.</i></li>
+      <li>Desiderativa: <i>Ojalá termines el informe hoy.</i></li>
+      <li>Dubitativa: <i>Quizá termines el informe hoy.</i></li>
+      <li>Exclamativa: <i>¡Terminas el informe hoy!</i></li>
+    </ul>
+  </div>
+</section>
+
+<section id="tipos">
+  <span class="week">Неделя 4 · U1 §5</span>
+  <h2>6. Tipos de texto según el tema</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Humanístico y social</span><p>Философия, социология, право, психология. Рассуждение, абстрактные понятия (<i>libertad, sociedad</i>), позиция автора. <b>Más subjetivos</b>.</p></div>
+    <div class="box tip"><span class="lbl">Científico-técnico</span><p>Точные знания, язык объективный и denotativo, tecnicismos, 3-е лицо, presente atemporal. <b>Objetivos</b>.</p></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Científico-técnico</th><th>Receptor</th><th>Язык</th></tr>
+    <tr><td>divulgativo</td><td>широкая публика</td><td>простые слова, сравнения, обращение к читателю: <i>«¿Sabías que…? Imagina que…»</i></td></tr>
+    <tr><td>especializado</td><td>специалисты</td><td>плотные tecnicismos, без объяснений: <i>«despolarización de la membrana…»</i></td></tr>
+  </table></div>
+</section>
+
+<section id="literatura">
+  <span class="week">Неделя 4 · U1 §6</span>
+  <h2>7. ¿Qué es la literatura?</h2>
+  <p>Литература — искусство слова. Текст делает литературным <b>эстетическое намерение</b> автора (<span class="es">función poética</span>) и соучастие читателя. Литература рассказывает не то, что было (это история), а то, что <b>могло бы быть</b> — <span class="es">verosimilitud</span>.</p>
+  <div class="tbl"><table>
+    <tr><th>Elemento</th><th>En la comunicación literaria</th></tr>
+    <tr><td>emisor</td><td>el autor: su visión del mundo y la tradición cultural que hereda</td></tr>
+    <tr><td>receptor</td><td>múltiple, indeterminado, universal; cada lector reinterpreta el texto</td></tr>
+    <tr><td>canal</td><td>oral en su origen; escrito tras la imprenta; hoy también audiolibro</td></tr>
+    <tr><td>mensaje</td><td>la obra; finalidad estética, de entretenimiento o de transformación social</td></tr>
+    <tr><td>contexto</td><td>la realidad histórica y social: cánones, política, censura</td></tr>
+  </table></div>
+</section>
+
+<section id="frases">
+  <h2>8. Готовые фразы для письменного ответа</h2>
+  <p>Главное на экзамене — <b>всегда обосновывать</b> (<span class="es">justificar</span>): ответ без «porque…» теряет большую часть балла.</p>
+  <div class="tbl"><table>
+    <tr><th>Задача</th><th>Frase modelo</th></tr>
+    <tr><td>тип текста</td><td>Se trata de un texto <i>científico-técnico divulgativo</i>, ya que va dirigido a un público general y emplea un lenguaje sencillo.</td></tr>
+    <tr><td>объективность</td><td>El texto es predominantemente <i>objetivo</i> porque utiliza la tercera persona, oraciones impersonales con «se» y datos comprobables.</td></tr>
+    <tr><td>субъективность</td><td>La subjetividad se manifiesta en el uso de adjetivos valorativos como «…» y en la primera persona («creo que…»).</td></tr>
+    <tr><td>модальность</td><td>Predomina la modalidad <i>desiderativa</i>, como muestra el adverbio «ojalá» seguido de subjuntivo.</td></tr>
+    <tr><td>сбой коммуникации</td><td>Falla el <i>canal</i>, puesto que el mensaje no llega físicamente al receptor debido al ruido.</td></tr>
+    <tr><td>вывод</td><td>En conclusión, el emisor pretende…</td></tr>
+  </table></div>
+  <div class="box tip"><span class="lbl">Conectores для обоснования</span><p><i>porque, ya que, puesto que, dado que</i> (причина) · <i>por tanto, por consiguiente, así pues</i> (вывод) · <i>sin embargo, no obstante</i> (противопоставление) · <i>además, asimismo</i> (добавление) · <i>por ejemplo, como se observa en</i> (пример).</p></div>
+</section>
+
+<section id="glosario">
+  <h2>9. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>emisor / receptor</td><td>отправитель / получатель</td><td>ruido</td><td>помехи</td></tr>
+    <tr><td>enunciado</td><td>высказывание</td><td>oración</td><td>предложение</td></tr>
+    <tr><td>sujeto / predicado</td><td>подлежащее / сказуемое</td><td>concordancia</td><td>согласование</td></tr>
+    <tr><td>modo indicativo / subjuntivo</td><td>изъявительное / сослагательное</td><td>tiempo verbal</td><td>время глагола</td></tr>
+    <tr><td>participio</td><td>причастие</td><td>pasiva refleja</td><td>пассив с «se»</td></tr>
+    <tr><td>tecnicismo</td><td>термин</td><td>divulgativo</td><td>научно-популярный</td></tr>
+    <tr><td>connotación / denotación</td><td>доп. оттенок / прямое значение</td><td>juicio de valor</td><td>оценочное суждение</td></tr>
+    <tr><td>justificar</td><td>обосновать</td><td>reescribir</td><td>переписать</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>10. Проверь себя</h2>
+  <details class="q"><summary>Экскурсовод говорит по-японски с группой из Мадрида. Что не сработало?</summary><div class="a">El <b>código</b>: emisor y receptor no comparten la lengua.</div></details>
+  <details class="q"><summary>Какая часть речи «mucho» в «Trabaja mucho» и в «Tiene muchos amigos»?</summary><div class="a">В первом — adverbio (не изменяется, относится к глаголу). Во втором — determinante (стоит перед существительным и согласуется: muchos amigos).</div></details>
+  <details class="q"><summary>Поставь глагол: «Dudo que Marta (saber) ___ la respuesta».</summary><div class="a"><i>sepa</i> — после «dudo que» нужен subjuntivo.</div></details>
+  <details class="q"><summary>Сделай объективной: «Yo creo que el ayuntamiento cerró el parque sin motivo».</summary><div class="a">Например: <i>«El parque fue cerrado por el ayuntamiento»</i> или <i>«Se cerró el parque»</i>. Оценку «sin motivo» и «yo creo» убираем.</div></details>
+  <details class="q"><summary>Модальность: «A lo mejor llueve esta tarde».</summary><div class="a">Dubitativa: маркер «a lo mejor» выражает вероятность.</div></details>
+  <p class="foot">Упражнения из апунтов с пустыми строками можно прислать мне в чат: проверю испанский и объясню ошибки.</p>
+</section>
+</div>
+</body></html>

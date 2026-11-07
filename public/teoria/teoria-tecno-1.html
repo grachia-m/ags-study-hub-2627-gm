@@ -1,0 +1,287 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tecnología U1: energía</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#0B7A8A;--subj-soft:#E0F4F6}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#5CC8D6;--subj-soft:#12303A}}:root[data-theme="dark"]{--subj:#5CC8D6;--subj-soft:#12303A}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Tecnología II · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Tecnología e Ingeniería II · U1 · Недели 1–3</div>
+  <h1>La energía: единицы, мощность, КПД</h1>
+  <p class="lede">U1 — это в основном задачи на перевод единиц и три-четыре формулы. Здесь собрана вся логика: как переводить, какая формула к какому виду энергии и где теряются баллы. Эта же тема повторится в Física UD3, так что учишь один раз на два предмета.</p>
+  <ul class="toc">
+    <li><a href="#unidades">1. Единицы</a></li>
+    <li><a href="#conversion">2. Factores de conversión</a></li>
+    <li><a href="#trabajo">3. Trabajo, potencia, energía</a></li>
+    <li><a href="#rendimiento">4. Rendimiento</a></li>
+    <li><a href="#formas">5. Формы энергии</a></li>
+    <li><a href="#mix">6. Комбинированная задача</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="unidades">
+  <span class="week">Неделя 1 · U1 §1</span>
+  <h2>1. Единицы энергии и мощности</h2>
+  <p>Энергия (<span class="es">energía</span>) — способность совершить работу. Работа и энергия измеряются в одних единицах — <b>julios (J)</b>. Мощность (<span class="es">potencia</span>) — энергия за секунду, в <b>vatios (W)</b>.</p>
+  <div class="tbl"><table>
+    <tr><th>Единица</th><th>Что измеряет</th><th class="num">В джоулях</th><th>Где встречается</th></tr>
+    <tr><td>julio (J)</td><td>энергия</td><td class="num">1</td><td>все формулы СИ</td></tr>
+    <tr><td>caloría (cal)</td><td>энергия</td><td class="num">4,184</td><td>теплота, еда</td></tr>
+    <tr><td>kilocaloría (kcal)</td><td>энергия</td><td class="num">4184</td><td>poder calorífico</td></tr>
+    <tr><td>kilovatio hora (kWh)</td><td>энергия</td><td class="num">3,6·10⁶</td><td>счёт за свет, электростанции</td></tr>
+    <tr><td>vatio (W)</td><td>мощность</td><td class="num">1 J/s</td><td>приборы, моторы</td></tr>
+    <tr><td>caballo de vapor (CV)</td><td>мощность</td><td class="num">736 W</td><td>моторы машин (U2)</td></tr>
+  </table></div>
+  <div class="box trap"><span class="lbl">Ловушка: kW и kWh</span><p><b>kW</b> — мощность (как быстро), <b>kWh</b> — энергия (сколько всего). Утюг 2 kW за 3 часа потребляет 6 kWh. Смешивать их нельзя, как нельзя путать km/h и km.</p></div>
+</section>
+
+<section id="conversion">
+  <span class="week">Неделя 1 · U1 §1.2</span>
+  <h2>2. Factores de conversión шаг за шагом</h2>
+  <ol class="steps">
+    <li>Пишем исходное число с единицами.</li>
+    <li>Умножаем на дробь-«единицу», где <b>ненужная единица стоит в знаменателе</b>, а нужная — в числителе.</li>
+    <li>Сокращаем единицы, считаем. Если единица не сократилась, дробь перевёрнута.</li>
+  </ol>
+  <div class="eq">50 kWh · <sup>3,6·10⁶ J</sup>/<sub>1 kWh</sub> · <sup>1 kcal</sup>/<sub>4184 J</sub> = 43 021 kcal<small>kWh → J → kcal: цепочка через джоули</small></div>
+  <div class="eq">90 000 kJ · <sup>1000 J</sup>/<sub>1 kJ</sub> · <sup>1 kWh</sup>/<sub>3,6·10⁶ J</sub> = 25 kWh</div>
+  <div class="box tip"><span class="lbl">Правило «через джоули»</span><p>Когда не помнишь прямую связь двух единиц, переведи сначала в J, потом из J в нужную. Достаточно помнить две константы: <b>1 cal = 4,184 J</b> и <b>1 kWh = 3,6·10⁶ J</b>.</p></div>
+  <div class="box trap"><span class="lbl">Ловушка: масса и объём</span><p>Граммы → kg (÷1000); литры → m³ (÷1000); 1 m³ воды = 1000 kg. Для других жидкостей нужна плотность: <span class="f"><i>m</i> = ρ · <i>V</i></span>. Плотность 0,85 g/cm³ = 850 kg/m³ = 0,85 kg/L.</p></div>
+</section>
+
+<section id="trabajo">
+  <span class="week">Неделя 2 · U1 §2</span>
+  <h2>3. Trabajo, potencia y energía</h2>
+  <div class="eqs">
+    <div class="eq"><i>W</i> = <i>F</i> · <i>d</i> · cos α<small>trabajo (J) = fuerza (N) · distancia (m); α — угол между силой и движением</small></div>
+    <div class="eq"><i>P</i> = <sup><i>E</i></sup>/<sub><i>t</i></sub> ⇔ <i>E</i> = <i>P</i> · <i>t</i><small>P в W и t в s → J; P в kW и t в h → kWh</small></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 300 190" role="img" aria-label="Треугольник E, P, t: E сверху, P и t снизу">
+      <path class="soft" d="M150 20 L270 170 L30 170 Z"/>
+      <path class="ln" stroke-width="2" d="M150 20 L270 170 L30 170 Z M80 108 H220 M150 108 V170"/>
+      <text x="150" y="90" font-size="30" font-weight="700" text-anchor="middle" font-style="italic">E</text>
+      <text x="108" y="152" font-size="26" font-weight="700" text-anchor="middle" font-style="italic">P</text>
+      <text x="192" y="152" font-size="26" font-weight="700" text-anchor="middle" font-style="italic">t</text>
+    </svg>
+    <figcaption>Закрой пальцем то, что ищешь: E = P·t, P = E/t, t = E/P.</figcaption>
+  </figure>
+  <ul>
+    <li>Нет перемещения — нет работы: держать чемодан на месте = 0 J.</li>
+    <li>Сила перпендикулярна движению (α = 90°) — работа 0, потому что cos 90° = 0.</li>
+  </ul>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Обогреватель 1800 W работает 2,5 h в день 30 дней. Сколько kWh и сколько евро при 0,15 €/kWh?</p>
+    <p><span class="f"><i>E</i> = 1,8 kW · 2,5 h · 30 = 135 kWh</span>; <span class="f">135 · 0,15 = 20,25 €</span>.</p>
+  </div>
+</section>
+
+<section id="rendimiento">
+  <span class="week">Неделя 2 · U1 §3</span>
+  <h2>4. Rendimiento (η) — КПД</h2>
+  <p>Ни одна машина не превращает всю полученную энергию в полезную: часть уходит в тепло, трение, шум. Энергия не исчезает (principio de conservación), а <span class="es">se degrada</span> — переходит в бесполезную форму.</p>
+  <div class="eqs">
+    <div class="eq">η = <sup><i>E</i><sub>útil</sub></sup>/<sub><i>E</i><sub>consumida</sub></sub> = <sup><i>P</i><sub>útil</sub></sup>/<sub><i>P</i><sub>consumida</sub></sub><small>всегда меньше 1 (или 100 %)</small></div>
+    <div class="eq">η<sub>total</sub> = η₁ · η₂ · η₃<small>цепочка процессов: перемножаем</small></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 560 170" role="img" aria-label="Цепочка из трёх преобразований: 100 → 70 → 63 → 50,4">
+      <rect x="10" y="40" width="80" height="80" class="acf" opacity=".9"/>
+      <text x="50" y="86" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--surface)">100</text>
+      <text x="50" y="140" font-size="12" text-anchor="middle" class="mut">entrada</text>
+      <rect x="160" y="52" width="80" height="56" class="acf" opacity=".75"/>
+      <text x="200" y="86" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--surface)">70</text>
+      <rect x="310" y="55" width="80" height="50" class="acf" opacity=".62"/>
+      <text x="350" y="86" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--surface)">63</text>
+      <rect x="460" y="60" width="80" height="40" class="acf" opacity=".5"/>
+      <text x="500" y="86" font-size="15" font-weight="700" text-anchor="middle" style="fill:var(--surface)">50,4</text>
+      <text x="500" y="140" font-size="12" text-anchor="middle" class="mut">útil</text>
+      <path class="ax" d="M92 80 H156 M242 80 H306 M392 80 H456"/>
+      <text x="124" y="72" font-size="12" text-anchor="middle">η = 0,7</text>
+      <text x="274" y="72" font-size="12" text-anchor="middle">η = 0,9</text>
+      <text x="424" y="72" font-size="12" text-anchor="middle">η = 0,8</text>
+      <path class="wa" stroke-width="2" d="M124 88 V120 M274 88 V120 M424 88 V120"/>
+      <text x="124" y="136" font-size="12" text-anchor="middle" style="fill:var(--warn)">−30 pérdidas</text>
+      <text x="274" y="136" font-size="12" text-anchor="middle" style="fill:var(--warn)">−7</text>
+      <text x="424" y="136" font-size="12" text-anchor="middle" style="fill:var(--warn)">−12,6</text>
+    </svg>
+    <figcaption>0,7 · 0,9 · 0,8 = 0,504 → общий КПД 50,4 %.</figcaption>
+  </figure>
+  <div class="box trap"><span class="lbl">Ловушка: в какую сторону делить</span><p>Известна полезная энергия, нужна потреблённая → <b>делить</b> на η: <span class="f"><i>E</i><sub>consumida</sub> = <i>E</i><sub>útil</sub>/η</span>. Потреблённая всегда больше полезной. Если у тебя вышло наоборот — ошибка.</p></div>
+</section>
+
+<section id="formas">
+  <span class="week">Неделя 3 · U1 §4–5</span>
+  <h2>5. Формы энергии: какую формулу брать</h2>
+  <div class="tbl"><table>
+    <tr><th>Forma</th><th>Формула</th><th>Единицы</th><th>Узнаёшь по словам</th></tr>
+    <tr><td>cinética</td><td class="f"><i>E</i><sub>c</sub> = ½·<i>m</i>·<i>v</i>²</td><td>kg, m/s → J</td><td>velocidad, en movimiento</td></tr>
+    <tr><td>potencial gravitatoria</td><td class="f"><i>E</i><sub>p</sub> = <i>m</i>·<i>g</i>·<i>h</i></td><td>kg, 9,8 m/s², m → J</td><td>altura, depósito, salto de agua</td></tr>
+    <tr><td>química (combustión)</td><td class="f"><i>E</i> = <i>m</i>·<i>P</i><sub>c</sub> или <i>V</i>·<i>P</i><sub>c</sub></td><td>по единицам P<sub>c</sub></td><td>poder calorífico, quemar, gasóleo</td></tr>
+    <tr><td>térmica (calor)</td><td class="f"><i>Q</i> = <i>m</i>·<i>c</i><sub>e</sub>·(<i>T</i><sub>f</sub> − <i>T</i><sub>i</sub>)</td><td>по единицам c<sub>e</sub></td><td>calentar, temperatura, calor específico</td></tr>
+    <tr><td>eléctrica</td><td class="f"><i>E</i> = <i>P</i>·<i>t</i></td><td>kW·h → kWh</td><td>aparato, consumo, potencia</td></tr>
+  </table></div>
+  <div class="box tip"><span class="lbl">Превращения энергии</span><p>Если «всё переходит в…» (sin rozamiento), приравниваем: падение с высоты → <span class="f"><i>m g h</i> = ½ <i>m v</i>²</span>, масса сокращается: <span class="f"><i>v</i> = √(2<i>g h</i>)</span>. С 20 m: <span class="f">√(2·9,8·20) = 19,8 m/s</span>.</p></div>
+  <div class="box trap"><span class="lbl">Ловушки единиц</span>
+    <ul>
+      <li>Масса в граммах → переведи в kg до подстановки в ½mv² и mgh.</li>
+      <li>Скорость в km/h → в m/s (÷3,6).</li>
+      <li>Poder calorífico дан на kg, а топливо в литрах → через плотность в kg.</li>
+      <li>Для воды c<sub>e</sub> = 1 kcal/(kg·°C) = 4184 J/(kg·°C). В каких единицах c<sub>e</sub>, в таких выйдет и ответ.</li>
+      <li>Разность температур в °C и в K одинакова: нагрев от 20 °C до 80 °C = 60 K.</li>
+    </ul>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · combustión + rendimiento</span>
+    <p>В котле с КПД 90 % сжигают 40 L дизеля (<span class="es">gasóleo</span>): P<sub>c</sub> = 10 200 kcal/kg, плотность 0,85 kg/L. Полезная энергия в J?</p>
+    <ol class="steps">
+      <li>Масса: <span class="f">40 L · 0,85 kg/L = 34 kg</span>.</li>
+      <li>Энергия топлива: <span class="f">34 · 10 200 = 346 800 kcal</span>.</li>
+      <li>Полезная: <span class="f">346 800 · 0,9 = 312 120 kcal</span>.</li>
+      <li>В J: <span class="f">312 120 · 4184 = 1,306·10⁹ J</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="mix">
+  <span class="week">Неделя 3–4 · U1 §5–6</span>
+  <h2>6. Комбинированная задача: гидроэлектростанция</h2>
+  <p>Такие задачи на экзамене собирают всё сразу: потенциальная энергия, КПД и перевод в kWh.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Из водохранилища сбрасывают 2000 m³ воды с высоты 50 m. Турбина-генератор работает с η = 85 %. Сколько kWh электричества получится?</p>
+    <ol class="steps">
+      <li>Масса воды: <span class="f">2000 m³ · 1000 kg/m³ = 2·10⁶ kg</span>.</li>
+      <li><span class="f"><i>E</i><sub>p</sub> = 2·10⁶ · 9,8 · 50 = 9,8·10⁸ J</span>.</li>
+      <li>Полезная: <span class="f">9,8·10⁸ · 0,85 = 8,33·10⁸ J</span>.</li>
+      <li>В kWh: <span class="f">8,33·10⁸ / 3,6·10⁶ = 231,4 kWh</span>.</li>
+    </ol>
+  </div>
+  <p>§6 (<span class="es">centrales</span>) — теория без формул: для каждого типа станции знать источник, цепочку превращений энергии, плюсы и минусы. Составь таблицу: térmica, nuclear, hidroeléctrica (y de bombeo), eólica, solar fotovoltaica, solar térmica, biomasa. Колонки: <i>fuente → transformaciones → renovable sí/no → ventajas → inconvenientes</i>. Пришли её мне — проверю.</p>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>rendimiento</td><td>КПД</td><td>pérdidas</td><td>потери</td></tr>
+    <tr><td>energía útil</td><td>полезная энергия</td><td>energía primaria</td><td>первичная энергия</td></tr>
+    <tr><td>poder calorífico</td><td>теплота сгорания</td><td>calor específico</td><td>удельная теплоёмкость</td></tr>
+    <tr><td>combustible</td><td>топливо</td><td>gasóleo / gasolina</td><td>дизель / бензин</td></tr>
+    <tr><td>caldera</td><td>котёл</td><td>salto de agua</td><td>перепад высот воды</td></tr>
+    <tr><td>central</td><td>электростанция</td><td>de bombeo</td><td>гидроаккумулирующая</td></tr>
+    <tr><td>densidad</td><td>плотность</td><td>depósito / embalse</td><td>бак / водохранилище</td></tr>
+    <tr><td>renovable</td><td>возобновляемый</td><td>aerogenerador</td><td>ветрогенератор</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Переведи 7,2·10⁷ J в kWh.</summary><div class="a">7,2·10⁷ / 3,6·10⁶ = 20 kWh.</div></details>
+  <details class="q"><summary>Мотор получает 5 kW, полезная мощность 3,5 kW. КПД?</summary><div class="a">3,5/5 = 0,7 = 70 %.</div></details>
+  <details class="q"><summary>Чтобы получить 120 kWh полезной энергии при η = 0,6, сколько нужно потребить?</summary><div class="a">120 / 0,6 = 200 kWh.</div></details>
+  <details class="q"><summary>Энергия, чтобы нагреть 3 kg воды с 15 °C до 65 °C, в kcal и kJ?</summary><div class="a">Q = 3·1·50 = 150 kcal = 150·4,184 = 627,6 kJ.</div></details>
+  <details class="q"><summary>Машина 1200 kg едет 90 km/h. Кинетическая энергия?</summary><div class="a">90/3,6 = 25 m/s; ½·1200·25² = 375 000 J = 375 kJ.</div></details>
+</section>
+</div>
+</body></html>

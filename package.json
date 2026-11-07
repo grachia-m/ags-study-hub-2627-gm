@@ -1,0 +1,15 @@
+{
+  "name": "ags-study-hub-2627-gm",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Curso de Acceso a Grado Superior (DAW) 2026-2027 — CPEPA Miguel Hernández (Huesca) / Aeducar. Интерактивный учебный план с 7 ноября 2026 по 3 июня 2027.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

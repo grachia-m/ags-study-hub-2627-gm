@@ -1,0 +1,352 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U1</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U1 · Недели 0–4</div>
+  <h1>Cálculo y proporcionalidad без пробелов</h1>
+  <p class="lede">Дополнение к апунтам U1: правила, которые в апунтах даны одной строкой, типичные ловушки экзамена и разобранные примеры на других числах. Задачи из Actividades de envío здесь не решены: это твоя работа, её можно прислать мне на проверку.</p>
+  <ul class="toc">
+    <li><a href="#enteros">1. Enteros и порядок действий</a></li>
+    <li><a href="#fracciones">2. Fracciones</a></li>
+    <li><a href="#resto">3. «Del resto»</a></li>
+    <li><a href="#porcentajes">4. Porcentajes</a></li>
+    <li><a href="#inversos">5. Обратные задачи</a></li>
+    <li><a href="#proporcionalidad">6. Proporcionalidad</a></li>
+    <li><a href="#compuesta">7. Compuesta</a></li>
+    <li><a href="#repartos">8. Repartos</a></li>
+    <li><a href="#erratas">9. Опечатки</a></li>
+    <li><a href="#glosario">10. Словарик</a></li>
+    <li><a href="#test">11. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="enteros">
+  <span class="week">Неделя 1 · U1 §1</span>
+  <h2>1. Números enteros и jerarquía de operaciones</h2>
+  <p>Порядок действий (<span class="es">jerarquía de operaciones</span>):</p>
+  <ol class="steps">
+    <li><span class="es">Paréntesis y corchetes</span> — изнутри наружу.</li>
+    <li><span class="es">Potencias y raíces</span>.</li>
+    <li><span class="es">Multiplicaciones y divisiones</span> — <b>слева направо</b>, в порядке записи.</li>
+    <li><span class="es">Sumas y restas</span> — тоже слева направо.</li>
+  </ol>
+  <div class="box trap"><span class="lbl">Три классические ловушки</span>
+    <ul>
+      <li><span class="f">−2² = −4</span>, а <span class="f">(−2)² = 4</span>. Степень относится только к тому, что прямо под ней.</li>
+      <li><span class="f">24 : 4 · 2 = 12</span>, а не 3: умножение и деление равноправны, идём слева направо.</li>
+      <li><span class="f">5 − (−3) = 5 + 3 = 8</span>: минус перед скобкой меняет знаки всего, что внутри.</li>
+    </ul>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Regla de signos</th><th>×, :</th></tr>
+    <tr><td>(+)·(+) и (−)·(−)</td><td>+</td></tr>
+    <tr><td>(+)·(−) и (−)·(+)</td><td>−</td></tr>
+  </table></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p><span class="f">3 − 2·[5 − (−4 + 1)·2] + (−2)³</span></p>
+    <ol class="steps">
+      <li>Самая внутренняя скобка: <span class="f">−4 + 1 = −3</span>.</li>
+      <li>В квадратных: <span class="f">5 − (−3)·2 = 5 + 6 = 11</span>.</li>
+      <li>Степень: <span class="f">(−2)³ = −8</span>.</li>
+      <li><span class="f">3 − 2·11 + (−8) = 3 − 22 − 8 = −27</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="fracciones">
+  <span class="week">Неделя 1 · U1 §2</span>
+  <h2>2. Fracciones</h2>
+  <p><span class="es">Numerador</span> — сверху (сколько частей взяли), <span class="es">denominador</span> — снизу (на сколько частей разделили целое).</p>
+  <h3>Mínimo común múltiplo (m.c.m.) — общий знаменатель</h3>
+  <p>Разложи знаменатели на простые множители и возьми <b>все</b> множители в <b>наибольшей</b> степени. Например, 12 = 2²·3 и 18 = 2·3² → m.c.m. = 2²·3² = 36.</p>
+  <div class="eqs">
+    <div class="eq"><sup>a</sup>/<sub>b</sub> + <sup>c</sup>/<sub>d</sub>: к общему знаменателю<small>5/12 + 7/18 = 15/36 + 14/36 = 29/36</small></div>
+    <div class="eq"><sup>a</sup>/<sub>b</sub> · <sup>c</sup>/<sub>d</sub> = <sup>a·c</sup>/<sub>b·d</sub><small>числитель на числитель</small></div>
+    <div class="eq"><sup>a</sup>/<sub>b</sub> : <sup>c</sup>/<sub>d</sub> = <sup>a·d</sup>/<sub>b·c</sub><small>«крест-накрест»</small></div>
+  </div>
+  <ul>
+    <li>Целое число — это дробь со знаменателем 1: <span class="f">2 + 3/5 = 10/5 + 3/5 = 13/5</span>.</li>
+    <li><span class="es">Fracción de una cantidad</span>: 3/4 от 200 = 200·3/4 = 150.</li>
+    <li>Всегда сокращай ответ (<span class="es">simplificar</span>): 16/38 = 8/19.</li>
+  </ul>
+</section>
+
+<section id="resto">
+  <span class="week">Неделя 1–2 · U1 §2</span>
+  <h2>3. Задачи «del resto» — самые частые на экзамене</h2>
+  <p>Формулировка <span class="es">«del resto…»</span> или <span class="es">«de lo que le queda…»</span> значит: следующая дробь берётся <b>не от всего</b>, а от остатка. Рисуй полоску.</p>
+  <figure>
+    <svg viewBox="0 0 560 170" role="img" aria-label="Полоска: 1/4 на аренду, от остатка 1/3 на еду, остаётся половина">
+      <text x="20" y="22" font-size="13" font-weight="700">Sueldo = 1</text>
+      <rect x="20" y="34" width="520" height="36" class="surf"/>
+      <rect x="20" y="34" width="130" height="36" class="acf" opacity=".85"/>
+      <text x="85" y="57" font-size="13" text-anchor="middle" style="fill:var(--surface)">1/4 alquiler</text>
+      <text x="345" y="57" font-size="13" text-anchor="middle">resto = 3/4</text>
+      <rect x="150" y="100" width="390" height="36" class="surf"/>
+      <rect x="150" y="100" width="130" height="36" class="ac2f" opacity=".85"/>
+      <text x="215" y="123" font-size="13" text-anchor="middle" style="fill:var(--surface)">1/3 del resto</text>
+      <text x="410" y="123" font-size="13" text-anchor="middle">queda 1/2 = 600 €</text>
+      <path class="ax" stroke-dasharray="3 3" d="M150 70 V100 M540 70 V100"/>
+      <text x="345" y="160" font-size="12" text-anchor="middle" class="mut">1/3 от 3/4 = 1/4 всей зарплаты</text>
+    </svg>
+    <figcaption>Каждая следующая дробь — от оставшейся части.</figcaption>
+  </figure>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Luis тратит 1/4 зарплаты на аренду, <span class="es">del resto</span> 1/3 на еду, и у него остаётся 600 €. Какая зарплата?</p>
+    <ol class="steps">
+      <li>После аренды осталось <span class="f">1 − 1/4 = 3/4</span>.</li>
+      <li>Еда: <span class="f">1/3 · 3/4 = 1/4</span> всей зарплаты. Осталось <span class="f">3/4 − 1/4 = 1/2</span>.</li>
+      <li><span class="f">1/2 · S = 600 → S = 1200 €</span>.</li>
+    </ol>
+    <p>Короче: остатки перемножаются — <span class="f">3/4 · 2/3 = 1/2</span>.</p>
+  </div>
+</section>
+
+<section id="porcentajes">
+  <span class="week">Неделя 2 · U1 §3</span>
+  <h2>4. Porcentajes и índice de variación</h2>
+  <p>Процент — это дробь со знаменателем 100: 21 % = 0,21. Главный инструмент курса — <span class="es">índice de variación</span> (множитель): одно умножение вместо двух действий.</p>
+  <div class="eqs">
+    <div class="eq">Subir r % → · (1 + <sup>r</sup>/<sub>100</sub>)<small>+21 % IVA → ·1,21</small></div>
+    <div class="eq">Bajar r % → · (1 − <sup>r</sup>/<sub>100</sub>)<small>−15 % → ·0,85</small></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Изменение</th><th class="num">Índice</th><th>Изменение</th><th class="num">Índice</th></tr>
+    <tr><td>+10 %</td><td class="num">1,10</td><td>−10 %</td><td class="num">0,90</td></tr>
+    <tr><td>+4 %</td><td class="num">1,04</td><td>−4 %</td><td class="num">0,96</td></tr>
+    <tr><td>+21 % (IVA)</td><td class="num">1,21</td><td>−30 %</td><td class="num">0,70</td></tr>
+    <tr><td>+100 % (вдвое)</td><td class="num">2,00</td><td>−5 %</td><td class="num">0,95</td></tr>
+  </table></div>
+  <h3>Encadenados — несколько изменений подряд</h3>
+  <p>Индексы <b>перемножаются</b>, проценты нельзя складывать. +10 %, потом −10 %: <span class="f">1,10 · 0,90 = 0,99</span>, то есть итог −1 %, а не 0.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Товар 250 € подорожал на 8 %, потом на него дали скидку 25 %. Цена и общее изменение?</p>
+    <p><span class="f">250 · 1,08 · 0,75 = 202,50 €</span>. Общий индекс <span class="f">1,08·0,75 = 0,81</span> → цена упала на 19 %.</p>
+  </div>
+  <h3>Tasa de variación — «на сколько процентов изменилось»</h3>
+  <div class="eq">TV = <sup>valor final − valor inicial</sup>/<sub>valor inicial</sub> · 100<small>делим всегда на <b>начальное</b> значение</small></div>
+  <p>Было 40 €, стало 46 €: <span class="f">(46 − 40)/40 · 100 = 15 %</span>. Отрицательный результат — снижение.</p>
+</section>
+
+<section id="inversos">
+  <span class="week">Неделя 2 · U1 §3</span>
+  <h2>5. Обратные задачи: найти цену «до»</h2>
+  <p>Если известна цена <b>после</b> изменения, чтобы найти цену <b>до</b>, нужно <b>разделить</b> на индекс.</p>
+  <div class="eq">valor inicial = <sup>valor final</sup>/<sub>índice</sub></div>
+  <div class="box trap"><span class="lbl">Ловушка</span><p>Заплатил 68 € после скидки 15 %. Прибавить 15 % нельзя: <span class="f">68·1,15 = 78,20</span> — неверно. Правильно: <span class="f">68 / 0,85 = 80 €</span>. Проверка: 80·0,85 = 68 ✓.</p></div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · base imponible</span>
+    <p>В чеке итог с IVA 21 % — 145,20 €. Сколько <span class="es">base imponible</span> и сколько IVA?</p>
+    <p><span class="f">145,20 / 1,21 = 120 €</span> — база; IVA = 145,20 − 120 = 25,20 €.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · два изменения назад</span>
+    <p>После наценки 10 % и затем IVA 21 % счёт 399,30 €. Базовая цена?</p>
+    <p><span class="f">399,30 / (1,10·1,21) = 399,30 / 1,331 = 300 €</span>.</p>
+  </div>
+</section>
+
+<section id="proporcionalidad">
+  <span class="week">Неделя 3 · U1 §4</span>
+  <h2>6. Proporcionalidad directa e inversa</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Directa</span><p><b>«A más… más»</b>. Одна величина растёт во столько же раз, во сколько другая. Kilos ↔ precio, horas trabajadas ↔ salario.</p></div>
+    <div class="box tip"><span class="lbl">Inversa</span><p><b>«A más… menos»</b>. Одна растёт во столько раз, во сколько другая падает. Trabajadores ↔ días, velocidad ↔ tiempo.</p></div>
+  </div>
+  <p>Вопрос, который нужно задать себе: «если первого станет <b>больше</b>, второго станет больше или меньше?»</p>
+  <div class="box trap"><span class="lbl">Не всё пропорционально</span><p>Возраст и рост, или цена такси с фиксированной посадкой, — не пропорциональны. Если при удвоении одной величины другая не удваивается и не уменьшается вдвое, пропорцией пользоваться нельзя.</p></div>
+  <h3>Reducción a la unidad — самый надёжный способ</h3>
+  <ol class="steps">
+    <li>Найти значение для <b>одной</b> единицы (1 рабочий, 1 кг, 1 час).</li>
+    <li>Directa: делим; inversa: умножаем (один рабочий будет работать дольше).</li>
+    <li>Перейти к нужному количеству.</li>
+  </ol>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>6 кранов (<span class="es">grifos</span>) заполняют бассейн за 10 часов. Сколько часов понадобится 4 кранам? Inversa: <span class="f">1 кран → 6·10 = 60 h</span>; <span class="f">4 крана → 60/4 = 15 h</span>.</p>
+  </div>
+  <h3>Regla de tres</h3>
+  <div class="pair">
+    <div class="eq">directa<br>a → b<br>c → x<br><i>x</i> = <sup>c·b</sup>/<sub>a</sub><small>умножаем крест-накрест</small></div>
+    <div class="eq">inversa<br>a → b<br>c → x<br><i>x</i> = <sup>a·b</sup>/<sub>c</sub><small>умножаем по строке</small></div>
+  </div>
+</section>
+
+<section id="compuesta">
+  <span class="week">Неделя 3 · U1 §4.3</span>
+  <h2>7. Proporcionalidad compuesta</h2>
+  <p>Три и более величины. Сравниваем величину с <i>x</i> с каждой другой <b>по отдельности</b>, считая остальные постоянными.</p>
+  <ol class="steps">
+    <li>Таблица: известная строка сверху, строка с <i>x</i> снизу.</li>
+    <li>Для каждой величины: directa или inversa по отношению к <i>x</i>.</li>
+    <li>Ответ = известное значение × дроби: для directa <span class="f">(новое/старое)</span>, для inversa — <span class="f">(старое/новое)</span>.</li>
+  </ol>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · mixta</span>
+    <p>5 станков, работая по 8 h в день, делают 2000 деталей за 4 дня. За сколько дней 4 станка по 10 h в день сделают 3000 деталей?</p>
+    <div class="tbl"><table>
+      <tr><th>máquinas</th><th>h/día</th><th>piezas</th><th>días</th></tr>
+      <tr><td>5</td><td>8</td><td>2000</td><td>4</td></tr>
+      <tr><td>4</td><td>10</td><td>3000</td><td><i>x</i></td></tr>
+      <tr><td class="mut">inversa</td><td class="mut">inversa</td><td class="mut">directa</td><td></td></tr>
+    </table></div>
+    <p><span class="f"><i>x</i> = 4 · <sup>5</sup>/<sub>4</sub> · <sup>8</sup>/<sub>10</sub> · <sup>3000</sup>/<sub>2000</sub> = 4 · 1,25 · 0,8 · 1,5 = 6 días</span>.</p>
+    <p>Проверка через «станко-часы»: 5·8·4 = 160 на 2000 деталей → 240 на 3000; 4 станка по 10 h дают 40 в день → 240/40 = 6 ✓.</p>
+  </div>
+</section>
+
+<section id="repartos">
+  <span class="week">Неделя 3–4 · U1 §4.4</span>
+  <h2>8. Repartos proporcionales</h2>
+  <h3>Directamente proporcional</h3>
+  <p>Сложить «доли», найти стоимость одной доли <span class="f"><i>k</i> = total / suma</span>, умножить на каждую долю.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Три партнёра вложили 2000, 3000 и 5000 €. Прибыль 4000 € делят пропорционально вложениям. <span class="f"><i>k</i> = 4000/10000 = 0,4</span> → 800, 1200 и 2000 €. Сумма 4000 ✓.</p>
+  </div>
+  <h3>Inversamente proporcional</h3>
+  <p>Больше «мера» → меньше получает. Делим пропорционально <b>обратным</b> числам 1/a, 1/b, 1/c: приводим их к общему знаменателю и делим по числителям.</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Премию 1200 € делят между тремя работниками обратно пропорционально числу пропусков: 2, 3 и 6.</p>
+    <p>Обратные: 1/2, 1/3, 1/6 = 3/6, 2/6, 1/6 → доли 3, 2, 1 (сумма 6). <span class="f"><i>k</i> = 1200/6 = 200</span> → 600, 400, 200 €. У кого больше пропусков, тот получил меньше ✓.</p>
+  </div>
+</section>
+
+<section id="erratas">
+  <h2>9. Опечатки в апунтах U1</h2>
+  <div class="box errata"><span class="lbl">apuntes completos v1.0</span>
+    <ul>
+      <li>§4, «Proporcionalidad inversa: Dos magnitudes son <i>directamente</i> proporcionales si…» — должно быть <b>inversamente</b>.</li>
+      <li>§4, regla de tres inversa: «4 · 6 = 8 · x» — должно быть <b>4 · 6 = 3 · x</b> (3 pintores); ответ 8 días верный.</li>
+    </ul>
+  </div>
+  <div class="box trap"><span class="lbl">Actividades de envío</span><p>Преподаватель вписал правки прямо в задания: в U1 считать для <b>253</b> человек и прибавить <b>100 €</b> к devengos; в U2 дорожка <b>2 m</b>, минута <b>0,24 €</b>, длина на <b>2 m</b> больше ширины. Решай с этими данными.</p></div>
+</section>
+
+<section id="glosario">
+  <h2>10. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>numerador / denominador</td><td>числитель / знаменатель</td><td>m.c.m. / m.c.d.</td><td>НОК / НОД</td></tr>
+    <tr><td>simplificar</td><td>сократить</td><td>fracción irreducible</td><td>несократимая дробь</td></tr>
+    <tr><td>del resto / lo que queda</td><td>от остатка</td><td>tanto por ciento</td><td>процент</td></tr>
+    <tr><td>descuento / rebaja</td><td>скидка</td><td>recargo / subida</td><td>надбавка / повышение</td></tr>
+    <tr><td>IVA</td><td>НДС</td><td>base imponible</td><td>сумма без налога</td></tr>
+    <tr><td>nómina</td><td>расчётный лист</td><td>devengos</td><td>начисления</td></tr>
+    <tr><td>deducciones</td><td>удержания</td><td>salario bruto / neto</td><td>до / после удержаний</td></tr>
+    <tr><td>líquido a percibir</td><td>к выплате на руки</td><td>IRPF</td><td>подоходный налог</td></tr>
+    <tr><td>magnitud</td><td>величина</td><td>reparto</td><td>распределение</td></tr>
+    <tr><td>presupuesto</td><td>смета</td><td>mano de obra</td><td>стоимость работы</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>11. Проверь себя</h2>
+  <details class="q"><summary>Посчитай: 10 − 3·(−2)² + 12 : (−4)·2</summary><div class="a">(−2)² = 4; 3·4 = 12; 12 : (−4) = −3; −3·2 = −6. Итого 10 − 12 − 6 = −8.</div></details>
+  <details class="q"><summary>2/3 + 5/4 − 1/6 = ?</summary><div class="a">m.c.m. = 12: 8/12 + 15/12 − 2/12 = 21/12 = 7/4.</div></details>
+  <details class="q"><summary>Из бака 200 L взяли 1/5, из остатка 1/4. Сколько литров осталось?</summary><div class="a">Остатки перемножаются: 4/5 · 3/4 = 3/5; 200·3/5 = 120 L.</div></details>
+  <details class="q"><summary>Цена после двух скидок 20 % и 10 % — 54 €. Исходная цена?</summary><div class="a">54 / (0,8·0,9) = 54 / 0,72 = 75 €.</div></details>
+  <details class="q"><summary>Абонемент в спортзал стоил 15 €, теперь 16,20 €. Tasa de variación?</summary><div class="a">(16,20 − 15)/15 · 100 = 8 %.</div></details>
+  <details class="q"><summary>8 рабочих строят стену за 15 дней. За сколько дней её построят 12 рабочих?</summary><div class="a">Inversa: 8·15 = 120 «рабочих-дней»; 120/12 = 10 дней.</div></details>
+</section>
+</div>
+</body></html>
