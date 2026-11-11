@@ -1188,3 +1188,178 @@ tr:last-child td {
   box-shadow: var(--shadow-md);
 }
 
+/* Умная карточка предмета со склейкой параграфов (Долг + План) и чекбоксами подзадач */
+.overdue-collector-banner {
+  background: color-mix(in srgb, var(--warn-soft) 55%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--line));
+  border-left: 5px solid var(--warn);
+  border-radius: var(--radius-lg);
+  padding: 15px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.subject-day-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease;
+}
+
+.subject-day-card.has-debt {
+  border-color: color-mix(in srgb, var(--warn) 55%, var(--line));
+  border-left: 4px solid var(--warn);
+}
+
+.subject-day-card.all-done {
+  background: color-mix(in srgb, var(--ok-soft) 24%, var(--surface));
+  border-color: color-mix(in srgb, var(--ok) 40%, var(--line));
+}
+
+.subject-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.card-merge-banner {
+  margin: 0 0 12px;
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn-soft) 55%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--line));
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.subtasks-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.subtask-row:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-hover);
+}
+
+.subtask-row.is-debt {
+  border-left: 3px solid var(--warn);
+  background: color-mix(in srgb, var(--warn-soft) 26%, var(--bg));
+}
+
+.subtask-row.done {
+  opacity: 0.72;
+  background: color-mix(in srgb, var(--ok-soft) 22%, var(--bg));
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
+}
+
+.subtask-row.done .subtask-title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.subtask-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  flex: 1;
+}
+
+.subtask-title {
+  font-size: 14.2px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.subtask-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.subtask-origin-tag {
+  font: 700 10.5px/1 var(--f-mono);
+  padding: 4px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.subtask-origin-tag.debt {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.subtask-origin-tag.plan {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.remainder-transfer-bar {
+  margin-top: 12px;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.transfer-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.moved-out-notice {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--line-strong);
+  background: var(--bg);
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+

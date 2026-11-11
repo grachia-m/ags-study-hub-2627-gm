@@ -11,8 +11,9 @@ import {
 } from './data/courseData.js';
 import {
   WEEKS_PLAN,
-  getDailySchedule,
-  computeSubjectHoursSummary,
+  getMergedDailySchedule,
+  findOverdueUncheckedSubtasks,
+  findNextLessonDateForSubject,
   shiftDateStr,
   daysBetweenStr,
 } from './data/scheduleData.js';
@@ -40,6 +41,8 @@ function loadState() {
             ? parsed.selectedElectives
             : [...DEFAULT_SELECTED_ELECTIVES],
         extraThirdElective: parsed.extraThirdElective || '',
+        completedSubtasks: parsed.completedSubtasks || {},
+        movedSubtasks: parsed.movedSubtasks || {},
         subjectShiftDays: parsed.subjectShiftDays || {},
         subjectStartDates: parsed.subjectStartDates || {},
         loggedMinutes: parsed.loggedMinutes || {},
@@ -72,6 +75,8 @@ function loadState() {
     showAllCatalogSubjects: false,
     selectedElectives: [...DEFAULT_SELECTED_ELECTIVES], // По умолчанию ['fisica', 'ingles']
     extraThirdElective: '', // Опционально можно включить 'tecno' как 3-й спецпредмет
+    completedSubtasks: {},
+    movedSubtasks: {},
     subjectShiftDays: {},
     subjectStartDates: {},
     loggedMinutes: {},
@@ -163,6 +168,12 @@ function formatRuDate(dateStr) {
   return `${d} ${months[(m || 1) - 1]} ${y}`;
 }
 
+function formatShortDate(dateStr) {
+  if (!dateStr) return '';
+  const [, m, d] = dateStr.split('-');
+  return `${d}.${m}`;
+}
+
 function getSprintDates() {
   const list = [];
   let cur = '2026-11-07';
@@ -181,7 +192,8 @@ function calculateOverallProgress() {
     const [, sId] = k.split(':');
     return v && activeIds.has(sId);
   }).length;
-  const doneBlocks = Object.values(state.completedBlocks || {}).filter(Boolean).length;
+  const doneSubtasks = Object.values(state.completedSubtasks || {}).filter(Boolean).length;
+  const doneBlocks = Object.values(state.completedBlocks || {}).filter(Boolean).length + doneSubtasks;
   const activeEnvios = ENVIOS_LIST.filter((e) => activeIds.has(e.subjectId));
   const doneEnvios = activeEnvios.filter(
     (e) => state.envioStatus?.[e.id] === 'submitted' || state.envioStatus?.[e.id] === 'ready'
@@ -403,133 +415,73 @@ function renderHeroBanner() {
   `;
 }
 
-// Панель гибкого сдвига дат и автоматического пересчёта часов по каждому предмету
-function renderHoursAndShiftRecalculator(hoursSummary) {
-  const activeSubjects = getActiveSubjects();
+function renderSmartWorkflowHelper(overdueList) {
+  const overdueTotalMins = overdueList.reduce((acc, s) => acc + s.mins, 0);
+  const movedEntriesCount = Object.keys(state.movedSubtasks || {}).length;
 
   return `
-    <section class="recalc-panel" aria-label="Пересчёт часов и сдвиг дат по предметам">
+    <section class="recalc-panel" aria-label="Умное накопление параграфов и перенос остатка в 1 клик">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
         <div>
-          <h3 style="margin:0 0 4px; font:700 16.5px/1.3 var(--f-display);">
-            ⏱️ Адаптивный сдвиг дат и пересчёт часов по предметам
+          <h3 style="margin:0 0 4px; font:700 16px/1.3 var(--f-display);">
+            🔗 Умная склейка параграфов (Долг + План) и перенос неотмеченного остатка в 1 клик
           </h3>
-          <p style="margin:0; font-size:13.5px; color:var(--muted);">
-            Если в один день вы позанимались <b>1 час вместо 2 часов</b> (или наоборот <b>4 часа</b>), введите фактические минуты в карточке задачи ниже или сдвиньте дату старта предмета здесь — система автоматически пересчитает, сколько минут нужно заниматься этим предметом в следующие дни до дедлайна!
+          <p style="margin:0; font-size:13.5px; color:var(--muted); max-width:96ch;">
+            <b>Как это работает:</b> Каждая карточка предмета разбита на чекбоксы конкретных параграфов (<code>§1</code>, <code>§2</code>...).
+            Если вы не успели предмет сегодня — нажмите <b>«⏭️ На след. урок предмета»</b> (или <code>+1 / +2 / +3 дня</code>). В день следующего урока перенесённые параграфы (<code>§1–2</code>) <b>автоматически склеятся в одну карточку</b> с планом того дня (<code>§3–4</code> → получится <code>§1–4</code>, а часы сложатся: <code>2 ч + 2 ч = 4 ч</code>).
+            Если в склеенной карточке из 4 чекбоксов вы сделали два (<code>[x] §1, §2</code>), а два остались (<code>[ ] §3, §4</code>) — при нажатии кнопки переноса <b>перенесутся только 2 неотмеченных чекбокса</b>, а сделанные останутся закрытыми сегодня!
           </p>
         </div>
-        <button type="button" class="btn btn-sm" id="btn-reset-all-shifts">
-          🔄 Сбросить все сдвиги и часы
-        </button>
-      </div>
-
-      <div class="recalc-grid">
-        ${activeSubjects
-          .map((subj) => {
-            const st = hoursSummary[subj.id] || {
-              shiftDays: 0,
-              plannedTotalMins: 0,
-              plannedPastMins: 0,
-              actualLoggedMins: 0,
-              remainingSessions: 0,
-              deltaMins: 0,
-              extraMinsPerFutureSession: 0,
-            };
-            const shiftDays = Number(state.subjectShiftDays?.[subj.id] || 0);
-            const subjStartDate = shiftDateStr('2026-11-07', shiftDays);
-            const deltaHrs = (st.deltaMins / 60).toFixed(1);
-            const isDeficit = st.deltaMins < 0;
-            const isSurplus = st.deltaMins > 0;
-
-            return `
-              <div class="recalc-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-                  <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
-                  <span style="font:700 11.5px/1 var(--f-mono); color:${
-                    isDeficit ? 'var(--err)' : isSurplus ? 'var(--ok)' : 'var(--muted)'
-                  };">
-                    ${
-                      st.deltaMins === 0
-                        ? 'По графику (0 ч)'
-                        : isDeficit
-                        ? `Долг: ${deltaHrs} ч (${st.deltaMins} м)`
-                        : `Запас: +${deltaHrs} ч (+${st.deltaMins} м)`
-                    }
-                  </span>
-                </div>
-
-                <div class="recalc-stat-line">
-                  <span style="color:var(--muted);">Отработано / План на дату:</span>
-                  <strong style="font-family:var(--f-mono);">${(st.actualLoggedMins / 60).toFixed(1)} ч / ${(st.plannedPastMins / 60).toFixed(1)} ч</strong>
-                </div>
-
-                <div class="recalc-stat-line">
-                  <span style="color:var(--muted);">Пересчёт на след. занятия (${st.remainingSessions}):</span>
-                  <strong style="font-family:var(--f-mono); color:${
-                    st.extraMinsPerFutureSession > 0
-                      ? 'var(--warn)'
-                      : st.extraMinsPerFutureSession < 0
-                      ? 'var(--ok)'
-                      : 'var(--ink)'
-                  };">
-                    ${
-                      st.extraMinsPerFutureSession > 0
-                        ? `+${st.extraMinsPerFutureSession} мин/зан.`
-                        : st.extraMinsPerFutureSession < 0
-                        ? `${st.extraMinsPerFutureSession} мин/зан.`
-                        : 'Без изменений'
-                    }
-                  </strong>
-                </div>
-
-                <div style="padding-top:6px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:6px;">
-                  <label style="font-size:12px; color:var(--muted); display:flex; justify-content:space-between; align-items:center;">
-                    <span>Сдвиг старта предмета:</span>
-                    <b style="font-family:var(--f-mono); color:var(--accent);">${shiftDays > 0 ? `+${shiftDays} дн.` : `${shiftDays} дн.`}</b>
-                  </label>
-                  <div style="display:flex; gap:4px; align-items:center;">
-                    <button type="button" class="btn btn-sm" style="padding:4px 7px;" data-action="shift-subj-days" data-subj="${subj.id}" data-delta="-1" title="Сдвинуть на 1 день раньше">−1д</button>
-                    <input
-                      type="date"
-                      class="btn btn-sm"
-                      style="flex:1; padding:4px 6px; font-size:12px;"
-                      data-action="pick-subj-start-date"
-                      data-subj="${subj.id}"
-                      value="${subjStartDate}"
-                      min="2026-10-15"
-                      max="2027-05-25"
-                      title="Выберите дату начала/сдвига для предмета ${subj.shortName}"
-                    />
-                    <button type="button" class="btn btn-sm" style="padding:4px 7px;" data-action="shift-subj-days" data-subj="${subj.id}" data-delta="1" title="Сдвинуть на 1 день позже">+1д</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          })
-          .join('')}
+        ${
+          movedEntriesCount > 0
+            ? `<button type="button" class="btn btn-sm" id="btn-reset-all-shifts" title="Вернуть все перенесённые параграфы на исходные даты по умолчанию">
+                🔄 Сбросить все переносы (${movedEntriesCount} п.)
+              </button>`
+            : ''
+        }
       </div>
     </section>
+
+    ${
+      overdueList.length > 0
+        ? `
+      <div class="overdue-collector-banner">
+        <div>
+          <strong style="font-size:14.5px; color:var(--warn); display:block; margin-bottom:2px;">
+            ⏳ Найдены невыполненные параграфы за прошлые дни до ${formatShortDate(state.selectedDate)}: ${overdueList.length} п. (${overdueTotalMins} мин / ${(overdueTotalMins / 60).toFixed(1)} ч)
+          </strong>
+          <span style="font-size:13px; color:var(--ink-secondary);">
+            Вы можете в 1 клик подтянуть все забытые чекбоксы в текущий день (${formatShortDate(state.selectedDate)}) или автоматически распределить каждый долг на ближайший урок своего предмета:
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary btn-sm" id="btn-collect-overdue-today">
+            🧲 Собрать все долги сюда (${formatShortDate(state.selectedDate)})
+          </button>
+          <button type="button" class="btn btn-sm" id="btn-collect-overdue-next-lesson" style="border-color:var(--warn); color:var(--warn);">
+            ⏭️ На ближайшие уроки предметов
+          </button>
+        </div>
+      </div>
+    `
+        : ''
+    }
   `;
 }
 
 function renderDailyTab() {
   const activeElectives = getActiveElectivesList();
-  const sched = getDailySchedule(state.selectedDate, {
+  const stateWithElectives = {
     ...state,
     selectedElectives: activeElectives,
-  });
+  };
+  const sched = getMergedDailySchedule(state.selectedDate, stateWithElectives);
+  const overdueList = findOverdueUncheckedSubtasks(state.selectedDate, stateWithElectives);
   const sprintDates = getSprintDates();
 
-  const totalPlannedMins = sched.blocks.reduce((acc, b) => acc + (b.adjustedMins ?? b.mins), 0);
-  const totalActualMins = sched.blocks.reduce((acc, b) => {
-    const hasLog = state.loggedMinutes?.[b.id] !== undefined && state.loggedMinutes?.[b.id] !== '';
-    if (hasLog) return acc + Number(state.loggedMinutes[b.id]);
-    if (state.completedBlocks?.[b.id]) return acc + (b.adjustedMins ?? b.mins);
-    return acc;
-  }, 0);
-
-  const doneCount = sched.blocks.filter((b) => state.completedBlocks[b.id]).length;
-  const pct = sched.blocks.length ? Math.round((doneCount / sched.blocks.length) * 100) : 0;
+  const totalSubtasksCount = sched.cards.reduce((acc, c) => acc + c.subtasks.length, 0);
+  const doneSubtasksCount = sched.cards.reduce((acc, c) => acc + c.doneCount, 0);
+  const pct = totalSubtasksCount ? Math.round((doneSubtasksCount / totalSubtasksCount) * 100) : 0;
 
   const activeSubjIds = new Set(['all', ...getActiveSubjects().map((s) => s.id)]);
   const dayEvents = CALENDAR_EVENTS.filter(
@@ -539,8 +491,12 @@ function renderDailyTab() {
     (e) => e.date >= state.selectedDate && activeSubjIds.has(e.subjectId)
   ).slice(0, 6);
 
+  const nextDay1 = shiftDateStr(state.selectedDate, 1);
+  const nextDay2 = shiftDateStr(state.selectedDate, 2);
+  const nextDay3 = shiftDateStr(state.selectedDate, 3);
+
   return `
-    ${renderHoursAndShiftRecalculator(sched.hoursSummary)}
+    ${renderSmartWorkflowHelper(overdueList)}
 
     <div class="day-navigator">
       <div class="day-controls">
@@ -553,22 +509,25 @@ function renderDailyTab() {
           <span class="badge-mono">${sched.badge}</span>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="time-pill">План (с пересчётом): <b>${totalPlannedMins} мин (${(totalPlannedMins / 60).toFixed(1)} ч)</b></span>
-          <span class="time-pill" style="border-color:var(--ok); color:var(--ok);">Факт за день: <b>${totalActualMins} мин (${(totalActualMins / 60).toFixed(1)} ч)</b></span>
+          <span class="time-pill">Всего на день (с долгами): <b>${sched.totalMins} мин (${(sched.totalMins / 60).toFixed(1)} ч)</b></span>
+          <span class="time-pill" style="border-color:var(--ok); color:var(--ok);">✅ Сделано: <b>${sched.doneMins} мин (${(sched.doneMins / 60).toFixed(1)} ч)</b></span>
+          <span class="time-pill" style="border-color:${sched.remainingMins > 0 ? 'var(--warn)' : 'var(--ok)'}; color:${sched.remainingMins > 0 ? 'var(--warn)' : 'var(--ok)'};">
+            ⏳ Осталось: <b>${sched.remainingMins} мин (${(sched.remainingMins / 60).toFixed(1)} ч)</b>
+          </span>
         </div>
       </div>
 
       <div class="sprint-strip-label">
         <span>Навигатор 41-дневного спринта 1ª Evaluación (07.11 — 02.12 Дедлайн Envío — 15/17.12 Экзамены):</span>
-        <span>Кликните на любой день для просмотра и корректировки часов</span>
+        <span>Кликните на любой день · 🔥 = есть перенесённый долг · Зелёный = все чекбоксы закрыты</span>
       </div>
       <div class="sprint-days-strip">
         ${sprintDates
           .map((dStr, idx) => {
-            const dSchedule = getDailySchedule(dStr, { ...state, selectedElectives: activeElectives });
+            const dSchedule = getMergedDailySchedule(dStr, stateWithElectives);
             const allDone =
-              dSchedule.blocks.length > 0 &&
-              dSchedule.blocks.every((b) => state.completedBlocks[b.id]);
+              dSchedule.cards.length > 0 && dSchedule.cards.every((c) => c.allDone);
+            const hasMovedInDebt = dSchedule.cards.some((c) => c.movedInCount > 0 && !c.allDone);
             const isDeadline = dStr === '2026-12-02' || dStr === '2026-12-15' || dStr === '2026-12-17';
             const [, mm, dd] = dStr.split('-');
             return `
@@ -577,9 +536,9 @@ function renderDailyTab() {
                 class="sprint-day-chip ${state.selectedDate === dStr ? 'active' : ''} ${allDone ? 'done' : ''} ${isDeadline ? 'deadline-chip' : ''}"
                 data-action="select-date"
                 data-date="${dStr}"
-                title="День ${idx + 1}: ${formatRuDate(dStr)}"
+                title="День ${idx + 1}: ${formatRuDate(dStr)} (${(dSchedule.totalMins / 60).toFixed(1)} ч)"
               >
-                <span class="dow">${dSchedule.dayShort} · Д${idx + 1}</span>
+                <span class="dow">${dSchedule.dayShort} · Д${idx + 1}${hasMovedInDebt ? ' 🔥' : ''}</span>
                 <span class="num">${dd}.${mm}</span>
               </button>
             `;
@@ -592,10 +551,10 @@ function renderDailyTab() {
       <div>
         <div class="section-header">
           <div>
-            <h2>Учебные блоки на ${formatRuDate(state.selectedDate)}</h2>
-            <p>Отмечайте выполнение, вводите реально отработанные часы/минуты или переносите задачу на другую дату.</p>
+            <h2>Карточки предметов и чекбоксы параграфов на ${formatRuDate(state.selectedDate)}</h2>
+            <p>Один предмет = одна единая карточка. Отмечайте сделанные параграфы галочкой, а оставшиеся переносите в 1 клик.</p>
           </div>
-          <span class="badge-mono">Выполнено: ${doneCount} из ${sched.blocks.length} (${pct}%)</span>
+          <span class="badge-mono">Чекбоксы: ${doneSubtasksCount} из ${totalSubtasksCount} (${pct}%)</span>
         </div>
 
         ${
@@ -619,129 +578,260 @@ function renderDailyTab() {
         }
 
         <div class="blocks-list">
-          ${sched.blocks
-            .map((b) => {
-              const subj = getSubject(b.subjectId);
-              const isDone = Boolean(state.completedBlocks[b.id]);
-              const guideUnit = subj.units ? subj.units.find((u) => u.guideUrl) : null;
-              // Ищем файлы решений для этого предмета (чтобы предложить защищённую кнопку просмотра решения)
-              const solFiles = subj.units
-                ? subj.units.flatMap((u) =>
-                    (u.files || [])
-                      .filter((f) => f.type === 'sol')
-                      .map((f) => ({ ...f, unitNum: u.num, unitTitle: u.title }))
-                  )
-                : [];
-              const firstSol = solFiles[0] || null;
+          ${
+            sched.cards.length === 0
+              ? `
+            <div class="panel-card" style="text-align:center; padding:28px 20px;">
+              <h3 style="margin:0 0 6px;">Все задачи с этого дня перенесены на другие даты</h3>
+              <p style="margin:0 0 12px; color:var(--muted);">Вы перенесли параграфы этого дня вперёд. Если хотите вернуть их обратно — нажмите кнопку сброса переносов выше.</p>
+            </div>
+          `
+              : sched.cards
+                  .map((card) => {
+                    const subj = getSubject(card.subjectId);
+                    const guideUnit = subj.units ? subj.units.find((u) => u.guideUrl) : null;
+                    const solFiles = subj.units
+                      ? subj.units.flatMap((u) =>
+                          (u.files || [])
+                            .filter((f) => f.type === 'sol')
+                            .map((f) => ({ ...f, unitNum: u.num, unitTitle: u.title }))
+                        )
+                      : [];
+                    const firstSol = solFiles[0] || null;
 
-              const loggedVal =
-                state.loggedMinutes?.[b.id] !== undefined && state.loggedMinutes?.[b.id] !== ''
-                  ? Number(state.loggedMinutes[b.id])
-                  : isDone
-                  ? b.adjustedMins ?? b.mins
-                  : '';
+                    return `
+                      <article class="subject-day-card ${card.movedInCount > 0 && !card.allDone ? 'has-debt' : ''} ${card.allDone ? 'all-done' : ''}">
+                        <div class="subject-card-head">
+                          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span class="subj-pill subj-${subj.id}" style="font-size:13px; padding:5px 11px;">${subj.shortName}</span>
+                            <span class="time-pill">⏱ Всего: <b>${card.totalMins} мин (${(card.totalMins / 60).toFixed(1)} ч)</b></span>
+                            <span class="time-pill" style="border-color:var(--ok); color:var(--ok);">
+                              ✅ Сделано: <b>${card.doneCount}/${card.subtasks.length} п. (${(card.doneMins / 60).toFixed(1)} ч)</b>
+                            </span>
+                            ${
+                              card.remainingMins > 0
+                                ? `<span class="time-pill" style="border-color:var(--warn); color:var(--warn); font-weight:700;">
+                                    ⏳ Осталось: ${card.uncheckedCount} п. (${card.remainingMins} мин / ${(card.remainingMins / 60).toFixed(1)} ч)
+                                  </span>`
+                                : `<span class="new-tag" style="padding:5px 9px; font-size:11px;">🎉 Полностью закрыто!</span>`
+                            }
+                          </div>
 
-              return `
-                <article class="task-card ${isDone ? 'completed' : ''}">
-                  <input
-                    type="checkbox"
-                    class="task-check"
-                    data-action="toggle-block"
-                    data-block-id="${b.id}"
-                    data-default-mins="${b.adjustedMins ?? b.mins}"
-                    ${isDone ? 'checked' : ''}
-                    aria-label="Отметить выполнение: ${b.title}"
-                  />
-                  <div class="task-body">
-                    <div class="task-meta">
-                      <span class="subj-pill subj-${subj.id}">${subj.shortName}</span>
-                      <span class="time-pill">⏱ База: ${b.baseMins ?? b.mins} мин (${((b.baseMins ?? b.mins) / 60).toFixed(1)} ч)</span>
-                      ${
-                        b.extraMins && b.extraMins !== 0
-                          ? `<span class="time-pill" style="border-color:${b.extraMins > 0 ? 'var(--warn)' : 'var(--ok)'}; color:${b.extraMins > 0 ? 'var(--warn)' : 'var(--ok)'}; font-weight:700;">
-                              🔄 С учётом пересчёта: ${b.adjustedMins} мин (${b.extraMins > 0 ? `+${b.extraMins}` : b.extraMins} мин)
-                            </span>`
-                          : ''
-                      }
-                      <span class="time-pill">${sched.weekObj.week}</span>
-                    </div>
-                    <h3 class="task-title">${b.title}</h3>
-                    <p class="task-desc">${b.desc}</p>
-
-                    ${
-                      b.subjectId !== 'all'
-                        ? `
-                      <div class="task-hours-control">
-                        <div class="hours-input-group">
-                          <span style="font-size:12.5px; font-weight:600;">⏱ Отработано по факту (мин):</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max="600"
-                            step="15"
-                            class="hours-num-input"
-                            placeholder="${b.adjustedMins ?? b.mins}"
-                            value="${loggedVal}"
-                            data-action="log-block-mins"
-                            data-block-id="${b.id}"
-                          />
-                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="60" title="Записать 1 час (60 мин)">1 ч</button>
-                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="120" title="Записать 2 часа (120 мин)">2 ч</button>
-                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="180" title="Записать 3 часа (180 мин)">3 ч</button>
-                          <button type="button" class="btn btn-sm" style="padding:3px 7px;" data-action="quick-log-mins" data-block-id="${b.id}" data-mins="240" title="Записать 4 часа (240 мин)">4 ч</button>
+                          <div style="display:flex; align-items:center; gap:6px;">
+                            ${
+                              card.uncheckedCount > 0 && card.subtasks.length > 1
+                                ? `<button
+                                    type="button"
+                                    class="btn btn-sm"
+                                    data-action="check-all-card-subtasks"
+                                    data-subj="${card.subjectId}"
+                                    title="Отметить все параграфы в этой карточке как выполненные"
+                                  >
+                                    ✓ Отметить все (${card.subtasks.length})
+                                  </button>`
+                                : ''
+                            }
+                            <span class="time-pill">${sched.weekObj.week}</span>
+                          </div>
                         </div>
 
-                        <div class="hours-input-group">
-                          <span style="font-size:12px; color:var(--muted);">📅 Перенести задачу на:</span>
-                          <input
-                            type="date"
-                            class="btn btn-sm"
-                            style="padding:3px 7px; font-size:12px;"
-                            value="${state.rescheduledBlocks?.[b.id] || state.selectedDate}"
-                            min="2026-11-07"
-                            max="2027-06-03"
-                            data-action="reschedule-block-date"
-                            data-block-id="${b.id}"
-                          />
-                        </div>
-                      </div>
-                    `
-                        : ''
-                    }
+                        ${
+                          card.isMergedWithDebt
+                            ? `
+                          <div class="card-merge-banner">
+                            <span>
+                              🔗 <b>Авто-склейка параграфов и часов:</b> Перенесённый долг (<b>${card.movedInCount} п. · ${(card.movedInMins / 60).toFixed(1)} ч</b>) + План этого дня (<b>${card.plannedTodayCount} п. · ${(card.plannedTodayMins / 60).toFixed(1)} ч</b>) = <b>${card.subtasks.length} п. (${(card.totalMins / 60).toFixed(1)} ч)</b>
+                            </span>
+                          </div>
+                        `
+                            : card.movedInCount > 0
+                            ? `
+                          <div class="card-merge-banner">
+                            <span>
+                              📌 <b>Перенесённые параграфы (${card.movedInCount} п. · ${(card.movedInMins / 60).toFixed(1)} ч):</b> Вы перенесли эти задачи сюда с прошлых дней.
+                            </span>
+                          </div>
+                        `
+                            : ''
+                        }
 
-                    <div class="task-links" style="margin-top:10px;">
-                      ${
-                        guideUnit && guideUnit.guideUrl
-                          ? `<button type="button" class="btn btn-sm" data-action="open-reader" data-url="${guideUnit.guideUrl}" data-title="Конспект: ${subj.shortName}">📖 Открыть конспект U1</button>`
-                          : ''
-                      }
-                      ${
-                        subj.id !== 'all'
-                          ? `<button type="button" class="btn btn-sm" data-action="open-subject" data-subj="${subj.id}">📂 Все материалы ${subj.shortName}</button>`
-                          : ''
-                      }
-                      ${
-                        firstSol
-                          ? `<button
+                        <h3 class="task-title" style="margin:0 0 4px;">${card.titles.join(' + ')}</h3>
+                        <p class="task-desc" style="margin:0 0 10px;">${card.descs.join(' · ')}</p>
+
+                        <div class="subtasks-checklist">
+                          ${card.subtasks
+                            .map((sub) => {
+                              return `
+                                <label class="subtask-row ${sub.isDone ? 'done' : ''} ${sub.isMovedIn ? 'is-debt' : ''}">
+                                  <div class="subtask-left">
+                                    <input
+                                      type="checkbox"
+                                      class="task-check"
+                                      data-action="toggle-subtask"
+                                      data-subtask-id="${sub.id}"
+                                      ${sub.isDone ? 'checked' : ''}
+                                    />
+                                    <div>
+                                      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
+                                        <span class="subtask-origin-tag ${sub.isMovedIn ? 'debt' : 'plan'}">
+                                          ${sub.isMovedIn ? `📌 Долг с ${formatShortDate(sub.originDate)}` : '📅 План дня'}
+                                        </span>
+                                        <code style="font:700 12px/1 var(--f-mono); color:var(--accent);">${sub.para}</code>
+                                      </div>
+                                      <div class="subtask-title">${sub.title}</div>
+                                    </div>
+                                  </div>
+
+                                  <div class="subtask-badges">
+                                    <span class="time-pill" style="font-weight:700;">⏱ ${sub.mins} мин (${(sub.mins / 60).toFixed(1)} ч)</span>
+                                    ${
+                                      sub.isMovedIn
+                                        ? `<button
+                                            type="button"
+                                            class="btn btn-sm"
+                                            style="padding:3px 7px; font-size:11.5px;"
+                                            data-action="return-single-subtask"
+                                            data-subtask-id="${sub.id}"
+                                            title="Вернуть этот параграф обратно на исходную дату (${formatRuDate(sub.originDate)})"
+                                          >
+                                            ↩ На ${formatShortDate(sub.originDate)}
+                                          </button>`
+                                        : ''
+                                    }
+                                  </div>
+                                </label>
+                              `;
+                            })
+                            .join('')}
+                        </div>
+
+                        ${
+                          card.uncheckedCount > 0 && card.subjectId !== 'all'
+                            ? `
+                          <div class="remainder-transfer-bar">
+                            <div style="font-size:13px; font-weight:600; color:var(--ink);">
+                              ${
+                                card.doneCount > 0
+                                  ? `⚡ Вы сделали <b>${card.doneCount} из ${card.subtasks.length}</b>. Перенести оставшиеся <b>${card.uncheckedCount} п. (${card.remainingMins} мин / ${(card.remainingMins / 60).toFixed(1)} ч)</b> в другую карточку:`
+                                  : `📅 Не успеваете сегодня? Перенести неотмеченные <b>${card.uncheckedCount} п. (${card.remainingMins} мин / ${(card.remainingMins / 60).toFixed(1)} ч)</b>:`
+                              }
+                            </div>
+
+                            <div class="transfer-btn-group">
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm"
+                                data-action="move-card-unchecked"
+                                data-subj="${card.subjectId}"
+                                data-target-date="${card.nextLessonDate}"
+                                title="Автоматически склеить неотмеченные параграфы со следующим занятием по предмету ${subj.shortName} (${formatRuDate(card.nextLessonDate)})"
+                              >
+                                ⏭️ На след. урок (${formatShortDate(card.nextLessonDate)})
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm"
+                                data-action="move-card-unchecked"
+                                data-subj="${card.subjectId}"
+                                data-target-date="${nextDay1}"
+                                title="Перенести неотмеченные чекбоксы на завтра (${formatRuDate(nextDay1)})"
+                              >
+                                +1д (${formatShortDate(nextDay1)})
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm"
+                                data-action="move-card-unchecked"
+                                data-subj="${card.subjectId}"
+                                data-target-date="${nextDay2}"
+                                title="Перенести неотмеченные чекбоксы на через 2 дня (${formatRuDate(nextDay2)})"
+                              >
+                                +2д (${formatShortDate(nextDay2)})
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-sm"
+                                data-action="move-card-unchecked"
+                                data-subj="${card.subjectId}"
+                                data-target-date="${nextDay3}"
+                                title="Перенести неотмеченные чекбоксы на через 3 дня (${formatRuDate(nextDay3)})"
+                              >
+                                +3д (${formatShortDate(nextDay3)})
+                              </button>
+                              <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--muted);">
+                                <span>📅 Дата:</span>
+                                <input
+                                  type="date"
+                                  class="btn btn-sm"
+                                  style="padding:3px 6px; font-size:12px;"
+                                  value="${card.nextLessonDate}"
+                                  min="2026-11-07"
+                                  max="2027-06-03"
+                                  data-action="move-card-unchecked-picker"
+                                  data-subj="${card.subjectId}"
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        `
+                            : ''
+                        }
+
+                        ${
+                          card.movedOutSubs && card.movedOutSubs.length > 0
+                            ? `
+                          <div class="moved-out-notice">
+                            <span>
+                              ↪ <b>Перенесено с этого дня вперёд (${card.movedOutSubs.length} п.):</b>
+                              ${card.movedOutSubs.map((s) => `${s.para} → <b>${formatShortDate(s.movedToDate)}</b>`).join(' · ')}
+                            </span>
+                            <button
                               type="button"
                               class="btn btn-sm"
-                              style="border-color:var(--warn); color:var(--warn);"
-                              data-action="request-solution"
-                              data-subj="${subj.id}"
-                              data-unit="${firstSol.unitNum}"
-                              data-title="${subj.shortName} — ${firstSol.name}"
-                              data-url="${firstSol.isLocal ? firstSol.url : driveUrl(firstSol.id)}"
+                              style="padding:3px 8px; font-size:12px;"
+                              data-action="return-card-moved-out"
+                              data-subj="${card.subjectId}"
                             >
-                              🔒 Посмотреть решение (Solucionario)
-                            </button>`
-                          : ''
-                      }
-                    </div>
-                  </div>
-                </article>
-              `;
-            })
-            .join('')}
+                              ↩ Вернуть их обратно на ${formatShortDate(state.selectedDate)}
+                            </button>
+                          </div>
+                        `
+                            : ''
+                        }
+
+                        <div class="task-links" style="margin-top:12px;">
+                          ${
+                            guideUnit && guideUnit.guideUrl
+                              ? `<button type="button" class="btn btn-sm" data-action="open-reader" data-url="${guideUnit.guideUrl}" data-title="Конспект: ${subj.shortName}">📖 Открыть конспект U1</button>`
+                              : ''
+                          }
+                          ${
+                            subj.id !== 'all'
+                              ? `<button type="button" class="btn btn-sm" data-action="open-subject" data-subj="${subj.id}">📂 Все материалы ${subj.shortName}</button>`
+                              : ''
+                          }
+                          ${
+                            firstSol
+                              ? `<button
+                                  type="button"
+                                  class="btn btn-sm"
+                                  style="border-color:var(--warn); color:var(--warn);"
+                                  data-action="request-solution"
+                                  data-subj="${subj.id}"
+                                  data-unit="${firstSol.unitNum}"
+                                  data-title="${subj.shortName} — ${firstSol.name}"
+                                  data-url="${firstSol.isLocal ? firstSol.url : driveUrl(firstSol.id)}"
+                                >
+                                  🔒 Посмотреть решение (Solucionario)
+                                </button>`
+                              : ''
+                          }
+                        </div>
+                      </article>
+                    `;
+                  })
+                  .join('')
+          }
         </div>
       </div>
 
@@ -752,6 +842,7 @@ function renderDailyTab() {
             <div class="progress-bar-fill" style="width: ${pct}%"></div>
           </div>
           <p style="margin:6px 0 0; font-size:13.5px; color:var(--muted);">
+            Выполнено параграфов: <b>${doneSubtasksCount} из ${totalSubtasksCount}</b><br/>
             Неделя <b>${sched.weekObj.week}</b> (${sched.weekObj.dates})<br/>
             Цель недели: <b>${sched.weekObj.deliverable}</b>
           </p>
@@ -762,7 +853,7 @@ function renderDailyTab() {
           <textarea
             id="textarea-day-note"
             class="notes-area"
-            placeholder="Запишите вопросы к тутории, номера решённых задач или почему сдвинули часы..."
+            placeholder="Запишите вопросы к тутории, номера решённых задач или какие параграфы перенесли..."
           >${state.dayNotes[state.selectedDate] || ''}</textarea>
         </div>
 
@@ -1828,35 +1919,18 @@ function attachEvents() {
     });
   }
 
-  // Сдвиг дат по предмету (+/- 1 день или выбор даты старта предмета)
-  document.querySelectorAll('[data-action="shift-subj-days"]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const subj = el.getAttribute('data-subj');
-      const delta = Number(el.getAttribute('data-delta') || 0);
-      if (!state.subjectShiftDays) state.subjectShiftDays = {};
-      state.subjectShiftDays[subj] = Number(state.subjectShiftDays[subj] || 0) + delta;
-      saveState();
-      renderApp();
+  // Helper для получения расписания выбранного дня
+  const getCurrentDayMergedSched = () =>
+    getMergedDailySchedule(state.selectedDate, {
+      ...state,
+      selectedElectives: getActiveElectivesList(),
     });
-  });
 
-  document.querySelectorAll('[data-action="pick-subj-start-date"]').forEach((el) => {
-    el.addEventListener('change', (e) => {
-      const subj = el.getAttribute('data-subj');
-      const pickedDate = e.target.value;
-      if (pickedDate) {
-        const diff = daysBetweenStr('2026-11-07', pickedDate);
-        if (!state.subjectShiftDays) state.subjectShiftDays = {};
-        state.subjectShiftDays[subj] = diff;
-        saveState();
-        renderApp();
-      }
-    });
-  });
-
+  // Сброс всех переносов параграфов
   const btnResetAllShifts = document.getElementById('btn-reset-all-shifts');
   if (btnResetAllShifts) {
     btnResetAllShifts.addEventListener('click', () => {
+      state.movedSubtasks = {};
       state.subjectShiftDays = {};
       state.loggedMinutes = {};
       state.rescheduledBlocks = {};
@@ -1865,41 +1939,150 @@ function attachEvents() {
     });
   }
 
-  // Ввод фактически отработанных минут по блоку (для автоматического пересчёта будущих дней)
-  document.querySelectorAll('[data-action="log-block-mins"]').forEach((el) => {
-    el.addEventListener('change', (e) => {
-      const blockId = el.getAttribute('data-block-id');
-      const val = e.target.value;
-      if (!state.loggedMinutes) state.loggedMinutes = {};
-      if (val === '' || val === null) {
-        delete state.loggedMinutes[blockId];
-      } else {
-        state.loggedMinutes[blockId] = Math.max(0, Number(val));
+  // Собрать все забытые долги прошлых дней в текущий выбранный день
+  const btnCollectOverdueToday = document.getElementById('btn-collect-overdue-today');
+  if (btnCollectOverdueToday) {
+    btnCollectOverdueToday.addEventListener('click', () => {
+      const activeElectives = getActiveElectivesList();
+      const overdue = findOverdueUncheckedSubtasks(state.selectedDate, {
+        ...state,
+        selectedElectives: activeElectives,
+      });
+      if (!state.movedSubtasks) state.movedSubtasks = {};
+      for (const sub of overdue) {
+        if (state.selectedDate === sub.originDate) {
+          delete state.movedSubtasks[sub.id];
+        } else {
+          state.movedSubtasks[sub.id] = state.selectedDate;
+        }
       }
       saveState();
       renderApp();
     });
-  });
+  }
 
-  document.querySelectorAll('[data-action="quick-log-mins"]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const blockId = el.getAttribute('data-block-id');
-      const mins = Number(el.getAttribute('data-mins') || 60);
-      if (!state.loggedMinutes) state.loggedMinutes = {};
-      state.loggedMinutes[blockId] = mins;
+  // Распределить забытые долги прошлых дней на ближайшие уроки своих предметов (начиная с текущего дня)
+  const btnCollectOverdueNextLesson = document.getElementById('btn-collect-overdue-next-lesson');
+  if (btnCollectOverdueNextLesson) {
+    btnCollectOverdueNextLesson.addEventListener('click', () => {
+      const activeElectives = getActiveElectivesList();
+      const overdue = findOverdueUncheckedSubtasks(state.selectedDate, {
+        ...state,
+        selectedElectives: activeElectives,
+      });
+      if (!state.movedSubtasks) state.movedSubtasks = {};
+      const dayBeforeSelected = shiftDateStr(state.selectedDate, -1);
+      for (const sub of overdue) {
+        const targetDate = findNextLessonDateForSubject(
+          dayBeforeSelected,
+          sub.subjectId,
+          activeElectives
+        );
+        if (targetDate === sub.originDate) {
+          delete state.movedSubtasks[sub.id];
+        } else {
+          state.movedSubtasks[sub.id] = targetDate;
+        }
+      }
+      saveState();
+      renderApp();
+    });
+  }
+
+  // Отметка отдельного чекбокса параграфа (subtask)
+  document.querySelectorAll('[data-action="toggle-subtask"]').forEach((el) => {
+    el.addEventListener('change', (e) => {
+      const subId = el.getAttribute('data-subtask-id');
+      if (!state.completedSubtasks) state.completedSubtasks = {};
+      state.completedSubtasks[subId] = e.target.checked;
       saveState();
       renderApp();
     });
   });
 
-  // Ручной перенос конкретного блока на другую выбранную дату
-  document.querySelectorAll('[data-action="reschedule-block-date"]').forEach((el) => {
+  // Отметить сразу все чекбоксы внутри карточки предмета
+  document.querySelectorAll('[data-action="check-all-card-subtasks"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const subjId = el.getAttribute('data-subj');
+      const sched = getCurrentDayMergedSched();
+      const card = sched.cards.find((c) => c.subjectId === subjId);
+      if (card) {
+        if (!state.completedSubtasks) state.completedSubtasks = {};
+        for (const sub of card.subtasks) {
+          state.completedSubtasks[sub.id] = true;
+        }
+        saveState();
+        renderApp();
+      }
+    });
+  });
+
+  // Функция переноса ТОЛЬКО неотмеченных чекбоксов карточки предмета на новую дату
+  const moveUncheckedInSubjectCard = (subjId, targetDate) => {
+    if (!subjId || !targetDate) return;
+    const sched = getCurrentDayMergedSched();
+    const card = sched.cards.find((c) => c.subjectId === subjId);
+    if (!card) return;
+    if (!state.movedSubtasks) state.movedSubtasks = {};
+
+    for (const sub of card.subtasks) {
+      const isDone = Boolean(state.completedSubtasks?.[sub.id]);
+      if (!isDone) {
+        if (targetDate === sub.originDate) {
+          delete state.movedSubtasks[sub.id];
+        } else {
+          state.movedSubtasks[sub.id] = targetDate;
+        }
+      }
+    }
+    saveState();
+    renderApp();
+  };
+
+  // Кнопки переноса остатка в 1 клик (⏭️ На след. урок, +1д, +2д, +3д)
+  document.querySelectorAll('[data-action="move-card-unchecked"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const subjId = el.getAttribute('data-subj');
+      const targetDate = el.getAttribute('data-target-date');
+      moveUncheckedInSubjectCard(subjId, targetDate);
+    });
+  });
+
+  // Выбор произвольной даты в календаре карточки для переноса остатка
+  document.querySelectorAll('[data-action="move-card-unchecked-picker"]').forEach((el) => {
     el.addEventListener('change', (e) => {
-      const blockId = el.getAttribute('data-block-id');
+      const subjId = el.getAttribute('data-subj');
       const targetDate = e.target.value;
       if (targetDate) {
-        if (!state.rescheduledBlocks) state.rescheduledBlocks = {};
-        state.rescheduledBlocks[blockId] = targetDate;
+        moveUncheckedInSubjectCard(subjId, targetDate);
+      }
+    });
+  });
+
+  // Вернуть один конкретный перенесённый параграф на его исходную дату
+  document.querySelectorAll('[data-action="return-single-subtask"]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const subId = el.getAttribute('data-subtask-id');
+      if (state.movedSubtasks && subId) {
+        delete state.movedSubtasks[subId];
+        saveState();
+        renderApp();
+      }
+    });
+  });
+
+  // Вернуть все параграфы, перенесённые с текущего дня вперёд по этому предмету
+  document.querySelectorAll('[data-action="return-card-moved-out"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const subjId = el.getAttribute('data-subj');
+      const sched = getCurrentDayMergedSched();
+      const card = sched.cards.find((c) => c.subjectId === subjId);
+      if (card && card.movedOutSubs && state.movedSubtasks) {
+        for (const sub of card.movedOutSubs) {
+          delete state.movedSubtasks[sub.id];
+        }
         saveState();
         renderApp();
       }

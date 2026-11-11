@@ -1,5 +1,5 @@
-// Детальный учебный план по неделям (W01–W30: 07.11.2026 – 03.06.2027) и адаптивный генератор расписания по дням
-// Поддерживает динамическую замену спецпредметов (Electivas), сдвиг дат по каждому предмету и пересчёт часов
+// Детальный учебный план по неделям (W01–W30: 07.11.2026 – 03.06.2027)
+// и система «Умной склейки параграфов и переноса неотмеченного остатка» по дням
 
 import { MANDATORY_SUBJECT_IDS, SUBJECTS } from './courseData.js';
 
@@ -568,7 +568,6 @@ const BASE_WEEKS_PLAN = [
   },
 ];
 
-// Автоматически дополняем каждую неделю W01–W30 данными для всех 10 предметов (включая Química, Biología, Geografía, Empresa)
 export const WEEKS_PLAN = BASE_WEEKS_PLAN.map((w) => {
   const enrichedSubjects = { ...w.subjects };
   for (const subjId of ['quimica', 'biologia', 'geografia', 'empresa']) {
@@ -612,221 +611,459 @@ export function findWeekForDate(dateStr) {
   );
 }
 
-// Базовые блоки по предметам для первых 9 дней спринта (динамически адаптируются под выбранные спецпредметы E1 и E2)
+// Автоматически разбивает любой учебный блок на 2 наглядных подпункта-чекбокса (параграфа/шага),
+// чтобы при склейке карточек (например, §1–2 + §3–4 = 4 чекбокса) можно было выполнить половину (2 из 4),
+// а оставшиеся 2 чекбокса перенести в следующую карточку!
+function buildSubtasksForBlock(block, dateStr) {
+  if (block.subtasks && block.subtasks.length > 0) {
+    return block.subtasks.map((st, i) => ({
+      id: st.id || `${block.id}__sub${i + 1}`,
+      parentBlockId: block.id,
+      subjectId: block.subjectId,
+      origDate: dateStr,
+      paraTag: st.paraTag || `Ч.${i + 1}`,
+      title: st.title,
+      mins: st.mins,
+    }));
+  }
+
+  // Для оргблоков или одиночных коротких блоков (≤ 30 мин) оставляем 1 чекбокс
+  if (block.subjectId === 'all' || block.mins <= 30) {
+    return [
+      {
+        id: `${block.id}__sub1`,
+        parentBlockId: block.id,
+        subjectId: block.subjectId,
+        origDate: dateStr,
+        paraTag: 'План',
+        title: `${block.title} — ${block.desc}`,
+        mins: block.mins,
+      },
+    ];
+  }
+
+  const m1 = Math.round(block.mins / 2 / 5) * 5 || Math.floor(block.mins / 2);
+  const m2 = block.mins - m1;
+
+  // Разбиваем описание на две логические части (теория/первые параграфы и практика/вторые параграфы)
+  const sentences = block.desc
+    .split(/(?<=\.)\s+|\s+·\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const part1Text =
+    sentences.length >= 2
+      ? `${block.title} (Часть 1 / Теория и разбор): ${sentences.slice(0, Math.ceil(sentences.length / 2)).join(' ')}`
+      : `${block.title} — §1 (Теория и разбор базовых примеров): ${block.desc}`;
+
+  const part2Text =
+    sentences.length >= 2
+      ? `${block.title} (Часть 2 / Практика и задачи): ${sentences.slice(Math.ceil(sentences.length / 2)).join(' ')}`
+      : `${block.title} — §2 (Самостоятельное решение задач и закрепление)`;
+
+  return [
+    {
+      id: `${block.id}__sub1`,
+      parentBlockId: block.id,
+      subjectId: block.subjectId,
+      origDate: dateStr,
+      paraTag: 'Шаг 1',
+      title: part1Text,
+      mins: m1,
+    },
+    {
+      id: `${block.id}__sub2`,
+      parentBlockId: block.id,
+      subjectId: block.subjectId,
+      origDate: dateStr,
+      paraTag: 'Шаг 2',
+      title: part2Text,
+      mins: m2,
+    },
+  ];
+}
+
+// Детальные блоки для первых дней спринта с явной разбивкой по параграфам (§1, §2, §3, §4...)
 function getSprintOverrideBlocks(dateStr, elective1, elective2, elective3) {
   const e1 = elective1 || 'fisica';
   const e2 = elective2 || 'ingles';
-  const e3 = elective3 || null; // Опциональный 3-й спецпредмет (например, tecno)
+  const e3 = elective3 || null;
+  const w1 = WEEKS_PLAN[0];
 
-  const getSubjTitleDesc = (subjId, defaultTitle, defaultDesc, weekObj) => {
+  const makeElectiveBlock = (id, subjId, mins, defaultTitle, defaultDesc, defaultSubtasks) => {
     const s = SUBJECTS.find((x) => x.id === subjId);
-    if (!s) return { title: defaultTitle, desc: defaultDesc };
-    if (defaultTitle && (subjId === 'fisica' || subjId === 'ingles' || subjId === 'tecno' || MANDATORY_SUBJECT_IDS.includes(subjId))) {
-      return { title: defaultTitle, desc: defaultDesc };
+    if (!s) return null;
+    if (defaultTitle && (subjId === 'fisica' || subjId === 'ingles' || subjId === 'tecno')) {
+      return { id, subjectId: subjId, mins, title: defaultTitle, desc: defaultDesc, subtasks: defaultSubtasks };
     }
+    const m1 = Math.round(mins / 2);
+    const m2 = mins - m1;
     return {
-      title: `${s.shortName}: ${s.units[0]?.title || 'Unidad 1'} (${weekObj.week})`,
-      desc: weekObj.subjects[subjId] || s.evalBreakdown.eval1,
+      id,
+      subjectId: subjId,
+      mins,
+      title: `${s.shortName}: ${s.units[0]?.title || 'Unidad 1'}`,
+      desc: w1.subjects[subjId] || s.evalBreakdown.eval1,
+      subtasks: [
+        {
+          id: `${id}__sub1`,
+          paraTag: 'U1 §1',
+          title: `${s.shortName} U1 §1: Теория и конспект первой половины раздела (${s.units[0]?.title || 'Unidad 1'})`,
+          mins: m1,
+        },
+        {
+          id: `${id}__sub2`,
+          paraTag: 'U1 §2',
+          title: `${s.shortName} U1 §2: Практические упражнения и подготовка Envío 1ª Eval`,
+          mins: m2,
+        },
+      ],
     };
   };
-
-  const w1 = WEEKS_PLAN[0];
 
   const map = {
     '2026-11-07': {
       badge: 'ДЕНЬ 1 · СТАРТ СПРИНТА',
       blocks: [
-        { id: 'd-2026-11-07-1', subjectId: 'all', mins: 20, title: 'Оргмомент: Вход в Aeducar и проверка личного кабинета', desc: 'Зайти на https://aula2.aeducar.es/, открыть все выбранные курсы (это фиксирует активность и защищает от отчисления по правилу 3 недель).' },
-        { id: 'd-2026-11-07-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U1 §1–2 + Конспект teoria-mates-1 (разделы 1–3)', desc: 'Изучить целые числа, порядок операций, дроби и ключевую ловушку задач типа «del resto» (остаток от остатка). Решить базовые примеры из апунтов U1.' },
         {
-          id: `d-2026-11-07-3-${e1}`,
-          subjectId: e1,
-          mins: 90,
-          ...getSubjTitleDesc(
-            e1,
-            e1 === 'fisica' ? 'Física UD1: Инструменты физики (конспект teoria-fisica-1, разделы 1–5)' : e1 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
-            e1 === 'fisica'
-              ? 'Перевод единиц в СИ (км/ч → м/с через ÷3,6), научная нотация, выразить переменную из формулы (despejar), тригонометрия прямоугольного треугольника и проекции векторов.'
-              : e1 === 'tecno'
-              ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, механическая работа W, мощность P и КПД (rendimiento η = P_útil / P_consumida).'
-              : null,
-            w1
-          ),
+          id: 'd-2026-11-07-1',
+          subjectId: 'all',
+          mins: 20,
+          title: 'Оргмомент: Вход в Aeducar и проверка личного кабинета',
+          desc: 'Зайти на https://aula2.aeducar.es/, открыть все выбранные курсы (защита от отчисления по правилу 3 недель).',
         },
-        { id: 'd-2026-11-07-4', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §1–2 + конспект teoria-espanol-1 (разделы 1–2)', desc: '6 элементов коммуникации (emisor, receptor, mensaje, canal, código, contexto/situación) и таблица 9 частей речи (CUADRO MORFOLOGÍA.pdf).' },
-      ],
+        {
+          id: 'd-2026-11-07-2',
+          subjectId: 'mates',
+          mins: 90,
+          title: 'Matemáticas U1 §1–2: Целые числа и Дроби',
+          desc: 'Изучить целые числа, порядок операций, дроби и ключевую ловушку задач типа «del resto».',
+          subtasks: [
+            { id: 'd-2026-11-07-2__sub1', paraTag: 'U1 §1', title: 'U1 §1: Целые числа, степени и иерархия операций (конспект teoria-mates-1, разд. 1–2)', mins: 45 },
+            { id: 'd-2026-11-07-2__sub2', paraTag: 'U1 §2', title: 'U1 §2: Дроби и задачи на «остаток от остатка» («del resto», разд. 3 + примеры из апунтов)', mins: 45 },
+          ],
+        },
+        makeElectiveBlock(
+          `d-2026-11-07-3-${e1}`,
+          e1,
+          90,
+          e1 === 'fisica' ? 'Física UD1 §1–2: Инструменты физики и векторы' : e1 === 'tecno' ? 'Tecnología II U1 §1–2: Единицы энергии и КПД' : null,
+          'Перевод единиц в СИ, тригонометрия и проекции векторов.',
+          e1 === 'fisica'
+            ? [
+                { id: `d-2026-11-07-3-${e1}__sub1`, paraTag: 'UD1 §1', title: 'UD1 §1: Перевод единиц в СИ (км/ч → м/с), научная нотация и вывод переменных (teoria-fisica-1, разд. 1–3)', mins: 45 },
+                { id: `d-2026-11-07-3-${e1}__sub2`, paraTag: 'UD1 §2', title: 'UD1 §2: Тригонометрия прямоугольного треугольника и разложение векторов по осям X и Y (разд. 4–5)', mins: 45 },
+              ]
+            : null
+        ),
+        {
+          id: 'd-2026-11-07-4',
+          subjectId: 'lengua',
+          mins: 60,
+          title: 'Lengua U1 §1–2: Коммуникация и Морфология',
+          desc: '6 элементов коммуникации и таблица 9 частей речи (CUADRO MORFOLOGÍA.pdf).',
+          subtasks: [
+            { id: 'd-2026-11-07-4__sub1', paraTag: 'U1 §1', title: 'U1 §1: 6 элементов коммуникации (emisor, receptor, mensaje, canal, código, contexto)', mins: 30 },
+            { id: 'd-2026-11-07-4__sub2', paraTag: 'U1 §2', title: 'U1 §2: Разбор таблицы 9 частей речи (CUADRO MORFOLOGÍA.pdf + конспект разд. 2)', mins: 30 },
+          ],
+        },
+      ].filter(Boolean),
     },
     '2026-11-08': {
       badge: 'ДЕНЬ 2 · БАЗА U1',
       blocks: [
+        makeElectiveBlock(
+          `d-2026-11-08-1-${e2}`,
+          e2,
+          90,
+          e2 === 'ingles' ? 'Inglés U1 §1–2: Present Tenses, Pronouns & Questions' : null,
+          'Present Simple vs Continuous, вопросы и самопроверка U1.',
+          e2 === 'ingles'
+            ? [
+                { id: `d-2026-11-08-1-${e2}__sub1`, paraTag: 'U1 §1', title: 'U1 §1: Personal Pronouns, Possessives, Present Simple vs Present Continuous (AGS INGLÉS Unidad 1.pdf)', mins: 45 },
+                { id: `d-2026-11-08-1-${e2}__sub2`, paraTag: 'U1 §2', title: 'U1 §2: Adverbs of frequency, Question formation и выполнение упражнений самопроверки U1', mins: 45 },
+              ]
+            : null
+        ),
         {
-          id: `d-2026-11-08-1-${e2}`,
-          subjectId: e2,
-          mins: 90,
-          ...getSubjTitleDesc(
-            e2,
-            e2 === 'ingles' ? 'Inglés U1: Present Simple vs Continuous, Pronouns & Questions' : e2 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
-            e2 === 'ingles'
-              ? 'Прочитать теорию AGS INGLÉS Unidad 1.pdf, выполнить упражнения на самопроверку и сверить по solucionario autoevaluaciones unidad 1 ing.pdf.'
-              : e2 === 'tecno'
-              ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, механическая работа W, мощность P и КПД.'
-              : null,
-            w1
-          ),
+          id: 'd-2026-11-08-2',
+          subjectId: 'digital',
+          mins: 60,
+          title: 'Competencia Digital Tema 1 §1–2: Поиск и метод SIFT',
+          desc: 'Булевы операторы, команды поиска и критическая оценка источников.',
+          subtasks: [
+            { id: 'd-2026-11-08-2__sub1', paraTag: 'T1 §1', title: 'Tema 1 §1: Булевы операторы (AND, OR, NOT) и команды (site:, filetype:, кавычки)', mins: 30 },
+            { id: 'd-2026-11-08-2__sub2', paraTag: 'T1 §2', title: 'Tema 1 §2: Оценка достоверности источников (метод SIFT) и лицензии Creative Commons', mins: 30 },
+          ],
         },
-        { id: 'd-2026-11-08-2', subjectId: 'digital', mins: 60, title: 'Competencia Digital Tema 1: Поисковые операторы и метод SIFT', desc: 'Изучить Tema1_Búsqueda información.pdf (операторы AND, OR, NOT, кавычки, site:, filetype:, оценка источников SIFT, лицензии Creative Commons).' },
-        { id: 'd-2026-11-08-3', subjectId: 'mates', mins: 60, title: 'Matemáticas U1: Практика задач на дроби (Actividades de envío U1, задачи №1–2)', desc: 'Решить на черновике задачи №1 (завтрак на 153 чел.) и №2 (зарплата Надии) из Actividades de envío unidad 1.pdf.' },
+        {
+          id: 'd-2026-11-08-3',
+          subjectId: 'mates',
+          mins: 60,
+          title: 'Matemáticas U1: Практика задач №1–2 из Envío U1',
+          desc: 'Решить на черновике задачи №1 (завтрак на 153 чел.) и №2 (зарплата Надии).',
+          subtasks: [
+            { id: 'd-2026-11-08-3__sub1', paraTag: 'Envío №1', title: 'Envío U1 — Задача №1: Расчёт продуктов завтрака на 153 человека (мука, молоко, яйца)', mins: 30 },
+            { id: 'd-2026-11-08-3__sub2', paraTag: 'Envío №2', title: 'Envío U1 — Задача №2: Зарплата Надии (вычеты SS/IRPF и доли расходов «del resto»)', mins: 30 },
+          ],
+        },
         ...(e3
           ? [
-              {
-                id: `d-2026-11-08-4-${e3}`,
-                subjectId: e3,
-                mins: 75,
-                ...getSubjTitleDesc(
-                  e3,
-                  e3 === 'tecno' ? 'Tecnología II U1 §1–3 + конспект teoria-tecno-1' : null,
-                  e3 === 'tecno' ? 'Единицы энергии (J, cal, kWh, tep), факторы конверсии, работа, мощность и КПД.' : null,
-                  w1
-                ),
-              },
+              makeElectiveBlock(
+                `d-2026-11-08-4-${e3}`,
+                e3,
+                80,
+                e3 === 'tecno' ? 'Tecnología II U1 §1–2: Единицы энергии и КПД' : null,
+                'Единицы энергии (J, cal, kWh, tep), работа, мощность и КПД.',
+                e3 === 'tecno'
+                  ? [
+                      { id: `d-2026-11-08-4-${e3}__sub1`, paraTag: 'U1 §1', title: 'U1 §1: Единицы энергии (J, cal, kWh, tep) и факторы конверсии (teoria-tecno-1)', mins: 40 },
+                      { id: `d-2026-11-08-4-${e3}__sub2`, paraTag: 'U1 §2', title: 'U1 §2: Работа W, мощность P и формула КПД (η = P_útil / P_consumida)', mins: 40 },
+                    ]
+                  : null
+              ),
             ]
           : []),
-      ],
+      ].filter(Boolean),
     },
     '2026-11-09': {
       badge: 'ДЕНЬ 3 · ПРОЦЕНТЫ И ТЕКСТ',
       blocks: [
-        { id: 'd-2026-11-09-1', subjectId: 'mates', mins: 75, title: 'Matemáticas U1 §3: Проценты и индексы изменения', desc: 'Изучить разделы 4–5 в teoria-mates-1 (цепочки скидок/наценок, возврат к исходной цене, tasa de variación). Решить задачи №3 и №4 из Envío U1 (смета Марты и масло).' },
-        { id: 'd-2026-11-09-2', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §3–4: Наклонения глагола, объективность/субъективность и модальность', desc: 'Изучить разделы 3–5 в teoria-espanol-1: маркеры субъективности и 6 модальностей высказывания (enunciativa, interrogativa, exclamativa, exhortativa, dubitativa, desiderativa).' },
+        {
+          id: 'd-2026-11-09-1',
+          subjectId: 'mates',
+          mins: 80,
+          title: 'Matemáticas U1 §3: Проценты и задачи №3–4 из Envío U1',
+          desc: 'Индексы изменения, цепочки скидок/наценок и решение задач №3–4.',
+          subtasks: [
+            { id: 'd-2026-11-09-1__sub1', paraTag: 'U1 §3', title: 'U1 §3: Проценты, индекс изменения и цепочки скидок/наценок (teoria-mates-1, разд. 4–5)', mins: 40 },
+            { id: 'd-2026-11-09-1__sub2', paraTag: 'Envío №3–4', title: 'Envío U1 — Задачи №3 и №4: Смета ремонта Марты (+IVA) и сравнение акций на масло', mins: 40 },
+          ],
+        },
+        {
+          id: 'd-2026-11-09-2',
+          subjectId: 'lengua',
+          mins: 60,
+          title: 'Lengua U1 §3–4: Глагол, субъективность и модальность',
+          desc: 'Наклонения глагола, маркеры субъективности и 6 модальностей предложений.',
+          subtasks: [
+            { id: 'd-2026-11-09-2__sub1', paraTag: 'U1 §3', title: 'U1 §3: Времена и наклонения глагола (indicativo, subjuntivo, imperativo) + объективность/субъективность', mins: 30 },
+            { id: 'd-2026-11-09-2__sub2', paraTag: 'U1 §4', title: 'U1 §4: 6 модальностей высказывания (enunciativa, interrogativa, exhortativa, dubitativa, desiderativa, exclamativa)', mins: 30 },
+          ],
+        },
       ],
     },
     '2026-11-10': {
-      badge: 'ДЕНЬ 4 · СПЕЦПРЕДМЕТЫ (TEORÍA + PRÁCTICA)',
+      badge: 'ДЕНЬ 4 · СПЕЦПРЕДМЕТЫ (§3–4)',
       blocks: [
-        {
-          id: `d-2026-11-10-1-${e1}`,
-          subjectId: e1,
-          mins: 75,
-          ...getSubjTitleDesc(
-            e1,
-            e1 === 'fisica' ? 'Física UD1 §1–3: Прямолинейное движение MRU и MRUA' : null,
-            e1 === 'fisica' ? 'Изучить разделы 6–8 в teoria-fisica-1 (уравнения движения, графики x(t) и v(t), задачи на встречу и догонялки). Решить задачу №1 из Envío 1 Física (велосипедистка).' : null,
-            w1
-          ),
-        },
-        {
-          id: `d-2026-11-10-2-${e2}`,
-          subjectId: e2,
-          mins: 60,
-          ...getSubjTitleDesc(
-            e2,
-            e2 === 'ingles' ? 'Inglés U1: Разбор правил чтения и Modelo de Examen U1' : null,
-            e2 === 'ingles' ? 'Прочитать правила цитирования в consejos-para-realizar-actividades-de-envio.md и прорешать ACGS_Ingles_u1_mexamen26.pdf.' : null,
-            w1
-          ),
-        },
-      ],
+        makeElectiveBlock(
+          `d-2026-11-10-1-${e1}`,
+          e1,
+          80,
+          e1 === 'fisica' ? 'Física UD1 §3–4: Движение MRU, MRUA и задача №1 Envío 1' : null,
+          'Уравнения движения MRU и MRUA, графики и решение задачи №1.',
+          e1 === 'fisica'
+            ? [
+                { id: `d-2026-11-10-1-${e1}__sub1`, paraTag: 'UD1 §3', title: 'UD1 §3: Равномерное прямолинейное движение (MRU) и задачи на встречу/догонялки (разд. 6–7)', mins: 40 },
+                { id: `d-2026-11-10-1-${e1}__sub2`, paraTag: 'UD1 §4', title: 'UD1 §4: Равноускоренное движение (MRUA) + решение задачи №1 из Envío 1 (велосипедистка)', mins: 40 },
+              ]
+            : null
+        ),
+        makeElectiveBlock(
+          `d-2026-11-10-2-${e2}`,
+          e2,
+          60,
+          e2 === 'ingles' ? 'Inglés U1 §3–4: Правила Reading и Modelo de Examen U1' : null,
+          'Правила цитирования True/False и прорешивание модели экзамена U1.',
+          e2 === 'ingles'
+            ? [
+                { id: `d-2026-11-10-2-${e2}__sub1`, paraTag: 'U1 §3', title: 'U1 §3: Техника Reading True/False с дословным цитированием строк и перефразированием ответов', mins: 30 },
+                { id: `d-2026-11-10-2-${e2}__sub2`, paraTag: 'U1 §4', title: 'U1 §4: Полное решение модели экзамена ACGS_Ingles_u1_mexamen26.pdf', mins: 30 },
+              ]
+            : null
+        ),
+      ].filter(Boolean),
     },
     '2026-11-11': {
-      badge: 'ДЕНЬ 5 · ПРОПОРЦИИ И ПРАКТИКА',
+      badge: 'ДЕНЬ 5 · ПРОПОРЦИИ И ПРАКТИКА (§4–5)',
       blocks: [
-        { id: 'd-2026-11-11-1', subjectId: 'mates', mins: 65, title: 'Matemáticas U1 §4: Прямая, обратная и сложная пропорциональность, распределения', desc: 'Изучить разделы 6–8 в teoria-mates-1. Решить задачи №5 (рынок: прямые и обратные пропорции) и №6 (оптоволокно) из Envío U1.' },
         {
-          id: `d-2026-11-11-2-${e1}`,
-          subjectId: e1,
-          mins: 65,
-          ...getSubjTitleDesc(
-            e1,
-            e1 === 'fisica' ? '18:15 — Онлайн-тутория по Физике + Свободное падение' : null,
-            e1 === 'fisica' ? 'Подключиться к групповой тутории Física в 18:15 (Catalina Pena Rufas) и разобрать раздел 9 конспекта (caída libre y lanzamiento vertical).' : null,
-            w1
-          ),
+          id: 'd-2026-11-11-1',
+          subjectId: 'mates',
+          mins: 70,
+          title: 'Matemáticas U1 §4: Пропорциональность и задачи №5–6 из Envío U1',
+          desc: 'Прямая, обратная и сложная пропорциональность, распределения.',
+          subtasks: [
+            { id: 'd-2026-11-11-1__sub1', paraTag: 'U1 §4', title: 'U1 §4: Прямо и обратно пропорциональное деление + сложная пропорциональность (разд. 6–8)', mins: 35 },
+            { id: 'd-2026-11-11-1__sub2', paraTag: 'Envío №5–6', title: 'Envío U1 — Задачи №5 (рынок Лайла/Рафаэль/Сильвия) и №6 (бригада техников оптоволокна)', mins: 35 },
+          ],
         },
-      ],
+        makeElectiveBlock(
+          `d-2026-11-11-2-${e1}`,
+          e1,
+          70,
+          e1 === 'fisica' ? 'Física UD1 §5: Свободное падение + Онлайн-тутория (18:15)' : null,
+          'Вертикальный бросок, свободное падение и участие в онлайн-тутории.',
+          e1 === 'fisica'
+            ? [
+                { id: `d-2026-11-11-2-${e1}__sub1`, paraTag: 'UD1 §5', title: 'UD1 §5: Свободное падение и вертикальный бросок вверх/вниз (ось OY, a = −9,8 м/с²)', mins: 35 },
+                { id: `d-2026-11-11-2-${e1}__sub2`, paraTag: 'Тутория', title: '18:15 — Групповая онлайн-тутория по Физике (Catalina Pena Rufas) в Aeducar', mins: 35 },
+              ]
+            : null
+        ),
+      ].filter(Boolean),
     },
     '2026-11-12': {
-      badge: 'ДЕНЬ 6 · ЗАДАЧИ U1 И САМОПРОВЕРКА',
+      badge: 'ДЕНЬ 6 · БРОСКИ И ТИПЫ ТЕКСТОВ (§5–6)',
       blocks: [
+        makeElectiveBlock(
+          `d-2026-11-12-1-${e1}`,
+          e1,
+          70,
+          e1 === 'fisica' ? 'Física UD1 §6: Горизонтальный и параболический бросок' : null,
+          'Разложение по осям X и Y + решение задачи №2 из Envío 1.',
+          e1 === 'fisica'
+            ? [
+                { id: `d-2026-11-12-1-${e1}__sub1`, paraTag: 'UD1 §6', title: 'UD1 §6: Теория горизонтального и параболического броска (независимость движений X и Y)', mins: 35 },
+                { id: `d-2026-11-12-1-${e1}__sub2`, paraTag: 'Envío №2', title: 'Envío 1 Física — Задача №2: Гаечный ключ, падающий горизонтально с высоты 20 м со скоростью 4 м/с', mins: 35 },
+              ]
+            : null
+        ),
         {
-          id: `d-2026-11-12-1-${e1}`,
-          subjectId: e1,
-          mins: 70,
-          ...getSubjTitleDesc(
-            e1,
-            e1 === 'fisica' ? 'Física UD1 §4: Горизонтальный и параболический бросок' : null,
-            e1 === 'fisica' ? 'Разложить движение по осям X (MRU) и Y (MRUA с −g). Решить задачу №2 из Envío 1 Física (гаечный ключ с лесов 20 м).' : null,
-            w1
-          ),
+          id: 'd-2026-11-12-2',
+          subjectId: 'lengua',
+          mins: 60,
+          title: 'Lengua U1 §5–6: Типы текстов и упражнения самопроверки U1',
+          desc: 'Гуманитарные и научно-технические тексты + упражнения U1.',
+          subtasks: [
+            { id: 'd-2026-11-12-2__sub1', paraTag: 'U1 §5', title: 'U1 §5: Отличия гуманитарных (humanísticos) и научно-технических (científico-técnicos) текстов', mins: 30 },
+            { id: 'd-2026-11-12-2__sub2', paraTag: 'U1 §6', title: 'U1 §6: Выполнение итоговых упражнений из UNIDAD 1 - CON EJERCICIOS.pdf', mins: 30 },
+          ],
         },
-        { id: 'd-2026-11-12-2', subjectId: 'lengua', mins: 60, title: 'Lengua U1 §5–6: Гуманитарные и научно-технические тексты + самопроверка U1', desc: 'Изучить раздел 6 в teoria-espanol-1 и выполнить упражнения из UNIDAD 1.pdf.' },
-      ],
+      ].filter(Boolean),
     },
     '2026-11-13': {
       badge: 'ДЕНЬ 7 · ПЯТНИЦА: ЧИСТОВИК MAT U1 + DIGITAL',
       blocks: [
-        { id: 'd-2026-11-13-1', subjectId: 'mates', mins: 65, title: 'Matemáticas: Написание чистовика Envío U1', desc: 'Аккуратно переписать от руки все 6 задач Actividades de envío U1 (проверив видимые числа!).' },
-        { id: 'd-2026-11-13-2', subjectId: 'digital', mins: 65, title: 'Competencia Digital Envío 1: Таблица 8 поисковых запросов и 4 источников', desc: 'Создать файл Martirosian_Grachia_ActividadEnvio1.docx, оформить Actividad 1 (введение 80–120 слов про семью FP + таблица 8 запросов + таблица 4 источников).' },
+        {
+          id: 'd-2026-11-13-1',
+          subjectId: 'mates',
+          mins: 70,
+          title: 'Matemáticas: Оформление чистовика Actividades de envío U1',
+          desc: 'Переписать от руки все 6 задач Envío U1 с полным ходом решения.',
+          subtasks: [
+            { id: 'd-2026-11-13-1__sub1', paraTag: 'Чистовик ч.1', title: 'Чистовик Matemáticas Envío U1: аккуратное оформление задач №1, №2 и №3 (проверив видимые числа!)', mins: 35 },
+            { id: 'd-2026-11-13-1__sub2', paraTag: 'Чистовик ч.2', title: 'Чистовик Matemáticas Envío U1: оформление задач №4, №5 и №6 и сканирование в единый PDF', mins: 35 },
+          ],
+        },
+        {
+          id: 'd-2026-11-13-2',
+          subjectId: 'digital',
+          mins: 70,
+          title: 'Competencia Digital Envío 1: Выполнение Actividad 1 (.docx)',
+          desc: 'Создание документа Word и таблиц поисковых запросов и источников.',
+          subtasks: [
+            { id: 'd-2026-11-13-2__sub1', paraTag: 'Envío Ч.1', title: 'Digital Envío 1: Создать Martirosian_Grachia_ActividadEnvio1.docx, написать введение (80–120 слов) и таблицу 8 поисковых запросов', mins: 35 },
+            { id: 'd-2026-11-13-2__sub2', paraTag: 'Envío Ч.2', title: 'Digital Envío 1: Заполнить таблицу критической оценки 4 официальных источников (критерии SIFT)', mins: 35 },
+          ],
+        },
       ],
     },
     '2026-11-14': {
       badge: 'ДЕНЬ 8 · СУББОТА: ПЕРЕХОД К UNIDAD 2',
       blocks: [
+        makeElectiveBlock(
+          `d-2026-11-14-1-${e1}`,
+          e1,
+          100,
+          e1 === 'fisica' ? 'Física UD1 §7 (MCU) + Старт UD2 Dinámica (§1–2)' : null,
+          'Круговое движение MCU, задача №3 из Envío 1 и старт Динамики.',
+          e1 === 'fisica'
+            ? [
+                { id: `d-2026-11-14-1-${e1}__sub1`, paraTag: 'UD1 §7', title: 'UD1 §7: Движение по окружности (MCU: ω, v, T, f, a_n) + задача №3 из Envío 1 (колесо обозрения)', mins: 50 },
+                { id: `d-2026-11-14-1-${e1}__sub2`, paraTag: 'UD2 §1–2', title: 'UD2 §1–2: Законы Ньютона, сила тяжести, нормальная реакция опоры N и сила трения F_r', mins: 50 },
+              ]
+            : null
+        ),
         {
-          id: `d-2026-11-14-1-${e1}`,
-          subjectId: e1,
-          mins: 100,
-          ...getSubjTitleDesc(
-            e1,
-            e1 === 'fisica' ? 'Física UD1 §5 (MCU) + Старт UD2 Dinámica' : null,
-            e1 === 'fisica' ? 'Разобрать круговое движение MCU (ω = 2π/T, v = ω·R, a_n = v²/R) и решить задачу №3 из Envío 1 (колесо обозрения R=18 м, T=40 с). Начать чтение UD2 Dinámica.pdf.' : null,
-            w1
-          ),
+          id: 'd-2026-11-14-2',
+          subjectId: 'mates',
+          mins: 90,
+          title: 'Matemáticas U2 §1–3: Многочлены и уравнения 1–2 степени',
+          desc: 'Алгебра, формулы сокращённого умножения и задачи №1–3 из Envío U2.',
+          subtasks: [
+            { id: 'd-2026-11-14-2__sub1', paraTag: 'U2 §1–2', title: 'U2 §1–2: Многочлены, формулы сокращённого умножения и уравнения 1-й и 2-й степени', mins: 45 },
+            { id: 'd-2026-11-14-2__sub2', paraTag: 'Envío U2 №1–3', title: 'Envío U2 — Задачи №1 (пруд с дорожкой 1 м), №2 (телефонный тариф) и №3 (участок 96 м²)', mins: 45 },
+          ],
         },
-        { id: 'd-2026-11-14-2', subjectId: 'mates', mins: 90, title: 'Matemáticas U2 §1–3: Многочлены, формулы сокращённого умножения и уравнения 1–2 степени', desc: 'Изучить U2 в Apuntes completos. Решить задачи №1 (пруд с дорожкой), №2 (телефонный счёт) и №3 (огород 96 м²) из Actividades de envío U2.' },
-        { id: 'd-2026-11-14-3', subjectId: 'lengua', mins: 75, title: 'Lengua U2 §1–3 + EXPLICACIONES CLASE 26_10.pdf', desc: 'Изучить функции языка, типы синтагм, страдательный залог (pasiva perifrástica vs pasiva refleja), безличные предложения с «se» и правило формулировки TEMA (<12 слов, без глагола).' },
-      ],
+        {
+          id: 'd-2026-11-14-3',
+          subjectId: 'lengua',
+          mins: 80,
+          title: 'Lengua U2 §1–3: Функции языка, Пассив/Безличные и TEMA',
+          desc: 'Функции языка, типы синтагм, пассивный залог и формулировка темы.',
+          subtasks: [
+            { id: 'd-2026-11-14-3__sub1', paraTag: 'U2 §1–2', title: 'U2 §1–2: 6 функций языка (representativa, expresiva, apelativa, poética, fática, metalingüística) и типы синтагм', mins: 40 },
+            { id: 'd-2026-11-14-3__sub2', paraTag: 'U2 §3', title: 'U2 §3 (EXPLICACIONES CLASE 26_10.pdf): Pasiva perifrástica vs refleja, impersonales и формулировка TEMA (<12 слов без глагола)', mins: 40 },
+          ],
+        },
+      ].filter(Boolean),
     },
     '2026-11-15': {
       badge: 'ДЕНЬ 9 · ВОСКРЕСЕНЬЕ: U2 + DIGITAL ENVÍO',
       blocks: [
+        makeElectiveBlock(
+          `d-2026-11-15-1-${e2}`,
+          e2,
+          100,
+          e2 === 'ingles' ? 'Inglés U2 §1–3: Past & Perfect Tenses, Used to + Modelo U2' : null,
+          'Времена группы Past и Perfect, конструкция used to и модель экзамена U2.',
+          e2 === 'ingles'
+            ? [
+                { id: `d-2026-11-15-1-${e2}__sub1`, paraTag: 'U2 §1–2', title: 'U2 §1–2: Past Simple/Continuous, Present Perfect Simple/Continuous, Past Perfect и used to (AGS INGLÉS Unidad 2.pdf)', mins: 50 },
+                { id: `d-2026-11-15-1-${e2}__sub2`, paraTag: 'U2 §3', title: 'U2 §3: Упражнения самопроверки U2 + полное решение модели экзамена ACGS_Ingles_u2_mexamen26.pdf', mins: 50 },
+              ]
+            : null
+        ),
         {
-          id: `d-2026-11-15-1-${e2}`,
-          subjectId: e2,
-          mins: 100,
-          ...getSubjTitleDesc(
-            e2,
-            e2 === 'ingles' ? 'Inglés U2: Past Simple/Continuous, Present & Past Perfect, Used to' : null,
-            e2 === 'ingles' ? 'Изучить AGS INGLÉS Unidad 2.pdf, выполнить autoevaluaciones U2 и прорешать модель экзамена ACGS_Ingles_u2_mexamen26.pdf.' : null,
-            w1
-          ),
+          id: 'd-2026-11-15-2',
+          subjectId: 'digital',
+          mins: 80,
+          title: 'Competencia Digital Envío 1: Завершение Actividad 2 и 3 (.docx)',
+          desc: 'Промпт для ИИ и карточка семьи FP (без ловушки про астронавта!).',
+          subtasks: [
+            { id: 'd-2026-11-15-2__sub1', paraTag: 'Envío Ч.3', title: 'Digital Envío 1 (Actividad 2): Промпт для ИИ + критическое сравнение ответа ИИ с официальными источниками (150–300 слов)', mins: 40 },
+            { id: 'd-2026-11-15-2__sub2', paraTag: 'Envío Ч.4', title: 'Digital Envío 1 (Actividad 3): Карточка семьи FP (стили Título 1/2, таблица, картинка CC, ≥5 реальных ИТ-профессий БЕЗ астронавта!)', mins: 40 },
+          ],
         },
-        { id: 'd-2026-11-15-2', subjectId: 'digital', mins: 80, title: 'Competencia Digital Envío 1: Завершение Actividad 2 и Actividad 3 (.docx)', desc: 'Дописать в Martirosian_Grachia_ActividadEnvio1.docx раздел с ИИ-промптом и карточку семьи FP (со стилями Título 1/2, таблицей, картинкой CC, колонтитулом и нумерацией страниц; БЕЗ астронавта!).' },
         ...(e3
           ? [
-              {
-                id: `d-2026-11-15-3-${e3}`,
-                subjectId: e3,
-                mins: 85,
-                ...getSubjTitleDesc(
-                  e3,
-                  e3 === 'tecno' ? 'Tecnología II U2 ч.1: Крутящий момент, шестерни, редукторы и шкивы' : null,
-                  e3 === 'tecno' ? 'Изучить первую половину unidad 2 mecánica v1.0.pdf (P = M·ω, передаточное отношение i = Z₁/Z₂ = N₂/N₁).' : null,
-                  w1
-                ),
-              },
+              makeElectiveBlock(
+                `d-2026-11-15-3-${e3}`,
+                e3,
+                90,
+                e3 === 'tecno' ? 'Tecnología II U2 §1–2: Механика и передачи' : null,
+                'Крутящий момент, редукторы и шкивы.',
+                e3 === 'tecno'
+                  ? [
+                      { id: `d-2026-11-15-3-${e3}__sub1`, paraTag: 'U2 §1', title: 'U2 §1: Крутящий момент (Par motor) и мощность вращения P = M · ω', mins: 45 },
+                      { id: `d-2026-11-15-3-${e3}__sub2`, paraTag: 'U2 §2', title: 'U2 §2: Зубчатые передачи, редукторы, ременные передачи и червячный механизм (i = Z₁/Z₂)', mins: 45 },
+                    ]
+                  : null
+              ),
             ]
           : []),
-      ],
+      ].filter(Boolean),
     },
   };
 
   return map[dateStr] || null;
 }
 
-// Базовый генератор блоков на конкретную дату (без учёта сдвигов по предметам)
+// Базовый генератор исходного расписания на выбранную дату (со списком подзадач subtasks в каждом блоке)
 export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingles']) {
   const d = new Date(`${dateStr}T12:00:00`);
-  const dow = d.getDay(); // 0=Sun .. 6=Sat
+  const dow = d.getDay();
   const dayName = RU_DAYS[dow];
   const dayShort = RU_DAYS_SHORT[dow];
   const weekObj = findWeekForDate(dateStr);
@@ -843,59 +1080,64 @@ export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingle
       dayShort,
       weekObj,
       badge: sprintOv.badge,
-      blocks: sprintOv.blocks,
+      blocks: sprintOv.blocks.map((b) => ({
+        ...b,
+        subtasks: buildSubtasksForBlock(b, dateStr),
+      })),
     };
   }
 
-  // Специальные дни дедлайнов и очных экзаменов
+  // Дни официальных дедлайнов и экзаменов
   if (dateStr === '2026-12-02' || dateStr === '2027-03-03' || dateStr === '2027-05-19') {
     const evalNum = dateStr === '2026-12-02' ? 1 : dateStr === '2027-03-03' ? 2 : 3;
     const s2 = SUBJECTS.find((s) => s.id === e2) || SUBJECTS[0];
+    const rawBlocks = [
+      {
+        id: `d-${dateStr}-1`,
+        subjectId: 'all',
+        mins: 60,
+        title: `Контрольная проверка и загрузка всех Actividades de Envío (${evalNum}ª Evaluación) в Aeducar`,
+        desc: 'Проверить имена файлов, наличие ФИО внутри каждого документа и убедиться, что статус доставки — «Enviado para calificar».',
+      },
+      {
+        id: `d-${dateStr}-2`,
+        subjectId: 'mates',
+        mins: 50,
+        title: 'Онлайн-тутория и повторение Matemáticas',
+        desc: weekObj.subjects.mates,
+      },
+      {
+        id: `d-${dateStr}-3-${e2}`,
+        subjectId: e2,
+        mins: 50,
+        title: `Повторение и проверка: ${s2.shortName}`,
+        desc: weekObj.subjects[e2] || s2.evalBreakdown[`eval${evalNum}`],
+      },
+    ];
     return {
       dateStr,
       dayName,
       dayShort,
       weekObj,
       badge: `🔥 ОФИЦИАЛЬНЫЙ ДЕДЛАЙН ${evalNum}ª EVALUACIÓN (до 23:59)`,
-      blocks: [
-        {
-          id: `d-${dateStr}-1`,
-          subjectId: 'all',
-          mins: 60,
-          title: `Контрольная проверка и загрузка всех Actividades de Envío (${evalNum}ª Evaluación) в Aeducar`,
-          desc: 'Проверить имена файлов, наличие ФИО внутри каждого документа, формат и убедиться, что статус доставки в Aeducar — «Enviado para calificar».',
-        },
-        {
-          id: `d-${dateStr}-2`,
-          subjectId: 'mates',
-          mins: 45,
-          title: 'Онлайн-тутория / Повторение Matemáticas',
-          desc: weekObj.subjects.mates,
-        },
-        {
-          id: `d-${dateStr}-3-${e2}`,
-          subjectId: e2,
-          mins: 45,
-          title: `Повторение и проверка: ${s2.shortName}`,
-          desc: weekObj.subjects[e2] || s2.evalBreakdown[`eval${evalNum}`],
-        },
-      ],
+      blocks: rawBlocks.map((b) => ({ ...b, subtasks: buildSubtasksForBlock(b, dateStr) })),
     };
   }
 
   if (dateStr === '2026-12-15' || dateStr === '2027-03-16' || dateStr === '2027-06-01') {
     const evalNum = dateStr === '2026-12-15' ? 1 : dateStr === '2027-03-16' ? 2 : 3;
+    const rawBlocks = [
+      { id: `d-${dateStr}-1`, subjectId: 'lengua', mins: 90, title: '16:00 — Очный экзамен: Competencia en Lengua Castellana', desc: 'Явиться в Centro de Adultos заранее с документом DNI/NIE и ручками.' },
+      { id: `d-${dateStr}-2`, subjectId: 'mates', mins: 90, title: '17:30 — Очный экзамен: Competencia Matemática', desc: 'Взять научный непрограммируемый калькулятор. Писать полный ход решения!' },
+      { id: `d-${dateStr}-3`, subjectId: 'digital', mins: 90, title: '19:00 — Очный экзамен: Competencia Básica Digital', desc: 'Вопросы аналогичны выполненным заданиям Actividades de envío.' },
+    ];
     return {
       dateStr,
       dayName,
       dayShort,
       weekObj,
       badge: `🎯 ДЕНЬ ОЧНЫХ ЭКЗАМЕНОВ (${evalNum}ª EVAL — COMPETENCIAS)`,
-      blocks: [
-        { id: `d-${dateStr}-1`, subjectId: 'lengua', mins: 90, title: '16:00 — Очный экзамен: Competencia en Lengua Castellana', desc: 'Явиться в Centro de Adultos заранее с документом DNI/NIE и ручками (чёрная/синяя).' },
-        { id: `d-${dateStr}-2`, subjectId: 'mates', mins: 90, title: '17:30 — Очный экзамен: Competencia Matemática', desc: 'Взять разрешённый научный непрограммируемый калькулятор. Писать полный ход решения каждой задачи!' },
-        { id: `d-${dateStr}-3`, subjectId: 'digital', mins: 90, title: '19:00 — Очный экзамен: Competencia Básica Digital', desc: 'Вопросы аналогичны выполненным заданиям Actividades de envío.' },
-      ],
+      blocks: rawBlocks.map((b) => ({ ...b, subtasks: buildSubtasksForBlock(b, dateStr) })),
     };
   }
 
@@ -903,23 +1145,23 @@ export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingle
     const evalNum = dateStr === '2026-12-17' ? 1 : dateStr === '2027-03-18' ? 2 : 3;
     const examElectives = [e1, e2, ...(e3 ? [e3] : [])].map((id) => SUBJECTS.find((s) => s.id === id)).filter(Boolean);
     examElectives.sort((a, b) => (a.examTime || '17:30').localeCompare(b.examTime || '17:30'));
+    const rawBlocks = examElectives.map((subj, idx) => ({
+      id: `d-${dateStr}-${idx + 1}-${subj.id}`,
+      subjectId: subj.id,
+      mins: 90,
+      title: `${subj.examTime} — Очный экзамен: ${subj.name}`,
+      desc: `Очный экзамен в Centro de Adultos (${subj.evalBreakdown[`eval${evalNum}`]}).`,
+    }));
     return {
       dateStr,
       dayName,
       dayShort,
       weekObj,
       badge: `🎯 ДЕНЬ ОЧНЫХ ЭКЗАМЕНОВ (${evalNum}ª EVAL — MATERIAS ESPECÍFICAS)`,
-      blocks: examElectives.map((subj, idx) => ({
-        id: `d-${dateStr}-${idx + 1}-${subj.id}`,
-        subjectId: subj.id,
-        mins: 90,
-        title: `${subj.examTime} — Очный экзамен: ${subj.name}`,
-        desc: `Очный экзамен в Centro de Adultos (${subj.evalBreakdown[`eval${evalNum}`]}). Не забудьте паспорт/DNI и калькулятор (для расчётных предметов).`,
-      })),
+      blocks: rawBlocks.map((b) => ({ ...b, subtasks: buildSubtasksForBlock(b, dateStr) })),
     };
   }
 
-  // Шаблон распределения предметов по дням недели (Пн–Вс) для активных 5 (или 6) предметов
   const isSprint = Boolean(weekObj.isSprint);
   const sE1 = SUBJECTS.find((s) => s.id === e1) || SUBJECTS[3];
   const sE2 = SUBJECTS.find((s) => s.id === e2) || SUBJECTS[4];
@@ -927,26 +1169,26 @@ export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingle
 
   const templatesByDow = {
     1: [
-      { subjectId: 'mates', mins: isSprint ? 75 : 60, label: 'Matemáticas (теория и разбор примеров)' },
-      { subjectId: 'lengua', mins: isSprint ? 60 : 45, label: 'Lengua Castellana (грамматика, текст и тутория)' },
+      { subjectId: 'mates', mins: isSprint ? 80 : 60, label: 'Matemáticas (теория и разбор примеров)' },
+      { subjectId: 'lengua', mins: isSprint ? 60 : 50, label: 'Lengua Castellana (грамматика, текст и тутория)' },
     ],
     2: [
-      { subjectId: e1, mins: isSprint ? 75 : 60, label: `${sE1.shortName} (теория, формулы и разбор задач)` },
-      { subjectId: e2, mins: isSprint ? 65 : 50, label: `${sE2.shortName} (теория, упражнения и модели экзамена)` },
+      { subjectId: e1, mins: isSprint ? 80 : 60, label: `${sE1.shortName} (теория, формулы и разбор задач)` },
+      { subjectId: e2, mins: isSprint ? 60 : 50, label: `${sE2.shortName} (теория, упражнения и модели экзамена)` },
     ],
     3: [
       ...(sE3
-        ? [{ subjectId: e3, mins: isSprint ? 70 : 55, label: `${sE3.shortName} (теория и расчётные задачи)` }]
-        : [{ subjectId: e2, mins: isSprint ? 65 : 50, label: `${sE2.shortName} (практика заданий и Envío)` }]),
-      { subjectId: 'mates', mins: isSprint ? 65 : 50, label: 'Matemáticas (практика задач и Envío)' },
+        ? [{ subjectId: e3, mins: isSprint ? 70 : 60, label: `${sE3.shortName} (теория и расчётные задачи)` }]
+        : [{ subjectId: e2, mins: isSprint ? 60 : 50, label: `${sE2.shortName} (практика заданий и Envío)` }]),
+      { subjectId: 'mates', mins: isSprint ? 60 : 50, label: 'Matemáticas (практика задач и Envío)' },
     ],
     4: [
-      { subjectId: e1, mins: isSprint ? 75 : 60, label: `${sE1.shortName} (решение задач и подготовка Envío)` },
-      { subjectId: 'lengua', mins: isSprint ? 55 : 45, label: 'Lengua Castellana (практика комментария и синтаксиса)' },
+      { subjectId: e1, mins: isSprint ? 80 : 60, label: `${sE1.shortName} (решение задач и подготовка Envío)` },
+      { subjectId: 'lengua', mins: isSprint ? 60 : 50, label: 'Lengua Castellana (практика комментария и синтаксиса)' },
     ],
     5: [
-      { subjectId: 'mates', mins: isSprint ? 60 : 45, label: 'Matemáticas (контрольные задачи недели)' },
-      { subjectId: 'digital', mins: isSprint ? 60 : 45, label: 'Competencia Digital (теория и практика Envío)' },
+      { subjectId: 'mates', mins: isSprint ? 60 : 50, label: 'Matemáticas (контрольные задачи недели)' },
+      { subjectId: 'digital', mins: isSprint ? 60 : 50, label: 'Competencia Digital (теория и практика Envío)' },
     ],
     6: [
       { subjectId: e1, mins: 100, label: `${sE1.shortName} (глубокий практикум и задачи Envío/экзамена)` },
@@ -955,15 +1197,15 @@ export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingle
     ],
     0: [
       ...(sE3
-        ? [{ subjectId: e3, mins: 95, label: `${sE3.shortName} (практикум по задачам и Soluciones)` }]
-        : [{ subjectId: e1, mins: 75, label: `${sE1.shortName} (повторение и закрепление задач недели)` }]),
+        ? [{ subjectId: e3, mins: 90, label: `${sE3.shortName} (практикум по задачам и Soluciones)` }]
+        : [{ subjectId: e1, mins: 80, label: `${sE1.shortName} (повторение и закрепление задач недели)` }]),
       { subjectId: e2, mins: 90, label: `${sE2.shortName} (практикум, контрольный вариант и Envío)` },
-      { subjectId: 'digital', mins: 55, label: 'Competencia Digital + Итоговое повторение недели' },
+      { subjectId: 'digital', mins: 60, label: 'Competencia Digital + Итоговое повторение недели' },
     ],
   };
 
   const dayTemplate = templatesByDow[dow] || templatesByDow[1];
-  const blocks = dayTemplate.map((item, idx) => ({
+  const rawBlocks = dayTemplate.map((item, idx) => ({
     id: `d-${dateStr}-${idx + 1}-${item.subjectId}`,
     subjectId: item.subjectId,
     mins: item.mins,
@@ -977,204 +1219,185 @@ export function getRawDailySchedule(dateStr, activeElectives = ['fisica', 'ingle
     dayShort,
     weekObj,
     badge: `${weekObj.week} · ${weekObj.phase}`,
-    blocks,
+    blocks: rawBlocks.map((b) => ({ ...b, subtasks: buildSubtasksForBlock(b, dateStr) })),
   };
 }
 
-// Вычисляет баланс часов по каждому предмету (План vs Факт) и коэффициент пересчёта на будущие дни
-export function computeSubjectHoursSummary(state, activeSubjectIds) {
-  const refDate = state.selectedDate || '2026-11-07';
-  const eval1End = '2026-12-17';
-  const eval2End = '2027-03-18';
-  const currentPeriodStart =
-    refDate <= eval1End ? '2026-11-07' : refDate <= eval2End ? '2026-12-18' : '2027-03-19';
-  const currentPeriodEnd =
-    refDate <= eval1End ? '2026-12-02' : refDate <= eval2End ? '2027-03-03' : '2027-05-19';
+// Находит ближайшую следующую дату (после fromDateStr), в которую по расписанию стоит занятие по предмету subjectId
+export function findNextLessonDateForSubject(fromDateStr, subjectId, activeElectives = ['fisica', 'ingles']) {
+  let cur = shiftDateStr(fromDateStr, 1);
+  for (let i = 0; i < 14 && cur <= '2027-06-03'; i++) {
+    const sched = getRawDailySchedule(cur, activeElectives);
+    if (sched.blocks.some((b) => b.subjectId === subjectId)) {
+      return cur;
+    }
+    cur = shiftDateStr(cur, 1);
+  }
+  return shiftDateStr(fromDateStr, 1);
+}
 
-  const summary = {};
-  for (const subjId of activeSubjectIds) {
-    summary[subjId] = {
-      subjectId: subjId,
-      shiftDays: Number(state.subjectShiftDays?.[subjId] || 0),
-      customStartDate: state.subjectStartDates?.[subjId] || '2026-11-07',
-      plannedTotalMins: 0,
-      plannedPastMins: 0,
-      actualLoggedMins: 0,
-      remainingSessions: 0,
-      remainingPlannedMins: 0,
-      deltaMins: 0, // >0 переработка (запас), <0 недоработка (долг часов)
-      extraMinsPerFutureSession: 0,
-    };
+// Собирает глобальную карту всех подзадач (subtasks) с 07.11.2026 по 03.06.2027,
+// чтобы мгновенно находить перенесённые пункты и склеивать их с карточками целевого дня!
+export function getMergedDailySchedule(dateStr, state = {}) {
+  const activeElectives = state.selectedElectives || ['fisica', 'ingles'];
+  const movedSubtasks = state.movedSubtasks || {}; // { [subtaskId]: 'YYYY-MM-DD' }
+  const completedSubtasks = state.completedSubtasks || {}; // { [subtaskId]: true/false }
+
+  const rawToday = getRawDailySchedule(dateStr, activeElectives);
+
+  // 1. Собираем все подзадачи, которые были перенесены НА эту дату (dateStr) с других дней
+  const incomingBySubject = {};
+  const sourceDatesToScan = new Set();
+  for (const [subId, targetDate] of Object.entries(movedSubtasks)) {
+    if (targetDate === dateStr) {
+      const m = subId.match(/^d-(\d{4}-\d{2}-\d{2})-/);
+      if (m && m[1] !== dateStr) {
+        sourceDatesToScan.add(m[1]);
+      }
+    }
   }
 
-  let cur = currentPeriodStart;
-  while (cur <= currentPeriodEnd) {
-    const raw = getRawDailySchedule(cur, state.selectedElectives || ['fisica', 'ingles']);
-    for (const b of raw.blocks) {
-      if (!summary[b.subjectId]) continue;
-      const st = summary[b.subjectId];
-      st.plannedTotalMins += b.mins;
-
-      const hasExplicitLog =
-        state.loggedMinutes && state.loggedMinutes[b.id] !== undefined && state.loggedMinutes[b.id] !== '';
-      const isChecked = Boolean(state.completedBlocks?.[b.id]);
-
-      if (cur <= refDate) {
-        st.plannedPastMins += b.mins;
-        if (hasExplicitLog) {
-          st.actualLoggedMins += Number(state.loggedMinutes[b.id]);
-        } else if (isChecked) {
-          st.actualLoggedMins += b.mins;
+  for (const srcDate of sourceDatesToScan) {
+    const srcRaw = getRawDailySchedule(srcDate, activeElectives);
+    for (const blk of srcRaw.blocks) {
+      for (const sub of blk.subtasks) {
+        if (movedSubtasks[sub.id] === dateStr) {
+          if (!incomingBySubject[sub.subjectId]) incomingBySubject[sub.subjectId] = [];
+          incomingBySubject[sub.subjectId].push({
+            ...sub,
+            isMovedHere: true,
+            movedFromDate: srcDate,
+          });
         }
+      }
+    }
+  }
+
+  // 2. Формируем склеенные карточки по предметам на dateStr
+  const subjectOrder = [];
+  const subtasksBySubject = {};
+  const metaBySubject = {};
+  const movedOutHistoryBySubject = {}; // Выполненные чекбоксы оставляем здесь, а перенесённые показываем компактной плашкой
+
+  for (const blk of rawToday.blocks) {
+    if (!subjectOrder.includes(blk.subjectId)) {
+      subjectOrder.push(blk.subjectId);
+      subtasksBySubject[blk.subjectId] = [];
+      metaBySubject[blk.subjectId] = {
+        baseTitle: blk.title,
+        baseDesc: blk.desc,
+      };
+      movedOutHistoryBySubject[blk.subjectId] = [];
+    }
+
+    for (const sub of blk.subtasks) {
+      const movedTo = movedSubtasks[sub.id];
+      if (movedTo && movedTo !== dateStr) {
+        // Этот чекбокс был перенесён на другой день
+        movedOutHistoryBySubject[blk.subjectId].push({
+          ...sub,
+          movedToDate: movedTo,
+        });
       } else {
-        if (hasExplicitLog) {
-          st.actualLoggedMins += Number(state.loggedMinutes[b.id]);
-        } else if (isChecked) {
-          st.actualLoggedMins += b.mins;
-        } else {
-          st.remainingSessions += 1;
-          st.remainingPlannedMins += b.mins;
+        subtasksBySubject[blk.subjectId].push({
+          ...sub,
+          isMovedHere: false,
+        });
+      }
+    }
+  }
+
+  // 3. Добавляем входящие перенесённые чекбоксы (ставятся ПЕРЕД сегодняшними параграфами, чтобы идти по порядку §1 → §2 → §3 → §4!)
+  for (const [subjId, incList] of Object.entries(incomingBySubject)) {
+    incList.sort((a, b) => a.origDate.localeCompare(b.origDate) || a.id.localeCompare(b.id));
+    if (!subjectOrder.includes(subjId)) {
+      subjectOrder.push(subjId);
+      const sObj = SUBJECTS.find((s) => s.id === subjId);
+      metaBySubject[subjId] = {
+        baseTitle: `${sObj?.shortName || 'Предмет'} (Перенесённое занятие)`,
+        baseDesc: rawToday.weekObj.subjects[subjId] || '',
+      };
+      movedOutHistoryBySubject[subjId] = [];
+      subtasksBySubject[subjId] = [...incList];
+    } else {
+      // Склеиваем: сначала перенесённые ранние параграфы (§1–2), затем плановые сегодняшние (§3–4)!
+      subtasksBySubject[subjId] = [...incList, ...subtasksBySubject[subjId]];
+    }
+  }
+
+  // 4. Собираем итоговые склеенные карточки предметов для отображения
+  const mergedCards = subjectOrder
+    .map((subjId) => {
+      const activeSubs = subtasksBySubject[subjId] || [];
+      const movedOutSubs = movedOutHistoryBySubject[subjId] || [];
+
+      if (activeSubs.length === 0 && movedOutSubs.length === 0) return null;
+
+      const totalMins = activeSubs.reduce((s, x) => s + x.mins, 0);
+      const doneSubs = activeSubs.filter((x) => completedSubtasks[x.id]);
+      const uncheckedSubs = activeSubs.filter((x) => !completedSubtasks[x.id]);
+      const doneMins = doneSubs.reduce((s, x) => s + x.mins, 0);
+      const remainingMins = uncheckedSubs.reduce((s, x) => s + x.mins, 0);
+      const movedInCount = activeSubs.filter((x) => x.isMovedHere).length;
+      const movedInMins = activeSubs.filter((x) => x.isMovedHere).reduce((s, x) => s + x.mins, 0);
+      const plannedTodayCount = activeSubs.filter((x) => !x.isMovedHere).length;
+      const plannedTodayMins = activeSubs.filter((x) => !x.isMovedHere).reduce((s, x) => s + x.mins, 0);
+
+      const nextLessonDate =
+        subjId !== 'all' ? findNextLessonDateForSubject(dateStr, subjId, activeElectives) : shiftDateStr(dateStr, 1);
+
+      return {
+        id: `card-${dateStr}-${subjId}`,
+        subjectId: subjId,
+        baseTitle: metaBySubject[subjId]?.baseTitle || '',
+        baseDesc: metaBySubject[subjId]?.baseDesc || '',
+        subtasks: activeSubs,
+        movedOutSubs,
+        totalMins,
+        doneMins,
+        remainingMins,
+        doneCount: doneSubs.length,
+        uncheckedCount: uncheckedSubs.length,
+        movedInCount,
+        movedInMins,
+        plannedTodayCount,
+        plannedTodayMins,
+        isMergedCard: movedInCount > 0 && plannedTodayCount > 0,
+        allCompleted: activeSubs.length > 0 && uncheckedSubs.length === 0,
+        nextLessonDate,
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    ...rawToday,
+    cards: mergedCards,
+  };
+}
+
+// Находит все невыполненные чекбоксы за прошедшие дни (< beforeDateStr), которые ещё не были перенесены вперёд
+export function findOverdueUncheckedSubtasks(beforeDateStr, state = {}) {
+  const activeElectives = state.selectedElectives || ['fisica', 'ingles'];
+  const movedSubtasks = state.movedSubtasks || {};
+  const completedSubtasks = state.completedSubtasks || {};
+  const overdue = [];
+
+  let cur = '2026-11-07';
+  while (cur < beforeDateStr && cur <= '2027-06-03') {
+    const raw = getRawDailySchedule(cur, activeElectives);
+    for (const blk of raw.blocks) {
+      if (blk.subjectId === 'all') continue;
+      for (const sub of blk.subtasks) {
+        const currentDateOfSub = movedSubtasks[sub.id] || cur;
+        if (currentDateOfSub < beforeDateStr && !completedSubtasks[sub.id]) {
+          overdue.push({
+            ...sub,
+            currentDate: currentDateOfSub,
+          });
         }
       }
     }
     cur = shiftDateStr(cur, 1);
   }
-
-  for (const subjId of Object.keys(summary)) {
-    const st = summary[subjId];
-    // Разница между фактически отработанным временем и планом на текущий момент
-    st.deltaMins = st.actualLoggedMins - st.plannedPastMins;
-    // Если есть недоработка (deltaMins < 0) или переработка (deltaMins > 0), распределяем её на оставшиеся занятия до дедлайна
-    if (st.remainingSessions > 0 && st.deltaMins !== 0) {
-      st.extraMinsPerFutureSession = Math.round(-st.deltaMins / st.remainingSessions);
-    } else {
-      st.extraMinsPerFutureSession = 0;
-    }
-  }
-
-  return summary;
-}
-
-// Главная функция получения расписания на день с учётом:
-// 1) Выбранных спецпредметов (2 или 3 по дропдауну)
-// 2) Индивидуального сдвига дат по конкретному предмету (subjectShiftDays / subjectStartDates)
-// 3) Ручного переноса конкретных блоков на другую дату (rescheduledBlocks)
-// 4) Автоматического пересчёта длительности занятий (adjustedMins) на основе фактически отработанных часов
-export function getDailySchedule(dateStr, state = {}) {
-  const activeElectives = state.selectedElectives || ['fisica', 'ingles'];
-  const activeSubjectIds = [...MANDATORY_SUBJECT_IDS, ...activeElectives.filter(Boolean)];
-  const raw = getRawDailySchedule(dateStr, activeElectives);
-  const hoursSummary = computeSubjectHoursSummary(state, activeSubjectIds);
-
-  const isExamOrDeadlineDay =
-    dateStr === '2026-12-02' ||
-    dateStr === '2027-03-03' ||
-    dateStr === '2027-05-19' ||
-    dateStr === '2026-12-15' ||
-    dateStr === '2027-03-16' ||
-    dateStr === '2027-06-01' ||
-    dateStr === '2026-12-17' ||
-    dateStr === '2027-03-18' ||
-    dateStr === '2027-06-03';
-
-  // Применяем индивидуальный сдвиг даты по предмету (если пользователь сдвинул дату старта/графика предмета)
-  const blocksAfterSubjectShift = raw.blocks
-    .map((b) => {
-      if (isExamOrDeadlineDay || b.subjectId === 'all') {
-        return { ...b, baseMins: b.mins, adjustedMins: b.mins, shiftApplied: 0 };
-      }
-      const shiftDays = Number(state.subjectShiftDays?.[b.subjectId] || 0);
-      let finalBlock = { ...b };
-
-      if (shiftDays !== 0) {
-        // Если расписание предмета сдвинуто на +N дней (позже), то на текущую дату dateStr подтягивается тема с даты (dateStr - shiftDays)
-        const sourceDate = shiftDateStr(dateStr, -shiftDays);
-        if (sourceDate < '2026-11-07') {
-          return {
-            ...b,
-            title: `${b.title} (Старт предмета сдвинут на ${shiftDateStr('2026-11-07', shiftDays)})`,
-            desc: `Вы сдвинули старт/график этого предмета на ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн. Нажмите «Сбросить сдвиг», если хотите начать сегодня.`,
-            baseMins: b.mins,
-            adjustedMins: 0,
-            shiftApplied: shiftDays,
-          };
-        }
-        const sourceRaw = getRawDailySchedule(sourceDate, activeElectives);
-        const matchingSourceBlock = sourceRaw.blocks.find((sb) => sb.subjectId === b.subjectId);
-        const sourceWeek = findWeekForDate(sourceDate);
-        if (matchingSourceBlock) {
-          finalBlock = {
-            ...b,
-            title: `${matchingSourceBlock.title} [Сдвиг графика: ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн.]`,
-            desc: matchingSourceBlock.desc,
-          };
-        } else {
-          finalBlock = {
-            ...b,
-            title: `${b.title} → тема из ${sourceWeek.week} [Сдвиг: ${shiftDays > 0 ? `+${shiftDays}` : shiftDays} дн.]`,
-            desc: sourceWeek.subjects[b.subjectId] || b.desc,
-          };
-        }
-      }
-
-      // Если блок был вручную перенесён пользователем на другую дату, скрываем его со старой даты
-      const rescheduledTo = state.rescheduledBlocks?.[b.id];
-      if (rescheduledTo && rescheduledTo !== dateStr) {
-        return null;
-      }
-
-      // Пересчёт длительности (adjustedMins) для будущих/незакрытых дней с учётом недоработки или переработки часов
-      const subjStat = hoursSummary[b.subjectId];
-      const extra = subjStat ? subjStat.extraMinsPerFutureSession : 0;
-      const hasLogged =
-        state.loggedMinutes && state.loggedMinutes[b.id] !== undefined && state.loggedMinutes[b.id] !== '';
-      const isDone = Boolean(state.completedBlocks?.[b.id]);
-
-      const adjustedMins =
-        !isDone && !hasLogged && extra !== 0
-          ? Math.max(15, Math.min(240, b.mins + extra))
-          : b.mins;
-
-      return {
-        ...finalBlock,
-        baseMins: b.mins,
-        adjustedMins,
-        extraMins: adjustedMins - b.mins,
-        shiftApplied: shiftDays,
-      };
-    })
-    .filter(Boolean);
-
-  // Добавляем блоки, которые пользователь вручную перенёс НА эту дату (dateStr) с других дней
-  const incomingRescheduled = [];
-  if (state.rescheduledBlocks) {
-    for (const [blockId, targetDate] of Object.entries(state.rescheduledBlocks)) {
-      if (targetDate === dateStr) {
-        // Извлекаем исходную дату из id вида d-YYYY-MM-DD-...
-        const m = blockId.match(/^d-(\d{4}-\d{2}-\d{2})-/);
-        if (m && m[1] !== dateStr) {
-          const origDate = m[1];
-          const origRaw = getRawDailySchedule(origDate, activeElectives);
-          const origBlock = origRaw.blocks.find((x) => x.id === blockId);
-          if (origBlock) {
-            incomingRescheduled.push({
-              ...origBlock,
-              title: `📌 [Перенесено с ${origDate}] ${origBlock.title}`,
-              baseMins: origBlock.mins,
-              adjustedMins: origBlock.mins,
-              extraMins: 0,
-              isRescheduledHere: true,
-              origDate,
-            });
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    ...raw,
-    blocks: [...blocksAfterSubjectShift, ...incomingRescheduled],
-    hoursSummary,
-  };
+  return overdue;
 }
