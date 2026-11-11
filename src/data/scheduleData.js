@@ -1265,8 +1265,16 @@ export function getMergedDailySchedule(dateStr, state = {}) {
           if (!incomingBySubject[sub.subjectId]) incomingBySubject[sub.subjectId] = [];
           incomingBySubject[sub.subjectId].push({
             ...sub,
+            para: sub.paraTag || sub.para || 'Шаг',
+            paraTag: sub.paraTag || sub.para || 'Шаг',
+            originDate: sub.origDate || srcDate,
+            origDate: sub.origDate || srcDate,
+            isMovedIn: true,
             isMovedHere: true,
             movedFromDate: srcDate,
+            isDone: Boolean(completedSubtasks[sub.id]),
+            parentTitle: blk.title,
+            parentDesc: blk.desc,
           });
         }
       }
@@ -1277,7 +1285,7 @@ export function getMergedDailySchedule(dateStr, state = {}) {
   const subjectOrder = [];
   const subtasksBySubject = {};
   const metaBySubject = {};
-  const movedOutHistoryBySubject = {}; // Выполненные чекбоксы оставляем здесь, а перенесённые показываем компактной плашкой
+  const movedOutHistoryBySubject = {};
 
   for (const blk of rawToday.blocks) {
     if (!subjectOrder.includes(blk.subjectId)) {
@@ -1286,21 +1294,38 @@ export function getMergedDailySchedule(dateStr, state = {}) {
       metaBySubject[blk.subjectId] = {
         baseTitle: blk.title,
         baseDesc: blk.desc,
+        titles: [blk.title],
+        descs: [blk.desc],
       };
       movedOutHistoryBySubject[blk.subjectId] = [];
+    } else {
+      if (!metaBySubject[blk.subjectId].titles.includes(blk.title)) {
+        metaBySubject[blk.subjectId].titles.push(blk.title);
+      }
+      if (blk.desc && !metaBySubject[blk.subjectId].descs.includes(blk.desc)) {
+        metaBySubject[blk.subjectId].descs.push(blk.desc);
+      }
     }
 
     for (const sub of blk.subtasks) {
       const movedTo = movedSubtasks[sub.id];
+      const enrichedSub = {
+        ...sub,
+        para: sub.paraTag || sub.para || 'Шаг',
+        paraTag: sub.paraTag || sub.para || 'Шаг',
+        originDate: sub.origDate || dateStr,
+        origDate: sub.origDate || dateStr,
+        isDone: Boolean(completedSubtasks[sub.id]),
+      };
       if (movedTo && movedTo !== dateStr) {
-        // Этот чекбокс был перенесён на другой день
         movedOutHistoryBySubject[blk.subjectId].push({
-          ...sub,
+          ...enrichedSub,
           movedToDate: movedTo,
         });
       } else {
         subtasksBySubject[blk.subjectId].push({
-          ...sub,
+          ...enrichedSub,
+          isMovedIn: false,
           isMovedHere: false,
         });
       }
@@ -1309,17 +1334,26 @@ export function getMergedDailySchedule(dateStr, state = {}) {
 
   // 3. Добавляем входящие перенесённые чекбоксы (ставятся ПЕРЕД сегодняшними параграфами, чтобы идти по порядку §1 → §2 → §3 → §4!)
   for (const [subjId, incList] of Object.entries(incomingBySubject)) {
-    incList.sort((a, b) => a.origDate.localeCompare(b.origDate) || a.id.localeCompare(b.id));
+    incList.sort((a, b) => a.originDate.localeCompare(b.originDate) || a.id.localeCompare(b.id));
     if (!subjectOrder.includes(subjId)) {
       subjectOrder.push(subjId);
       const sObj = SUBJECTS.find((s) => s.id === subjId);
+      const uniqueTitles = [...new Set(incList.map((x) => x.parentTitle).filter(Boolean))];
+      const uniqueDescs = [...new Set(incList.map((x) => x.parentDesc).filter(Boolean))];
       metaBySubject[subjId] = {
-        baseTitle: `${sObj?.shortName || 'Предмет'} (Перенесённое занятие)`,
-        baseDesc: rawToday.weekObj.subjects[subjId] || '',
+        baseTitle: uniqueTitles[0] || `${sObj?.shortName || 'Предмет'} (Перенесённое занятие)`,
+        baseDesc: uniqueDescs[0] || rawToday.weekObj.subjects[subjId] || '',
+        titles: uniqueTitles.length ? uniqueTitles : [`${sObj?.shortName || 'Предмет'} (Перенесённое занятие)`],
+        descs: uniqueDescs.length ? uniqueDescs : [rawToday.weekObj.subjects[subjId] || ''],
       };
       movedOutHistoryBySubject[subjId] = [];
       subtasksBySubject[subjId] = [...incList];
     } else {
+      for (const incItem of incList) {
+        if (incItem.parentTitle && !metaBySubject[subjId].titles.includes(incItem.parentTitle)) {
+          metaBySubject[subjId].titles.unshift(incItem.parentTitle);
+        }
+      }
       // Склеиваем: сначала перенесённые ранние параграфы (§1–2), затем плановые сегодняшние (§3–4)!
       subtasksBySubject[subjId] = [...incList, ...subtasksBySubject[subjId]];
     }
@@ -1334,23 +1368,28 @@ export function getMergedDailySchedule(dateStr, state = {}) {
       if (activeSubs.length === 0 && movedOutSubs.length === 0) return null;
 
       const totalMins = activeSubs.reduce((s, x) => s + x.mins, 0);
-      const doneSubs = activeSubs.filter((x) => completedSubtasks[x.id]);
-      const uncheckedSubs = activeSubs.filter((x) => !completedSubtasks[x.id]);
+      const doneSubs = activeSubs.filter((x) => x.isDone);
+      const uncheckedSubs = activeSubs.filter((x) => !x.isDone);
       const doneMins = doneSubs.reduce((s, x) => s + x.mins, 0);
       const remainingMins = uncheckedSubs.reduce((s, x) => s + x.mins, 0);
-      const movedInCount = activeSubs.filter((x) => x.isMovedHere).length;
-      const movedInMins = activeSubs.filter((x) => x.isMovedHere).reduce((s, x) => s + x.mins, 0);
-      const plannedTodayCount = activeSubs.filter((x) => !x.isMovedHere).length;
-      const plannedTodayMins = activeSubs.filter((x) => !x.isMovedHere).reduce((s, x) => s + x.mins, 0);
+      const movedInCount = activeSubs.filter((x) => x.isMovedIn).length;
+      const movedInMins = activeSubs.filter((x) => x.isMovedIn).reduce((s, x) => s + x.mins, 0);
+      const plannedTodayCount = activeSubs.filter((x) => !x.isMovedIn).length;
+      const plannedTodayMins = activeSubs.filter((x) => !x.isMovedIn).reduce((s, x) => s + x.mins, 0);
 
       const nextLessonDate =
         subjId !== 'all' ? findNextLessonDateForSubject(dateStr, subjId, activeElectives) : shiftDateStr(dateStr, 1);
+
+      const isMerged = movedInCount > 0 && plannedTodayCount > 0;
+      const isAllDone = activeSubs.length > 0 && uncheckedSubs.length === 0;
 
       return {
         id: `card-${dateStr}-${subjId}`,
         subjectId: subjId,
         baseTitle: metaBySubject[subjId]?.baseTitle || '',
         baseDesc: metaBySubject[subjId]?.baseDesc || '',
+        titles: metaBySubject[subjId]?.titles || [metaBySubject[subjId]?.baseTitle || ''],
+        descs: metaBySubject[subjId]?.descs || [metaBySubject[subjId]?.baseDesc || ''],
         subtasks: activeSubs,
         movedOutSubs,
         totalMins,
@@ -1362,16 +1401,25 @@ export function getMergedDailySchedule(dateStr, state = {}) {
         movedInMins,
         plannedTodayCount,
         plannedTodayMins,
-        isMergedCard: movedInCount > 0 && plannedTodayCount > 0,
-        allCompleted: activeSubs.length > 0 && uncheckedSubs.length === 0,
+        isMergedCard: isMerged,
+        isMergedWithDebt: isMerged,
+        allCompleted: isAllDone,
+        allDone: isAllDone,
         nextLessonDate,
       };
     })
     .filter(Boolean);
 
+  const dayTotalMins = mergedCards.reduce((acc, c) => acc + c.totalMins, 0);
+  const dayDoneMins = mergedCards.reduce((acc, c) => acc + c.doneMins, 0);
+  const dayRemainingMins = mergedCards.reduce((acc, c) => acc + c.remainingMins, 0);
+
   return {
     ...rawToday,
     cards: mergedCards,
+    totalMins: dayTotalMins,
+    doneMins: dayDoneMins,
+    remainingMins: dayRemainingMins,
   };
 }
 
@@ -1392,6 +1440,10 @@ export function findOverdueUncheckedSubtasks(beforeDateStr, state = {}) {
         if (currentDateOfSub < beforeDateStr && !completedSubtasks[sub.id]) {
           overdue.push({
             ...sub,
+            para: sub.paraTag || sub.para || 'Шаг',
+            paraTag: sub.paraTag || sub.para || 'Шаг',
+            originDate: sub.origDate || cur,
+            origDate: sub.origDate || cur,
             currentDate: currentDateOfSub,
           });
         }

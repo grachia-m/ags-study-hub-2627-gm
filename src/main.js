@@ -655,8 +655,8 @@ function renderDailyTab() {
                             : ''
                         }
 
-                        <h3 class="task-title" style="margin:0 0 4px;">${card.titles.join(' + ')}</h3>
-                        <p class="task-desc" style="margin:0 0 10px;">${card.descs.join(' · ')}</p>
+                        <h3 class="task-title" style="margin:0 0 4px;">${(card.titles || [card.baseTitle || '']).join(' + ')}</h3>
+                        <p class="task-desc" style="margin:0 0 10px;">${(card.descs || [card.baseDesc || '']).join(' · ')}</p>
 
                         <div class="subtasks-checklist">
                           ${card.subtasks
