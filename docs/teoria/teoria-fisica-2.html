@@ -1,0 +1,294 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Física UD2: Estática y Dinámica</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#6D3FD9;--subj-soft:#EFE9FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#B69CFF;--subj-soft:#2A2046}}:root[data-theme="dark"]{--subj:#B69CFF;--subj-soft:#2A2046}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Física · конспект 2</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Física · UD2 · Недели 7–12</div>
+  <h1>Estática y Dinámica</h1>
+  <p class="lede">В папке курса по UD2 лежит только двухстраничный список формул, поэтому этот конспект полностью заменяет учебник: силы, три закона Ньютона, закон Гука, равновесие на тросах, движение с трением по горизонтали и наклонной плоскости, связанные тела и блоки.</p>
+  <ul class="toc">
+    <li><a href="#fuerzas">1. Силы и 3 закона Ньютона</a></li>
+    <li><a href="#catalogo">2. Каталог сил: P, N, Fr, Hooke</a></li>
+    <li><a href="#estatica">3. Estática: груз на двух тросах</a></li>
+    <li><a href="#horizontal">4. Dinámica на горизонтали</a></li>
+    <li><a href="#inclinado">5. Plano inclinado (наклонная плоскость)</a></li>
+    <li><a href="#poleas">6. Связанные тела и блоки (poleas)</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="fuerzas">
+  <span class="week">Неделя 7 · UD2 §1</span>
+  <h2>1. Fuerzas и las 3 Leyes de Newton</h2>
+  <p><span class="es">Fuerza (F⃗)</span> — векторная мера взаимодействия тел, способная изменить скорость тела или деформировать его. Единица СИ — <b>ньютон (<span class="f">1 N = 1 kg·m/s²</span>)</b>. Если на тело действует несколько сил, их складывают векторно (по осям X и Y), получая равнодействующую силу <span class="es">fuerza resultante</span> <span class="f">Σ<i>F⃗</i></span>.</p>
+  <div class="tbl"><table>
+    <tr><th>Закон Ньютона</th><th>Формулировка и формула</th><th>Смысл для задач</th></tr>
+    <tr><td><b>1ª Ley · Principio de inercia</b></td><td>Если <span class="f">Σ<i>F⃗</i> = 0</span>, то <span class="f"><i>v⃗</i> = const</span> (<span class="f"><i>a⃗</i> = 0</span>).</td><td>Тело либо покоится (<span class="es">equilibrio estático</span>), либо движется равномерно прямолинейно (MRU).</td></tr>
+    <tr><td><b>2ª Ley · Principio fundamental</b></td><td><span class="f">Σ<i>F⃗</i> = <i>m</i> · <i>a⃗</i></span></td><td>Вдоль оси движения: <span class="f"><i>F</i><sub>a favor</sub> − <i>F</i><sub>en contra</sub> = <i>m</i> · <i>a</i></span>.</td></tr>
+    <tr><td><b>3ª Ley · Acción y reacción</b></td><td><span class="f"><i>F⃗</i><sub>AB</sub> = −<i>F⃗</i><sub>BA</sub></span></td><td>Силы равны по модулю, противоположны по направлению, но приложены к <b>разным</b> телам (поэтому не уравновешивают друг друга!).</td></tr>
+  </table></div>
+</section>
+
+<section id="catalogo">
+  <span class="week">Неделя 8 · UD2 §2</span>
+  <h2>2. Главные силы механики: Peso, Normal, Rozamiento и Ley de Hooke</h2>
+  <div class="eqs">
+    <div class="eq"><i>P</i> = <i>m</i> · <i>g</i><small>Peso (вес/сила тяжести, N) — всегда вертикально вниз к центру Земли (g = 9,8 m/s²)</small></div>
+    <div class="eq"><i>N</i> (Fuerza Normal)<small>Реакция опоры — всегда перпендикулярна (90°) поверхности опоры</small></div>
+    <div class="eq"><i>F</i><sub>r</sub> = μ · <i>N</i><small>Fuerza de rozamiento (сила трения) — всегда против движения (μ безразмерен)</small></div>
+    <div class="eq"><i>F</i><sub>e</sub> = <i>k</i> · Δ<i>x</i><small>Ley de Hooke (упругость пружины): k в N/m, удлинение Δx = x − x₀ в метрах</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: масса ≠ вес, а нормаль N не всегда равна m·g!</span>
+    <p><span class="es">Masa (m)</span> измеряется в <b>kg</b> и везде одинакова. <span class="es">Peso (P = m·g)</span> — это сила в <b>ньютонах (N)</b>. А сила реакции опоры <span class="f"><i>N</i></span> находится из баланса сил перпендикулярно поверхности (<span class="f">Σ<i>F</i><sub>y</sub> = 0</span>): на горизонтали без наклонных сил <span class="f"><i>N</i> = <i>mg</i></span>, но на наклонной плоскости <span class="f"><i>N</i> = <i>mg</i>·cos α</span>!</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · Ley de Hooke</span>
+    <p>Пружина жёсткостью <span class="f"><i>k</i> = 250 N/m</span> имеет длину в ненагруженном состоянии 20 cm. Какова станет её длина, если подвесить груз массой 5 kg?</p>
+    <p>Сила тяжести груза уравновешивается силой упругости: <span class="f"><i>P</i> = <i>m·g</i> = 5 · 9,8 = 49 N</span>. По закону Гука: <span class="f">Δ<i>x</i> = <i>F</i> / <i>k</i> = 49 / 250 = 0,196 m = 19,6 cm</span>. Итоговая длина: <span class="f">20 + 19,6 = 39,6 cm</span>.</p>
+  </div>
+</section>
+
+<section id="estatica">
+  <span class="week">Неделя 9 · UD2 §3</span>
+  <h2>3. Equilibrio estático: тело, подвешенное на двух тросах</h2>
+  <p>Если тело висит неподвижно (<span class="es">en equilibrio</span>), сумма всех сил по обеим осям равна нулю:</p>
+  <div class="eq">Σ<i>F</i><sub>x</sub> = 0 &nbsp;&nbsp;&nbsp; и &nbsp;&nbsp;&nbsp; Σ<i>F</i><sub>y</sub> = 0</div>
+  <figure>
+    <svg viewBox="0 0 460 190" role="img" aria-label="Светофор, подвешенный на двух наклонных тросах T1 и T2">
+      <defs><marker id="ad1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker>
+      <marker id="ad2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="waf" d="M0 0 L10 5 L0 10 Z"/></marker></defs>
+      <path class="ln" stroke-width="3" d="M50 25 H410"/>
+      <path class="ax" stroke-dasharray="4 3" d="M90 105 H370 M230 35 V175"/>
+      <path class="ac" stroke-width="2.5" d="M230 105 L115 25" marker-end="url(#ad1)"/>
+      <path class="ac" stroke-width="2.5" d="M230 105 L345 25" marker-end="url(#ad1)"/>
+      <path class="wa" stroke-width="2.5" d="M230 105 V172" marker-end="url(#ad2)"/>
+      <circle cx="230" cy="105" r="6" class="acf"/>
+      <text x="155" y="100" font-size="13" font-style="italic">α</text>
+      <text x="298" y="100" font-size="13" font-style="italic">β</text>
+      <text x="148" y="60" font-size="14" font-weight="700">T₁</text>
+      <text x="305" y="60" font-size="14" font-weight="700">T₂</text>
+      <text x="242" y="165" font-size="14" font-weight="700">P = m·g</text>
+    </svg>
+    <figcaption>Углы тросов с потолком равны углам с горизонтальной осью X в узле подвеса (накрест лежащие углы).</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · груз на двух тросах</span>
+    <p>Фонарь массой <span class="f"><i>m</i> = 10 kg</span> висит на двух тросах, образующих с горизонтальным потолком углы <span class="f">α = 30°</span> и <span class="f">β = 60°</span>. Найти силы натяжения <span class="f"><i>T</i>₁</span> и <span class="f"><i>T</i>₂</span>.</p>
+    <ol class="steps">
+      <li>Вес фонаря: <span class="f"><i>P</i> = 10 · 9,8 = 98 N</span> (вниз). Разложим <span class="f"><i>T</i>₁</span> и <span class="f"><i>T</i>₂</span> на горизонтальные (<span class="f">cos</span>) и вертикальные (<span class="f">sen</span>) проекции.</li>
+      <li>Ось X (влево = вправо): <span class="f"><i>T</i>₁·cos 30° = <i>T</i>₂·cos 60° → 0,866 <i>T</i>₁ = 0,5 <i>T</i>₂ → <i>T</i>₂ = 1,732 <i>T</i>₁</span>.</li>
+      <li>Ось Y (вверх = вниз): <span class="f"><i>T</i>₁·sen 30° + <i>T</i>₂·sen 60° = 98 → 0,5 <i>T</i>₁ + 0,866(1,732 <i>T</i>₁) = 98 → 2 <i>T</i>₁ = 98</span>.</li>
+      <li>Получаем: <span class="f"><i>T</i>₁ = 49 N</span> и <span class="f"><i>T</i>₂ = 1,732 · 49 = 84,87 N</span> (круче натянутый трос всегда держит большую нагрузку!).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="horizontal">
+  <span class="week">Неделя 10 · UD2 §4</span>
+  <h2>4. Dinámica на горизонтальной плоскости</h2>
+  <p>Если блок тянут по горизонтальному столу силой <span class="f"><i>F</i></span> под углом <span class="f">α</span> к горизонту:</p>
+  <ul>
+    <li><b>Ось Y (движения вверх-вниз нет, <span class="f"><i>a</i><sub>y</sub> = 0</span>)</b>: вверх тянет <span class="f"><i>N</i> + <i>F</i>·sen α</span>, вниз <span class="f"><i>P</i> = <i>mg</i></span> → <span class="f"><i>N</i> = <i>mg</i> − <i>F</i>·sen α</span> (если сила строго горизонтальна, <span class="f">α = 0°</span> и <span class="f"><i>N</i> = <i>mg</i></span>).</li>
+    <li><b>Сила трения</b>: <span class="f"><i>F</i><sub>r</sub> = μ · <i>N</i></span>.</li>
+    <li><b>Ось X (2-й закон Ньютона)</b>: <span class="f"><i>F</i>·cos α − <i>F</i><sub>r</sub> = <i>m</i> · <i>a</i></span>.</li>
+  </ul>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · ящик на полу</span>
+    <p>Ящик массой 20 kg тянут по горизонтальному полу горизонтальной силой <span class="f"><i>F</i> = 90 N</span>. Коэффициент трения <span class="f">μ = 0,25</span>. Найти ускорение ящика.</p>
+    <p>1) <span class="f"><i>N</i> = <i>P</i> = 20 · 9,8 = 196 N</span>. 2) Трение: <span class="f"><i>F</i><sub>r</sub> = 0,25 · 196 = 49 N</span>. 3) По оси X: <span class="f">90 − 49 = 20 · <i>a</i> → 41 = 20<i>a</i> → <i>a</i> = 2,05 m/s²</span>.</p>
+  </div>
+</section>
+
+<section id="inclinado">
+  <span class="week">Неделя 11 · UD2 §5</span>
+  <h2>5. Plano inclinado (наклонная плоскость)</h2>
+  <p>На наклонной плоскости с углом наклона <span class="f">α</span> оси координат <b>поворачивают вдоль склона</b>: ось <b>X</b> направляют параллельно плоскости (по движению), а ось <b>Y</b> — перпендикулярно плоскости. Тогда раскладывать нужно только вектор силы тяжести <span class="f"><i>P</i> = <i>m·g</i></span>:</p>
+  <div class="eqs">
+    <div class="eq"><i>P</i><sub>x</sub> = <i>m·g</i> · sen α<small>тянет тело вдоль склона ВНИЗ</small></div>
+    <div class="eq"><i>P</i><sub>y</sub> = <i>m·g</i> · cos α = <i>N</i><small>прижимает тело к склону (уравновешивается нормалью N)</small></div>
+    <div class="eq"><i>F</i><sub>r</sub> = μ · <i>N</i> = μ · <i>m·g</i> · cos α<small>всегда направлена ПРОТИВ скорости движения</small></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 460 215" role="img" aria-label="Разложение силы тяжести P на Px и Py на наклонной плоскости">
+      <defs>
+        <marker id="ai1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker>
+        <marker id="ai2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ac2f" d="M0 0 L10 5 L0 10 Z"/></marker>
+        <marker id="ai3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="waf" d="M0 0 L10 5 L0 10 Z"/></marker>
+      </defs>
+      <path class="soft" d="M40 185 L360 185 L360 45 Z"/>
+      <path class="ln" stroke-width="2" d="M40 185 L360 185 L360 45 Z"/>
+      <text x="95" y="178" font-size="14" font-style="italic">α</text>
+      <g transform="translate(210 110) rotate(-23.6)">
+        <rect x="-26" y="-36" width="52" height="36" rx="4" class="surf"/>
+        <path class="ac2" stroke-width="2.5" d="M0 -18 V-82" marker-end="url(#ai2)"/>
+        <text x="8" y="-72" font-size="13" font-weight="700">N</text>
+        <path class="ac" stroke-width="2.5" d="M0 -18 H-68" marker-end="url(#ai1)"/>
+        <text x="-66" y="-26" font-size="13" font-weight="700">Pₓ = mg·sen α</text>
+        <path class="ac2" stroke-width="2.5" d="M0 -18 V44" marker-end="url(#ai2)"/>
+        <text x="8" y="42" font-size="13" font-weight="700">Pᵧ = mg·cos α</text>
+        <path class="wa" stroke-width="2.5" d="M0 -18 H56" marker-end="url(#ai3)"/>
+        <text x="34" y="-26" font-size="13" font-weight="700">Fᵣ</text>
+      </g>
+      <path class="wa" stroke-width="2.5" d="M203 93 V166" marker-end="url(#ai3)"/>
+      <text x="193" y="166" font-size="13" font-weight="700" text-anchor="end">P = mg</text>
+    </svg>
+    <figcaption>Запомни проверку при α = 0°: на ровном полу sen 0° = 0 (Pₓ = 0, ничто не тянет вбок) и cos 0° = 1 (Pᵧ = mg). Поэтому Pₓ всегда с sen α, а Pᵧ всегда с cos α!</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · спуск по наклонной плоскости</span>
+    <p>Тело массой <span class="f"><i>m</i> = 5 kg</span> скользит вниз по наклонной плоскости с углом <span class="f">α = 30°</span> и коэффициентом трения <span class="f">μ = 0,2</span>. Найти его ускорение.</p>
+    <ol class="steps">
+      <li>Сила тяжести: <span class="f"><i>P</i> = 5 · 9,8 = 49 N</span>. Проекции: <span class="f"><i>P</i><sub>x</sub> = 49·sen 30° = 24,5 N</span>; <span class="f"><i>P</i><sub>y</sub> = <i>N</i> = 49·cos 30° = 42,44 N</span>.</li>
+      <li>Сила трения (направлена вверх по склону, против спуска): <span class="f"><i>F</i><sub>r</sub> = μ · <i>N</i> = 0,2 · 42,44 = 8,49 N</span>.</li>
+      <li>Второй закон Ньютона вдоль склона: <span class="f"><i>P</i><sub>x</sub> − <i>F</i><sub>r</sub> = <i>m · a</i> → 24,5 − 8,49 = 5<i>a</i> → <i>a</i> = 16,01 / 5 = 3,20 m/s²</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="poleas">
+  <span class="week">Неделя 12 · UD2 §6</span>
+  <h2>6. Sistemas de cuerpos enlazados y poleas (связанные тела)</h2>
+  <p>Когда два тела <span class="f"><i>m</i>₁</span> и <span class="f"><i>m</i>₂</span> связаны нерастяжимой нитью через блок (<span class="es">polea</span>), у них <b>общее по модулю ускорение <span class="f"><i>a</i></span></b> и одинаковая сила натяжения нити <span class="es">tensión (<span class="f"><i>T</i></span>)</span>. Такие задачи решаются в два шага:</p>
+  <ol class="steps">
+    <li>Записать 2-й закон Ньютона (<span class="f"><i>F</i><sub>по ходу</sub> − <i>F</i><sub>против</sub> = <i>m·a</i></span>) для каждого тела по отдельности.</li>
+    <li><b>Сложить оба уравнения</b>: внутренняя сила натяжения <span class="f">+<i>T</i></span> и <span class="f">−<i>T</i></span> сократится, и мы сразу получим общее ускорение системы:
+      <div class="eq"><i>a</i> = <sup>Σ<i>F</i><sub>внешних (тянущих)</sub> − Σ<i>F</i><sub>внешних (тормозящих)</sub></sup>/<sub><i>m</i>₁ + <i>m</i>₂</sub></div>
+      Затем подставить найденное <span class="f"><i>a</i></span> в любое из двух уравнений и найти натяжение нити <span class="f"><i>T</i></span>.
+    </li>
+  </ol>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · брусок на столе и груз на блоке</span>
+    <p>На горизонтальном столе с трением <span class="f">μ = 0,2</span> лежит брусок <span class="f"><i>m</i>₁ = 6 kg</span>, соединённый нитью через блок на краю стола с висящим грузом <span class="f"><i>m</i>₂ = 4 kg</span>. Найти ускорение системы и силу натяжения нити <span class="f"><i>T</i></span>.</p>
+    <ol class="steps">
+      <li>Внешние силы: вниз тянет вес второго груза <span class="f"><i>P</i>₂ = <i>m</i>₂<i>g</i> = 4 · 9,8 = 39,2 N</span>; тормозит трение первого бруска о стол <span class="f"><i>F</i><sub>r1</sub> = μ·<i>m</i>₁<i>g</i> = 0,2 · 6 · 9,8 = 11,76 N</span>.</li>
+      <li>Уравнения для каждого тела: для <span class="f"><i>m</i>₁</span>: <span class="f"><i>T</i> − 11,76 = 6<i>a</i></span>; для <span class="f"><i>m</i>₂</span>: <span class="f">39,2 − <i>T</i> = 4<i>a</i></span>.</li>
+      <li>Складываем уравнения: <span class="f">39,2 − 11,76 = (6 + 4)<i>a</i> → 27,44 = 10<i>a</i> → <i>a</i> = 2,744 m/s²</span>.</li>
+      <li>Натяжение нити из первого уравнения: <span class="f"><i>T</i> = 11,76 + 6 · 2,744 = 28,22 N</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>fuerza resultante / neta</td><td>равнодействующая сила</td><td>equilibrio estático</td><td>статическое равновесие</td></tr>
+    <tr><td>inercia</td><td>инерция</td><td>acción y reacción</td><td>действие и противодействие</td></tr>
+    <tr><td>peso (P = m·g)</td><td>вес / сила тяжести</td><td>fuerza normal (N)</td><td>сила нормальной реакции опоры</td></tr>
+    <tr><td>fuerza de rozamiento (F_r)</td><td>сила трения</td><td>coeficiente de rozamiento (μ)</td><td>коэффициент трения</td></tr>
+    <tr><td>ley de Hooke / resorte (muelle)</td><td>закон Гука / пружина</td><td>constante elástica (k)</td><td>коэффициент жёсткости (Н/м)</td></tr>
+    <tr><td>alargamiento / elongación (Δx)</td><td>удлинение пружины</td><td>tensión de la cuerda (T)</td><td>сила натяжения нити / троса</td></tr>
+    <tr><td>plano inclinado</td><td>наклонная плоскость</td><td>polea</td><td>блок / шкив</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Машина массой 1200 kg едет по прямому шоссе с постоянной скоростью 90 km/h. Чему равна равнодействующая всех приложенных к ней сил?</summary><div class="a">Нулю (ΣF = 0)! По 1-му закону Ньютона при постоянной скорости ускорение a = 0, значит тяга двигателя в точности уравновешена силами сопротивления и трения.</div></details>
+  <details class="q"><summary>Пружина растягивается на 5 cm под действием силы 15 N. Чему равен её коэффициент жёсткости k в СИ?</summary><div class="a">Переводим 5 cm = 0,05 m. k = F / Δx = 15 / 0,05 = 300 N/m.</div></details>
+  <details class="q"><summary>Брусок массой 10 kg лежит на наклонной плоскости с углом 30°. Чему равны P_x и сила нормальной реакции N?</summary><div class="a">P = 10 · 9,8 = 98 N. P_x = 98 · sen 30° = 49 N; N = P_y = 98 · cos 30° ≈ 84,87 N.</div></details>
+  <details class="q"><summary>На невесомом блоке (машина Атвуда) висят два груза: 3 kg слева и 7 kg справа. С каким ускорением они движутся?</summary><div class="a">a = (m₂ − m₁)·g / (m₁ + m₂) = (7 − 3)·9,8 / (3 + 7) = 39,2 / 10 = 3,92 m/s².</div></details>
+</section>
+</div>
+</body></html>

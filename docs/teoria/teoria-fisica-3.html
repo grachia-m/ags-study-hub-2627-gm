@@ -1,0 +1,248 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Física UD3: Trabajo, Potencia y Energía</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#6D3FD9;--subj-soft:#EFE9FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#B69CFF;--subj-soft:#2A2046}}:root[data-theme="dark"]{--subj:#B69CFF;--subj-soft:#2A2046}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Física · конспект 3</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Física · UD3 · Недели 13–18</div>
+  <h1>Trabajo, Potencia y Energía</h1>
+  <p class="lede">Механическая работа, мощность и КПД, кинетическая и потенциальная энергия, теорема об изменении кинетической энергии и закон сохранения механической энергии (с трением и без него).</p>
+  <ul class="toc">
+    <li><a href="#trabajo">1. Trabajo mecánico (W)</a></li>
+    <li><a href="#potencia">2. Potencia (P) и КПД (η)</a></li>
+    <li><a href="#cinetica">3. Energía cinética и Fuerzas vivas</a></li>
+    <li><a href="#potencial">4. Energía potencial (гравитация и пружина)</a></li>
+    <li><a href="#conservacion">5. Сохранение энергии и баланс с трением</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="trabajo">
+  <span class="week">Неделя 13 · UD3 §1</span>
+  <h2>1. Trabajo mecánico (механическая работа)</h2>
+  <p>В физике сила совершает работу (<span class="es">trabajo W</span>) только тогда, когда точка её приложения перемещается. Работа — скалярная величина, измеряется в <b>джоулях (<span class="f">1 J = 1 N · 1 m</span>)</b>:</p>
+  <div class="eq"><i>W</i> = <i>F</i> · Δ<i>r</i> · cos α<small>где α — угол между вектором силы F⃗ и вектором перемещения Δr⃗</small></div>
+  <div class="tbl"><table>
+    <tr><th>Угол α</th><th>Вид работы</th><th>Примеры</th></tr>
+    <tr><td><span class="f">0° ≤ α &lt; 90°</span> (<span class="f">cos α &gt; 0</span>)</td><td><b>Trabajo motor (<span class="f"><i>W</i> &gt; 0</span>)</b></td><td>Сила помогает движению (тяга мотора; при <span class="f">α = 0°</span> <span class="f"><i>W</i> = +<i>F·Δr</i></span>).</td></tr>
+    <tr><td><span class="f">α = 90°</span> (<span class="f">cos 90° = 0</span>)</td><td><b>Trabajo nulo (<span class="f"><i>W</i> = 0</span>)</b></td><td>Сила перпендикулярна перемещению: нормальная реакция опоры <span class="f"><i>N</i></span>, центростремительная сила, держание чемодана при ходьбе по горизонтали.</td></tr>
+    <tr><td><span class="f">90° &lt; α ≤ 180°</span> (<span class="f">cos α &lt; 0</span>)</td><td><b>Trabajo resistente (<span class="f"><i>W</i> &lt; 0</span>)</b></td><td>Сила мешает движению. Для силы трения (<span class="f">α = 180°, cos 180° = −1</span>): <span class="f"><i>W</i><sub>roz</sub> = −<i>F</i><sub>r</sub> · Δ<i>r</i></span>.</td></tr>
+  </table></div>
+</section>
+
+<section id="potencia">
+  <span class="week">Неделя 14 · UD3 §2</span>
+  <h2>2. Potencia (мощность) и Rendimiento (КПД η)</h2>
+  <p><span class="es">Potencia (P)</span> показывает, насколько быстро совершается работа (работа за 1 секунду). Единица СИ — <b>ватт (<span class="f">1 W = 1 J/s</span>)</b>.</p>
+  <div class="eqs">
+    <div class="eq"><i>P</i> = <sup><i>W</i></sup>/<sub><i>t</i></sub> = <i>F</i> · <i>v</i><small>мощность в ваттах (W)</small></div>
+    <div class="eq">1 CV = 735 W &nbsp;|&nbsp; 1 kW = 1000 W<small>лошадиная сила (caballo de vapor) и киловатт</small></div>
+    <div class="eq">η (%) = <sup><i>P</i><sub>útil</sub></sup>/<sub><i>P</i><sub>consumida</sub></sub> · 100<small>Rendimiento (КПД): всегда меньше 100 %</small></div>
+  </div>
+  <div class="box tip"><span class="lbl">Киловатт-час (kWh) — это единица ЭНЕРГИИ, а не мощности!</span>
+    <p><span class="f">1 kWh = 1000 W · 3600 s = 3,6 · 10⁶ J = 3,6 MJ</span>.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · насос с КПД</span>
+    <p>Электродвигатель крана потребляет из сети мощность <span class="f"><i>P</i><sub>cons</sub> = 5 kW</span> и равномерно поднимает груз массой <span class="f">300 kg</span> на высоту <span class="f">20 m</span> за <span class="f">15 s</span>. Найти полезную мощность (в W и CV) и КПД крана (<span class="es">rendimiento</span>).</p>
+    <ol class="steps">
+      <li>Полезная работа по подъёму груза: <span class="f"><i>W</i><sub>útil</sub> = <i>m·g·h</i> = 300 · 9,8 · 20 = 58 800 J</span>.</li>
+      <li>Полезная мощность: <span class="f"><i>P</i><sub>útil</sub> = 58 800 / 15 = 3920 W = 3,92 kW</span> (в лошадиных силах: <span class="f">3920 / 735 = 5,33 CV</span>).</li>
+      <li>КПД: <span class="f">η = (3920 / 5000) · 100 = 78,4 %</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="cinetica">
+  <span class="week">Неделя 15 · UD3 §3.1</span>
+  <h2>3. Energía cinética и Teorema de las fuerzas vivas</h2>
+  <p><span class="es">Energía cinética (E<sub>c</sub>)</span> — энергия движения тела. Она зависит от массы и квадрата скорости (в СИ скорость обязательно в <b>m/s</b>!):</p>
+  <div class="eqs">
+    <div class="eq"><i>E</i><sub>c</sub> = <sup>1</sup>/<sub>2</sub> <i>m</i> · <i>v</i>²<small>всегда ≥ 0; если скорость удвоится, E_c вырастет в 4 раза!</small></div>
+    <div class="eq"><i>W</i><sub>total</sub> = Δ<i>E</i><sub>c</sub> = <i>E</i><sub>c,final</sub> − <i>E</i><sub>c,inicial</sub><small>Teorema de las fuerzas vivas (работа всех сил = изменению E_c)</small></div>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · тормозной путь через Teorema de las fuerzas vivas</span>
+    <p>Автомобиль массой 1000 kg едет со скоростью 72 km/h и тормозит до полной остановки на горизонтальной дороге с коэффициентом трения <span class="f">μ = 0,5</span>. Какой тормозной путь он пройдёт?</p>
+    <ol class="steps">
+      <li>Переводим скорость: <span class="f"><i>v</i><sub>0</sub> = 72 / 3,6 = 20 m/s</span>, конечная <span class="f"><i>v</i><sub>f</sub> = 0</span>. Сила трения: <span class="f"><i>F</i><sub>r</sub> = μ<i>mg</i> = 0,5 · 1000 · 9,8 = 4900 N</span>.</li>
+      <li>По теореме о кинетической энергии: <span class="f"><i>W</i><sub>roz</sub> = Δ<i>E</i><sub>c</sub> → −<i>F</i><sub>r</sub> · <i>d</i> = 0 − ½·1000·20²</span>.</li>
+      <li><span class="f">−4900 · <i>d</i> = −200 000 → <i>d</i> = 200 000 / 4900 = 40,82 m</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="potencial">
+  <span class="week">Неделя 16 · UD3 §3.2</span>
+  <h2>4. Energía potencial gravitatoria и elástica</h2>
+  <p>Потенциальная энергия — это запасённая энергия положения тела в поле консервативных сил:</p>
+  <div class="eqs">
+    <div class="eq"><i>E</i><sub>p</sub> = <i>m</i> · <i>g</i> · <i>h</i><small>Gravitatoria (h — высота над выбранным нулевым уровнем, m)</small></div>
+    <div class="eq"><i>E</i><sub>pe</sub> = <sup>1</sup>/<sub>2</sub> <i>k</i> · <i>x</i>²<small>Elástica (запасённая в сжатой или растянутой на x метров пружине)</small></div>
+  </div>
+  <p>Сумма кинетической и потенциальной энергии тела называется полной <b>механической энергией (<span class="es">Energía mecánica</span>)</b>: <span class="f"><i>E</i><sub>m</sub> = <i>E</i><sub>c</sub> + <i>E</i><sub>p</sub></span>.</p>
+</section>
+
+<section id="conservacion">
+  <span class="week">Неделя 17–18 · UD3 §4</span>
+  <h2>5. Conservación de la Energía Mecánica и баланс с трением</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Без трения (sin rozamiento)</span>
+      <p>Полная механическая энергия сохраняется в любой точке траектории:</p>
+      <div class="eq"><i>E</i><sub>m,A</sub> = <i>E</i><sub>m,B</sub><br><small><i>E</i><sub>cA</sub> + <i>E</i><sub>pA</sub> = <i>E</i><sub>cB</sub> + <i>E</i><sub>pB</sub></small></div>
+    </div>
+    <div class="box trap"><span class="lbl">С трением (con rozamiento)</span>
+      <p>Часть механической энергии уходит в тепло (<span class="f"><i>W</i><sub>roz</sub> = −<i>F</i><sub>r</sub> · <i>d</i> &lt; 0</span>):</p>
+      <div class="eq"><i>E</i><sub>m,A</sub> + <i>W</i><sub>roz</sub> = <i>E</i><sub>m,B</sub><br><small>или <i>E</i><sub>m,A</sub> = <i>E</i><sub>m,B</sub> + <i>F</i><sub>r</sub> · <i>d</i></small></div>
+    </div>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 500 185" role="img" aria-label="Горка: переход потенциальной энергии в кинетическую между точками A и B">
+      <path class="soft" d="M40 40 L40 160 L460 160 L460 140 Q260 140 160 140 Q100 140 40 40 Z"/>
+      <path class="ln" stroke-width="2.5" d="M40 40 Q100 140 170 140 H460"/>
+      <path class="ax" stroke-dasharray="3 3" d="M40 40 V140 H170"/>
+      <circle cx="48" cy="40" r="7" class="acf"/>
+      <text x="64" y="36" font-size="13" font-weight="700">A: h = h₀, v_A = 0 (только E_p)</text>
+      <circle cx="230" cy="133" r="7" class="acf"/>
+      <text x="230" y="116" font-size="13" font-weight="700" text-anchor="middle">B: h = 0, v_B = máx (только E_c)</text>
+      <text x="25" y="95" font-size="13" text-anchor="end">h₀</text>
+      <text x="320" y="156" font-size="12.5" class="mut">если есть трение на участке d: E_mA − F_r·d = E_mB</text>
+    </svg>
+    <figcaption>Без трения скорость у подножия горки не зависит от формы склона и массы тела: v = √(2gh).</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · спуск с горки с трением</span>
+    <p>Санки массой <span class="f"><i>m</i> = 10 kg</span> стартуют из состояния покоя (<span class="f"><i>v</i><sub>A</sub> = 0</span>) с вершины склона высотой <span class="f"><i>h</i> = 6 m</span> и длиной пути по склону <span class="f"><i>d</i> = 12 m</span>. На всём спуске действует постоянная сила трения <span class="f"><i>F</i><sub>r</sub> = 25 N</span>. Какую скорость <span class="f"><i>v</i><sub>B</sub></span> наберут санки у подножия?</p>
+    <ol class="steps">
+      <li>На вершине A (<span class="f"><i>h</i><sub>A</sub> = 6 m, <i>v</i><sub>A</sub> = 0</span>): <span class="f"><i>E</i><sub>m,A</sub> = <i>m·g·h</i> = 10 · 9,8 · 6 = 588 J</span>.</li>
+      <li>Работа силы трения на пути 12 m: <span class="f"><i>W</i><sub>roz</sub> = −<i>F</i><sub>r</sub> · <i>d</i> = −25 · 12 = −300 J</span>.</li>
+      <li>У подножия B (<span class="f"><i>h</i><sub>B</sub> = 0</span>): <span class="f"><i>E</i><sub>m,B</sub> = <i>E</i><sub>m,A</sub> + <i>W</i><sub>roz</sub> = 588 − 300 = 288 J</span>.</li>
+      <li>Находим скорость из кинетической энергии: <span class="f">½ · 10 · <i>v</i><sub>B</sub>² = 288 → 5<i>v</i><sub>B</sub>² = 288 → <i>v</i><sub>B</sub> = √57,6 = 7,59 m/s</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>trabajo motor / resistente / nulo</td><td>положительная / отрицательная / нулевая работа</td><td>julio (J) / vatio (W)</td><td>джоуль (Дж) / ватт (Вт)</td></tr>
+    <tr><td>potencia útil / consumida</td><td>полезная / потребляемая мощность</td><td>caballo de vapor (1 CV = 735 W)</td><td>лошадиная сила</td></tr>
+    <tr><td>rendimiento (η)</td><td>КПД (коэф. полезного действия)</td><td>energía cinética (E_c)</td><td>кинетическая энергия</td></tr>
+    <tr><td>teorema de las fuerzas vivas</td><td>теорема о кинетической энергии</td><td>energía potencial gravitatoria</td><td>гравитационная потенц. энергия</td></tr>
+    <tr><td>energía potencial elástica</td><td>упругая потенциальная энергия</td><td>energía mecánica (E_m)</td><td>полная механическая энергия</td></tr>
+    <tr><td>fuerzas conservativas</td><td>консервативные силы</td><td>trabajo de rozamiento (W_roz)</td><td>работа силы трения</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Человек несёт чемодан весом 150 N по горизонтальному коридору длиной 40 m. Какую работу совершает сила тяжести и сила рук, удерживающая чемодан вертикально вверх?</summary><div class="a">Работа равна нулю (W = 0 J)! Сила направлена вертикально, а перемещение горизонтально → угол α = 90° и cos 90° = 0.</div></details>
+  <details class="q"><summary>Двигатель мощностью 2 CV работает 10 секунд. Какую работу в джоулях он совершает?</summary><div class="a">P = 2 · 735 = 1470 W. Работа W = P · t = 1470 · 10 = 14 700 J = 14,7 kJ.</div></details>
+  <details class="q"><summary>Камень бросают вертикально вверх со скоростью 14 m/s (без сопротивления воздуха). На какую максимальную высоту он поднимется (реши через закон сохранения энергии)?</summary><div class="a">½mv₀² = mgh → масса сокращается: h = v₀² / (2g) = 14² / 19,6 = 196 / 19,6 = 10 m.</div></details>
+  <details class="q"><summary>Пружину жёсткостью k = 400 N/m сжали на 10 cm. Какая потенциальная энергия в ней запасена?</summary><div class="a">x = 0,10 m. E_pe = ½ · 400 · 0,10² = 200 · 0,01 = 2 J.</div></details>
+</section>
+</div>
+</body></html>

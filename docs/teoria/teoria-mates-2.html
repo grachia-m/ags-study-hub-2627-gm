@@ -1,0 +1,349 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U2</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 2</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U2 · Недели 5–8</div>
+  <h1>Ecuaciones, Polinomios y Sistemas</h1>
+  <p class="lede">Алгебраический язык, многочлены, формулы сокращённого умножения, уравнения 1-й и 2-й степени, системы 2×2 и метод Гаусса для 3×3. Все правила со знаками и знаменателями разобраны пошагово.</p>
+  <ul class="toc">
+    <li><a href="#algebra">1. Lenguaje algebraico и полиномы</a></li>
+    <li><a href="#notables">2. Identidades notables</a></li>
+    <li><a href="#primer-grado">3. Ecuaciones de 1er grado</a></li>
+    <li><a href="#segundo-grado">4. Ecuaciones de 2º grado</a></li>
+    <li><a href="#sistemas-2x2">5. Sistemas 2×2</a></li>
+    <li><a href="#gauss">6. Sistemas 3×3 (Gauss)</a></li>
+    <li><a href="#problemas">7. Planteamiento и правки Envío U2</a></li>
+    <li><a href="#glosario">8. Словарик</a></li>
+    <li><a href="#test">9. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="algebra">
+  <span class="week">Неделя 5 · U2 §1</span>
+  <h2>1. Lenguaje algebraico, valor numérico и операции с полиномами</h2>
+  <p><span class="es">Lenguaje algebraico</span> переводит словесные условия на язык букв (<span class="es">incógnitas / variables</span>). Важно точно читать предлоги и порядок слов:</p>
+  <div class="tbl"><table>
+    <tr><th>Фраза на испанском</th><th>Запись</th><th>Пояснение</th></tr>
+    <tr><td>El doble de un número más tres</td><td><span class="f">2<i>x</i> + 3</span></td><td>сначала удвоили, потом прибавили 3</td></tr>
+    <tr><td>El doble de la suma de un número y tres</td><td><span class="f">2(<i>x</i> + 3)</span></td><td>удвоили всю сумму</td></tr>
+    <tr><td>La mitad de un número menos su tercera parte</td><td><span class="f"><sup><i>x</i></sup>/<sub>2</sub> − <sup><i>x</i></sup>/<sub>3</sub></span></td><td>разность долей одного числа</td></tr>
+    <tr><td>Dos números consecutivos</td><td><span class="f"><i>x</i>, <i>x</i> + 1</span></td><td>два последовательных целых числа</td></tr>
+    <tr><td>El cuadrado de la diferencia de dos números</td><td><span class="f">(<i>x</i> − <i>y</i>)²</span></td><td>квадрат разности (не путать с <span class="f"><i>x</i>² − <i>y</i>²</span>)</td></tr>
+  </table></div>
+
+  <h3>Valor numérico и одночлены (monomios)</h3>
+  <p><span class="es">Valor numérico</span> — число, которое получается при подстановке конкретного значения вместо буквы. Отрицательные числа всегда подставляй <b>в скобках</b>:</p>
+  <p>Для <span class="f"><i>P</i>(<i>x</i>) = 2<i>x</i>³ − 3<i>x</i>² + 5</span> при <span class="f"><i>x</i> = −2</span>: <span class="f"><i>P</i>(−2) = 2(−2)³ − 3(−2)² + 5 = 2(−8) − 3(4) + 5 = −16 − 12 + 5 = −23</span>.</p>
+  <p>У одночлена (<span class="es">monomio</span>) число спереди — <span class="es">coeficiente</span>, буквенная часть — <span class="es">parte literal</span>, сумма показателей букв — <span class="es">grado</span>. Складывать и вычитать можно только <span class="es">monomios semejantes</span> (с одинаковой буквенной частью и степенями).</p>
+
+  <h3>Операции с многочленами (polinomios)</h3>
+  <ul>
+    <li><b>Suma y resta</b>: приводим подобные слагаемые (<span class="es">reducir términos semejantes</span>). Если перед скобкой минус — меняем знаки <b>всех</b> слагаемых внутри.</li>
+    <li><b>Multiplicación</b>: каждый член первой скобки умножаем на каждый член второй; коэффициенты перемножаются, показатели степеней складываются (<span class="f"><i>x</i>² · <i>x</i>³ = <i>x</i>⁵</span>).</li>
+    <li><b>Sacar factor común</b> (вынесение общего множителя): обратная операция. В <span class="f">6<i>x</i>³ − 9<i>x</i>² + 3<i>x</i></span> общий множитель <span class="f">3<i>x</i></span> → <span class="f">3<i>x</i>(2<i>x</i>² − 3<i>x</i> + 1)</span>. Заметь: на месте <span class="f">3<i>x</i></span> остаётся <b>1</b>, а не 0!</li>
+  </ul>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · операции с полиномами</span>
+    <p>Даны <span class="f"><i>P</i>(<i>x</i>) = 3<i>x</i>² − 5<i>x</i> + 2</span> и <span class="f"><i>Q</i>(<i>x</i>) = 2<i>x</i> − 1</span>. Найти <span class="f"><i>P</i>(<i>x</i>) − 2<i>Q</i>(<i>x</i>)</span> и <span class="f"><i>P</i>(<i>x</i>) · <i>Q</i>(<i>x</i>)</span>.</p>
+    <ol class="steps">
+      <li><span class="f"><i>P</i>(<i>x</i>) − 2<i>Q</i>(<i>x</i>) = (3<i>x</i>² − 5<i>x</i> + 2) − 2(2<i>x</i> − 1) = 3<i>x</i>² − 5<i>x</i> + 2 − 4<i>x</i> + 2 = 3<i>x</i>² − 9<i>x</i> + 4</span>.</li>
+      <li><span class="f"><i>P</i>(<i>x</i>) · <i>Q</i>(<i>x</i>) = (3<i>x</i>² − 5<i>x</i> + 2)(2<i>x</i> − 1) = 6<i>x</i>³ − 3<i>x</i>² − 10<i>x</i>² + 5<i>x</i> + 4<i>x</i> − 2 = 6<i>x</i>³ − 13<i>x</i>² + 9<i>x</i> − 2</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="notables">
+  <span class="week">Неделя 5 · U2 §1.4</span>
+  <h2>2. Las 3 identidades notables (формулы сокращённого умножения)</h2>
+  <p>Три формулы, которые нужно узнавать мгновенно в обе стороны (и раскрывать скобки, и сворачивать):</p>
+  <div class="eqs">
+    <div class="eq">(<i>a</i> + <i>b</i>)² = <i>a</i>² + 2<i>ab</i> + <i>b</i>²<small>cuadrado de una suma</small></div>
+    <div class="eq">(<i>a</i> − <i>b</i>)² = <i>a</i>² − 2<i>ab</i> + <i>b</i>²<small>cuadrado de una diferencia</small></div>
+    <div class="eq">(<i>a</i> + <i>b</i>)(<i>a</i> − <i>b</i>) = <i>a</i>² − <i>b</i>²<small>suma por diferencia</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Главная ловушка экзамена: (a + b)² ≠ a² + b²</span>
+    <p>Никогда не забывай удвоенное произведение <span class="f">±2<i>ab</i></span>! Например, <span class="f">(<i>x</i> + 3)² = <i>x</i>² + 6<i>x</i> + 9</span>, а не <span class="f"><i>x</i>² + 9</span>. И второй момент: в <span class="f">(3<i>x</i>)²</span> в квадрат возводится <b>и число, и буква</b>: <span class="f">(3<i>x</i>)² = 9<i>x</i>²</span>, а не <span class="f">3<i>x</i>²</span>.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Раскрыть скобки и упростить: <span class="f">(2<i>x</i> − 5)² − (2<i>x</i> + 1)(2<i>x</i> − 1)</span>.</p>
+    <ol class="steps">
+      <li>Первая скобка (квадрат разности): <span class="f">(2<i>x</i>)² − 2·(2<i>x</i>)·5 + 5² = 4<i>x</i>² − 20<i>x</i> + 25</span>.</li>
+      <li>Произведение (разность квадратов): <span class="f">(2<i>x</i>)² − 1² = 4<i>x</i>² − 1</span>.</li>
+      <li>Вычитаем <b>в скобках</b>: <span class="f">(4<i>x</i>² − 20<i>x</i> + 25) − (4<i>x</i>² − 1) = 4<i>x</i>² − 20<i>x</i> + 25 − 4<i>x</i>² + 1 = −20<i>x</i> + 26</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="primer-grado">
+  <span class="week">Неделя 6 · U2 §2.1</span>
+  <h2>3. Ecuaciones de 1er grado con paréntesis y denominadores</h2>
+  <p>Стандартный алгоритм решения линейного уравнения со скобками и дробями:</p>
+  <ol class="steps">
+    <li>Найти <span class="es">m.c.m.</span> всех знаменателей и умножить на него <b>каждое</b> слагаемое обеих частей уравнения (включая целые числа без дроби!).</li>
+    <li>Раскрыть скобки (<span class="es">quitar paréntesis</span>), внимательно следя за знаками.</li>
+    <li>Перенести слагаемые с <i>x</i> в одну часть, числа — в другую (<span class="es">transponer términos</span>), меняя знак при переносе через «=».</li>
+    <li>Привести подобные (<span class="es">reducir</span>) и разделить на коэффициент при <i>x</i> (<span class="es">despejar la incógnita</span>).</li>
+  </ol>
+  <div class="box trap"><span class="lbl">Ловушка: минус перед дробью</span>
+    <p>Дробная черта работает как невидимые скобки! Если перед дробью стоит минус, он относится ко <b>всему числителю</b>. Всегда ставь скобки при избавлении от знаменателей:</p>
+    <p><span class="f">− <sup>2<i>x</i> − 3</sup>/<sub>4</sub></span> после умножения на 4 превращается в <span class="f">−(2<i>x</i> − 3) = −2<i>x</i> + 3</span> (знак перед тройкой поменялся на плюс!).</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Решить уравнение: <span class="f"><sup><i>x</i> + 1</sup>/<sub>2</sub> − <sup>2<i>x</i> − 3</sup>/<sub>6</sub> = 1 − <sup><i>x</i></sup>/<sub>3</sub></span></p>
+    <ol class="steps">
+      <li><span class="f">m.c.m.(2, 6, 3) = 6</span>. Умножаем всё уравнение на 6: <span class="f">3(<i>x</i> + 1) − 1·(2<i>x</i> − 3) = 6·1 − 2<i>x</i></span>.</li>
+      <li>Раскрываем скобки: <span class="f">3<i>x</i> + 3 − 2<i>x</i> + 3 = 6 − 2<i>x</i></span>.</li>
+      <li>Переносим <i>x</i> влево, числа вправо: <span class="f">3<i>x</i> − 2<i>x</i> + 2<i>x</i> = 6 − 3 − 3</span>.</li>
+      <li><span class="f">3<i>x</i> = 0 → <i>x</i> = 0</span>. (Ноль — нормальное число и полноценный корень!).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="segundo-grado">
+  <span class="week">Неделя 6 · U2 §2.2</span>
+  <h2>4. Ecuaciones de 2º grado: completas e incompletas</h2>
+  <p>Квадратное уравнение в стандартном виде записывается так (<span class="f"><i>a</i> ≠ 0</span>):</p>
+  <div class="eq"><i>a</i><i>x</i>² + <i>b</i><i>x</i> + <i>c</i> = 0</div>
+
+  <h3>Полные уравнения (completas: есть a, b и c)</h3>
+  <p>Решаются через общую формулу корней и дискриминант <span class="f">Δ = <i>b</i>² − 4<i>ac</i></span>:</p>
+  <div class="eq"><i>x</i> = <sup>−<i>b</i> ± √(<i>b</i>² − 4<i>ac</i>)</sup>/<sub>2<i>a</i></sub><small>Δ &gt; 0 → 2 корня; Δ = 0 → 1 двойной корень; Δ &lt; 0 → нет вещественных корней (sin solución real)</small></div>
+  <div class="box trap"><span class="lbl">Ловушка со знаком b и b²</span>
+    <p>Если <span class="f"><i>b</i> = −5</span>, то в начале формулы стоит <span class="f">−<i>b</i> = +5</span>, а под корнем <span class="f"><i>b</i>² = (−5)² = +25</span> (квадрат любого вещественного числа в <span class="f"><i>b</i>²</span> всегда положителен!).</p>
+  </div>
+
+  <h3>Неполные уравнения (incompletas) — без формулы быстрее!</h3>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Тип 1 · c = 0 (ax² + bx = 0)</span>
+      <p>Выносим <span class="f"><i>x</i></span> за скобку (<span class="es">sacar factor común</span>): <span class="f"><i>x</i>(<i>ax</i> + <i>b</i>) = 0</span>. Один корень всегда <span class="f"><i>x</i>₁ = 0</span>, второй <span class="f"><i>x</i>₂ = −<i>b</i>/<i>a</i></span>.</p>
+      <p>Пример: <span class="f">3<i>x</i>² − 12<i>x</i> = 0 → 3<i>x</i>(<i>x</i> − 4) = 0 → <i>x</i>₁ = 0, <i>x</i>₂ = 4</span>.</p>
+    </div>
+    <div class="box tip"><span class="lbl">Тип 2 · b = 0 (ax² + c = 0)</span>
+      <p>Выражаем <span class="f"><i>x</i>² = −<i>c</i>/<i>a</i></span> и извлекаем корень со знаком <b>±</b>.</p>
+      <p>Пример: <span class="f">2<i>x</i>² − 18 = 0 → <i>x</i>² = 9 → <i>x</i> = ±3</span> (два корня: +3 и −3!). А у <span class="f"><i>x</i>² + 9 = 0</span> решений нет.</p>
+    </div>
+  </div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · completa</span>
+    <p>Решить уравнение: <span class="f">2<i>x</i>² − 7<i>x</i> + 3 = 0</span>.</p>
+    <p>Выписываем коэффициенты: <span class="f"><i>a</i> = 2, <i>b</i> = −7, <i>c</i> = 3</span>. Дискриминант: <span class="f">Δ = (−7)² − 4·2·3 = 49 − 24 = 25</span>.</p>
+    <p><span class="f"><i>x</i> = (7 ± √25) / (2·2) = (7 ± 5) / 4</span> → <span class="f"><i>x</i>₁ = 12/4 = 3</span>; <span class="f"><i>x</i>₂ = 2/4 = 1/2</span>.</p>
+  </div>
+</section>
+
+<section id="sistemas-2x2">
+  <span class="week">Неделя 7 · U2 §3</span>
+  <h2>5. Sistemas de ecuaciones lineales 2×2</h2>
+  <p>Система двух линейных уравнений с двумя неизвестными (<span class="f"><i>x</i>, <i>y</i></span>) решается любым из трёх классических методов — все дают один и тот же ответ:</p>
+  <div class="tbl"><table>
+    <tr><th>Метод</th><th>Суть</th><th>Когда удобнее всего</th></tr>
+    <tr><td><span class="es">Sustitución</span> (подстановка)</td><td>Выразить одну букву из одного уравнения и подставить во второе.</td><td>Есть буква с коэффициентом <b>1</b> или <b>−1</b>.</td></tr>
+    <tr><td><span class="es">Igualación</span> (приравнивание)</td><td>Выразить одну и ту же букву из обоих уравнений и приравнять правые части.</td><td>Буква уже выражена или легко выражается в обоих уравнениях.</td></tr>
+    <tr><td><span class="es">Reducción</span> (сложение)</td><td>Умножить уравнения так, чтобы коэффициенты при одной букве стали противоположными, и сложить строки.</td><td>У всех букв коэффициенты отличны от 1 (самый быстрый и безошибочный метод!).</td></tr>
+  </table></div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · три метода на одной системе</span>
+    <p>Решить систему: <span class="f">(1) 2<i>x</i> + <i>y</i> = 7</span> и <span class="f">(2) 3<i>x</i> − 2<i>y</i> = 7</span>.</p>
+    <ol class="steps">
+      <li><b>Por sustitución</b>: из (1) <span class="f"><i>y</i> = 7 − 2<i>x</i></span>. Подставляем во (2): <span class="f">3<i>x</i> − 2(7 − 2<i>x</i>) = 7 → 3<i>x</i> − 14 + 4<i>x</i> = 7 → 7<i>x</i> = 21 → <i>x</i> = 3</span>. Тогда <span class="f"><i>y</i> = 7 − 2·3 = 1</span>.</li>
+      <li><b>Por igualación</b>: из (1) <span class="f"><i>y</i> = 7 − 2<i>x</i></span>, из (2) <span class="f"><i>y</i> = (3<i>x</i> − 7)/2</span>. Приравниваем: <span class="f">7 − 2<i>x</i> = (3<i>x</i> − 7)/2 → 14 − 4<i>x</i> = 3<i>x</i> − 7 → 7<i>x</i> = 21 → <i>x</i> = 3, <i>y</i> = 1</span>.</li>
+      <li><b>Por reducción</b>: умножим (1) на 2: <span class="f">4<i>x</i> + 2<i>y</i> = 14</span>. Сложим со (2): <span class="f">(4<i>x</i> + 3<i>x</i>) + (2<i>y</i> − 2<i>y</i>) = 14 + 7 → 7<i>x</i> = 21 → <i>x</i> = 3, <i>y</i> = 1</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="gauss">
+  <span class="week">Неделя 7–8 · U2 §3.5</span>
+  <h2>6. Sistemas 3×3 por el método de Gauss paso a paso</h2>
+  <p><span class="es">Método de Gauss</span> превращает систему 3×3 в «ступенчатую» (<span class="es">sistema escalonado</span>): во 2-м уравнении исчезает <span class="f"><i>x</i></span>, а в 3-м исчезают и <span class="f"><i>x</i></span>, и <span class="f"><i>y</i></span>. После этого неизвестные находятся снизу вверх (<span class="es">sustitución hacia atrás</span>).</p>
+  <figure>
+    <svg viewBox="0 0 540 155" role="img" aria-label="Схема метода Гаусса: приведение к треугольному виду">
+      <rect x="16" y="16" width="210" height="122" rx="6" class="surf"/>
+      <text x="121" y="38" font-size="13" font-weight="700" text-anchor="middle">Исходная система</text>
+      <text x="40" y="64" font-size="14" font-family="STIX Two Text,serif">a₁x + b₁y + c₁z = d₁</text>
+      <text x="40" y="90" font-size="14" font-family="STIX Two Text,serif">a₂x + b₂y + c₂z = d₂</text>
+      <text x="40" y="116" font-size="14" font-family="STIX Two Text,serif">a₃x + b₃y + c₃z = d₃</text>
+      <path class="ac" stroke-width="2.5" d="M240 77 H295"/>
+      <polygon class="acf" points="295,72 305,77 295,82"/>
+      <text x="272" y="66" font-size="11.5" text-anchor="middle" class="mut">Гаусс</text>
+      <rect x="314" y="16" width="210" height="122" rx="6" class="surf"/>
+      <text x="419" y="38" font-size="13" font-weight="700" text-anchor="middle">Sistema escalonado</text>
+      <path class="soft" d="M332 72 L408 124 L332 124 Z"/>
+      <text x="338" y="64" font-size="14" font-family="STIX Two Text,serif">a₁x + b₁y + c₁z = d₁</text>
+      <text x="380" y="90" font-size="14" font-family="STIX Two Text,serif">b'₂y + c'₂z = d'₂</text>
+      <text x="422" y="116" font-size="14" font-family="STIX Two Text,serif">c''₃z = d''₃</text>
+    </svg>
+    <figcaption>Под главной диагональю делаем три нуля: сначала два нуля в первом столбце (при x), затем ноль во втором (при y).</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · метод Гаусса по шагам</span>
+    <p>Решить систему: <span class="f">E₁: <i>x</i> + <i>y</i> + <i>z</i> = 6</span>, <span class="f">E₂: 2<i>x</i> − <i>y</i> + <i>z</i> = 3</span>, <span class="f">E₃: <i>x</i> + 2<i>y</i> − <i>z</i> = 2</span>.</p>
+    <ol class="steps">
+      <li><b>Опорная строка</b>: в <span class="f">E₁</span> коэффициент при <span class="f"><i>x</i></span> равен 1 — идеально. Оставляем <span class="f">E₁</span> на первом месте.</li>
+      <li><b>Убираем <i>x</i> из E₂ и E₃</b> (используя <span class="f">E₁</span>):<br>
+        <span class="f">E₂' = E₂ − 2·E₁</span>: <span class="f">(2<i>x</i> − <i>y</i> + <i>z</i>) − (2<i>x</i> + 2<i>y</i> + 2<i>z</i>) = 3 − 12 → −3<i>y</i> − <i>z</i> = −9</span> (или <span class="f">3<i>y</i> + <i>z</i> = 9</span>).<br>
+        <span class="f">E₃' = E₃ − E₁</span>: <span class="f">(<i>x</i> + 2<i>y</i> − <i>z</i>) − (<i>x</i> + <i>y</i> + <i>z</i>) = 2 − 6 → <i>y</i> − 2<i>z</i> = −4</span>.</li>
+      <li><b>Убираем <i>y</i> из третьей строки</b> (используя только 2-ю и 3-ю! <span class="f">E₁</span> больше не трогаем, иначе вернётся <span class="f"><i>x</i></span>):<br>
+        Поменяем местами <span class="f">E₂'</span> и <span class="f">E₃'</span>, чтобы во 2-й строке стояло <span class="f"><i>y</i> − 2<i>z</i> = −4</span>, а в 3-й <span class="f">3<i>y</i> + <i>z</i> = 9</span>.<br>
+        <span class="f">E₃'' = E₃' − 3·E₂'</span>: <span class="f">(3<i>y</i> + <i>z</i>) − 3(<i>y</i> − 2<i>z</i>) = 9 − 3(−4) → 7<i>z</i> = 21</span>.</li>
+      <li><b>Обратный ход (снизу вверх)</b>:<br>
+        Из 3-й строки: <span class="f">7<i>z</i> = 21 → <i>z</i> = 3</span>.<br>
+        Во 2-ю строку: <span class="f"><i>y</i> − 2·3 = −4 → <i>y</i> = 2</span>.<br>
+        В 1-ю строку: <span class="f"><i>x</i> + 2 + 3 = 6 → <i>x</i> = 1</span>. Ответ: <span class="f">(1, 2, 3)</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="problemas">
+  <span class="week">Неделя 8 · U2 §4</span>
+  <h2>7. Planteamiento de problemas и правки преподавателя в Envío U2</h2>
+  <p>Любая текстовая задача решается в 4 шага: 1) выбрать и назвать неизвестные (<span class="es">definir las incógnitas</span>), 2) перевести условия в уравнения (<span class="es">plantear</span>), 3) решить (<span class="es">resolver</span>), 4) проверить смысл ответа (<span class="es">comprobar e interpretar</span> — например, ширина дорожки или длина стороны не могут быть отрицательными).</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · рамка / дорожка вокруг прямоугольника</span>
+    <p>Бассейн 10 m на 6 m окружён дорожкой (<span class="es">pasillo / camino</span>) постоянной ширины <span class="f"><i>x</i></span>. Общая площадь бассейна вместе с дорожкой — 140 m². Найти ширину дорожки <span class="f"><i>x</i></span>.</p>
+    <ol class="steps">
+      <li>Дорожка опоясывает бассейн <b>с двух сторон</b> по длине и <b>с двух сторон</b> по ширине! Поэтому внешние размеры: <span class="f">(10 + 2<i>x</i>)</span> и <span class="f">(6 + 2<i>x</i>)</span>.</li>
+      <li>Уравнение площади: <span class="f">(10 + 2<i>x</i>)(6 + 2<i>x</i>) = 140 → 60 + 32<i>x</i> + 4<i>x</i>² = 140 → 4<i>x</i>² + 32<i>x</i> − 80 = 0</span>.</li>
+      <li>Разделим на 4: <span class="f"><i>x</i>² + 8<i>x</i> − 20 = 0</span> → <span class="f"><i>x</i> = (−8 ± √(64 + 80))/2 = (−8 ± 12)/2</span> → <span class="f"><i>x</i>₁ = 2 m</span>, <span class="f"><i>x</i>₂ = −10</span> (отбрасываем). Ответ: 2 m.</li>
+    </ol>
+  </div>
+
+  <div class="box errata"><span class="lbl">Внимание! Модификации преподавателя в Actividades de Envío U2</span>
+    <p>В файле заданий Envío U2 преподаватель изменил исходные числа (чтобы отсечь списывание со старых шаблонов). Обязательно решай именно с этими данными:</p>
+    <ul>
+      <li><b>Задача про дорожку (<span class="es">pasillo</span>)</b>: ширина дорожки равна <b>2 m</b> (<span class="es">pasillo de 2 m</span>). Помни, что с двух краёв она добавляет <span class="f">2 + 2 = 4 m</span> к каждому измерению!</li>
+      <li><b>Задача про телефонный тариф (<span class="es">llamada</span>)</b>: стоимость минуты разговора — <b>0,24 €/min</b>.</li>
+      <li><b>Задача про прямоугольник (<span class="es">largo y ancho</span>)</b>: длина на <b>2 m больше</b> ширины (<span class="es">el largo mide 2 m más que el ancho</span>, т.е. если ширина <span class="f"><i>x</i></span>, то длина <span class="f"><i>x</i> + 2</span>).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>8. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>incógnita / variable</td><td>неизвестное / переменная</td><td>valor numérico</td><td>числовое значение</td></tr>
+    <tr><td>monomio / polinomio</td><td>одночлен / многочлен</td><td>grado</td><td>степень (многочлена/уравнения)</td></tr>
+    <tr><td>términos semejantes</td><td>подобные слагаемые</td><td>sacar factor común</td><td>вынести общий множитель</td></tr>
+    <tr><td>identidades notables</td><td>формулы сокр. умножения</td><td>quitar denominadores</td><td>избавиться от знаменателей</td></tr>
+    <tr><td>despejar</td><td>выразить неизвестное</td><td>discriminante</td><td>дискриминант</td></tr>
+    <tr><td>ecuación completa / incompleta</td><td>полное / неполное ур-е</td><td>raíz / solución</td><td>корень / решение</td></tr>
+    <tr><td>sustitución / igualación</td><td>подстановка / приравнивание</td><td>reducción</td><td>метод сложения</td></tr>
+    <tr><td>método de Gauss</td><td>метод Гаусса</td><td>sistema escalonado</td><td>ступенчатая система</td></tr>
+    <tr><td>plantear un problema</td><td>составить уравнение по задаче</td><td>pasillo / ancho / largo</td><td>дорожка / ширина / длина</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>9. Проверь себя</h2>
+  <details class="q"><summary>Раскрой скобки: (3x − 4)² и (5x + 2)(5x − 2)</summary><div class="a">(3x − 4)² = 9x² − 24x + 16. (5x + 2)(5x − 2) = 25x² − 4.</div></details>
+  <details class="q"><summary>Реши уравнение: (x + 2)/3 − (x − 1)/2 = 1</summary><div class="a">m.c.m.(3,2) = 6 → 2(x + 2) − 3(x − 1) = 6 → 2x + 4 − 3x + 3 = 6 → −x = −1 → x = 1.</div></details>
+  <details class="q"><summary>Реши неполные квадратные уравнения: а) 4x² − 20x = 0; б) 3x² − 75 = 0</summary><div class="a">а) 4x(x − 5) = 0 → x₁ = 0, x₂ = 5. б) x² = 25 → x₁ = 5, x₂ = −5.</div></details>
+  <details class="q"><summary>Реши полное квадратное уравнение: x² − 5x + 6 = 0</summary><div class="a">Δ = 25 − 24 = 1; x = (5 ± 1)/2 → x₁ = 3, x₂ = 2.</div></details>
+  <details class="q"><summary>Реши систему: x + 2y = 8 и 3x − 2y = 4</summary><div class="a">Складываем уравнения (reducción): 4x = 12 → x = 3. Подставляем: 3 + 2y = 8 → y = 2,5.</div></details>
+  <details class="q"><summary>Участок шириной x и длиной на 2 m больше окружён дорожкой шириной 2 m со всех сторон. Каковы внешние размеры участка с дорожкой?</summary><div class="a">Внутренние размеры: x и x + 2. Дорожка 2 m добавляет по 2 m с каждого края (всего +4 m): внешняя ширина x + 4, внешняя длина x + 6.</div></details>
+</section>
+</div>
+</body></html>

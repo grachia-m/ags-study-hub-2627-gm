@@ -1,0 +1,250 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U2</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 2</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 2 · Недели 4–6</div>
+  <h1>Past & Perfect Tenses, Used to / Would</h1>
+  <p class="lede">Вся система прошедших и перфектных времён для экзамена: Past Simple vs. Past Continuous (с when и while), Present Perfect Simple vs. Continuous (с маркерами for, since, just, already, yet, still), Past Perfect («предпрошедшее»), конструкции used to / would / be used to + -ing и экзаменационные шаблоны Rephrasing.</p>
+  <ul class="toc">
+    <li><a href="#past">1. Past Simple vs Continuous</a></li>
+    <li><a href="#presperf">2. Present Perfect Simple vs Continuous</a></li>
+    <li><a href="#pastperf">3. Past Perfect Simple</a></li>
+    <li><a href="#usedto">4. Used to / Would / Be used to</a></li>
+    <li><a href="#nouns">5. Compound Nouns</a></li>
+    <li><a href="#rephrasing">6. Exam Rephrasing Patterns</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="past">
+  <span class="week">Unidad 2 · §1</span>
+  <h2>1. Past Simple vs. Past Continuous (when / while)</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Past Simple (Завершённый факт / Прерывание)</span>
+      <p><b>Формула:</b> <span class="f">V2 (-ed / 2-я форма)</span>; <span class="f">did not + V1</span>; <span class="f">Did + S + V1?</span></p>
+      <p>Короткое завершённое действие в прошлом в конкретный момент (<i>yesterday, in 2020, two days ago, last week</i>) или действие, которое <b>прервало</b> длительный процесс.</p>
+    </div>
+    <div class="box tip"><span class="lbl">Past Continuous (Длительный фон в прошлом)</span>
+      <p><b>Формула:</b> <span class="f">was / were + V-ing</span></p>
+      <p>Длительный процесс, который шёл в конкретный момент прошлого или служил фоном, когда произошло короткое событие.</p>
+    </div>
+  </div>
+
+  <h3>Золотая связка с WHEN и WHILE</h3>
+  <div class="eqs">
+    <div class="eq"><b>WHILE / AS</b> + Past Continuous<small><i><b>While I was driving</b> home, it started to rain.</i> (длительный процесс)</small></div>
+    <div class="eq"><b>WHEN</b> + Past Simple<small><i>I was driving home <b>when it started</b> to rain.</i> (короткое прерывание)</small></div>
+  </div>
+  <p>Если два длительных действия шли <b>параллельно</b> одновременно, оба ставятся в Past Continuous: <i>While I <b>was cooking</b>, my sister <b>was studying</b>.</i></p>
+</section>
+
+<section id="presperf">
+  <span class="week">Unidad 2 · §2</span>
+  <h2>2. Present Perfect Simple vs. Continuous</h2>
+  <p><b>Present Perfect Simple</b> (<span class="f">have / has + V3</span>) связывает прошлое с настоящим: действие произошло в незавершённый период или его результат важен сейчас, либо началось в прошлом и продолжается до сих пор.</p>
+  <p><b>Present Perfect Continuous</b> (<span class="f">have / has been + V-ing</span>) делает упор на <b>длительность процесса</b> (<span class="es">How long?</span>) и видимый наглядный эффект (<i>Your eyes are red — have you been crying?</i>).</p>
+
+  <div class="box trap"><span class="lbl">Главное противопоставление: Past Simple vs. Present Perfect</span>
+    <ul>
+      <li>Если указано <b>точное закрытое время в прошлом</b> (<kbd>yesterday, last year, in 2019, 5 minutes ago, when I was a child</kbd>) → <b>ТОЛЬКО Past Simple</b>!</li>
+      <li>Если время не уточнено или период ещё не закончился (<kbd>today, this week, recently, lately, so far, in my life</kbd>) → <b>Present Perfect</b>.</li>
+    </ul>
+  </div>
+
+  <h3>Таблица маркеров Present Perfect (где стоят и что значат)</h3>
+  <div class="tbl"><table>
+    <tr><th>Маркер</th><th>Значение</th><th>Тип предложения и позиция</th><th>Пример</th></tr>
+    <tr><td><b>FOR</b> + период</td><td>В течение (сколько времени?)</td><td>Считает длительность (<span class="es">duración</span>): <i>for 5 years, for a long time</i></td><td><i>We have lived here <b>for ten years</b>.</i></td></tr>
+    <tr><td><b>SINCE</b> + точка старта</td><td>С какого-то момента</td><td>Точка отсчёта (<span class="es">punto de partida</span>): <i>since 2018, since Monday, since I arrived</i> (после <i>since</i> глагол в Past Simple!)</td><td><i>We have lived here <b>since 2016</b>.</i></td></tr>
+    <tr><td><b>JUST</b></td><td>Только что</td><td>Утверждение (+), между <i>have/has</i> и <i>V3</i></td><td><i>She has <b>just</b> left the office.</i></td></tr>
+    <tr><td><b>ALREADY</b></td><td>Уже</td><td>Утверждение (+), между <i>have/has</i> и <i>V3</i></td><td><i>I have <b>already</b> sent the email.</i></td></tr>
+    <tr><td><b>YET</b></td><td>Ещё (не) / Уже?</td><td>Отрицание (−) и Вопрос (?), <b>всегда в самом конце</b> предложения</td><td><i>He hasn't called <b>yet</b>. Have you finished <b>yet</b>?</i></td></tr>
+    <tr><td><b>STILL</b></td><td>Всё ещё (не)</td><td>В отрицании ставится <b>ПЕРЕД</b> <i>haven't / hasn't</i>!</td><td><i>They <b>still</b> haven't replied.</i></td></tr>
+    <tr><td><b>EVER / NEVER</b></td><td>Когда-либо / Никогда</td><td><i>Ever</i> — в вопросах (?); <i>never</i> — в утверждениях с отрицательным смыслом</td><td><i>Have you <b>ever</b> been to London?</i></td></tr>
+  </table></div>
+</section>
+
+<section id="pastperf">
+  <span class="week">Unidad 2 · §3</span>
+  <h2>3. Past Perfect Simple («Предпрошедшее» время)</h2>
+  <p><b>Формула:</b> <span class="f">had + V3 (Past Participle)</span>.</p>
+  <p>Используется, когда в прошлом произошло два действия, и мы хотим показать, какое из них случилось <b>раньше другого</b> (<span class="es">el pasado del pasado</span>). Более раннее действие ставится в <b>Past Perfect</b> (<span class="f">had + V3</span>), а более позднее — в <b>Past Simple</b> (<span class="f">V2</span>).</p>
+
+  <div class="box ex"><span class="lbl">Пример на оси времени</span>
+    <p><i>When we <b>arrived</b> at the station (2-е действие, 18:05), the train <b>had already left</b> (1-е действие, 18:00).</i> — Когда мы приехали на вокзал, поезд уже ушёл.</p>
+  </div>
+  <p>Типичные союзы-маркеры: <b>by the time</b> (к тому времени как + Past Simple), <b>after</b> (+ Past Perfect), <b>before</b> (+ Past Simple), <b>already / just / never</b> в контексте прошлого.</p>
+</section>
+
+<section id="usedto">
+  <span class="week">Unidad 2 · §4 · Любимая тема экзамена</span>
+  <h2>4. Used to / Would / Be used to / Get used to</h2>
+  <p>Эти четыре конструкции выглядят почти одинаково, но имеют совершенно разные грамматические формулы и смысл:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Конструкция</th><th>Формула</th><th>Значение и правила</th><th>Пример</th></tr>
+    <tr><td><b>used to + V1</b><br>Отриц.: <b>didn't use to + V1</b><br>Вопрос: <b>Did you use to + V1?</b></td><td><span class="f">used to + инфинитив</span></td><td>Прошлая привычка <b>ИЛИ прошлое состояние</b>, которого больше нет («раньше бывало / раньше был»).</td><td><i>I <b>used to smoke</b></i> (действие).<br><i>There <b>used to be</b> a cinema here</i> (состояние).</td></tr>
+    <tr><td><b>would + V1</b></td><td><span class="f">would + инфинитив</span></td><td>Повторяющиеся прошлые действия («бывало, мы делали...»). <b>ЗАПРЕЩЕНО со Stative verbs (be, live, have, like, know)!</b></td><td><i>Every summer we <b>would go</b> to the beach.</i> (НО НЕ: <i>would live / would be</i>!)</td></tr>
+    <tr><td><b>be used to + V-ing / Noun</b></td><td><span class="f">am/is/are/was + used to + <b>-ing</b></span></td><td><b>Быть привыкшим</b> к чему-то (для тебя это уже легко и привычно).</td><td><i>She <b>is used to waking up</b> at 6 am.</i> (Она привыкла вставать в 6 утра).</td></tr>
+    <tr><td><b>get used to + V-ing / Noun</b></td><td><span class="f">get/got + used to + <b>-ing</b></span></td><td><b>Привыкать</b> к чему-то (процесс адаптации).</td><td><i>I quickly <b>got used to driving</b> on the left.</i> (Я быстро привык...).</td></tr>
+  </table></div>
+</section>
+
+<section id="nouns">
+  <span class="week">Unidad 2 · §5</span>
+  <h2>5. Compound Nouns (Сложные существительные)</h2>
+  <p>В конструкции <span class="f">Noun 1 + Noun 2</span> первое существительное работает как определение (отвечает на вопрос «какой?») и поэтому всегда ставится в <b>единственном числе</b>, а второе существительное — главное (только оно принимает <span class="f">-s</span> во множественном числе):</p>
+  <ul>
+    <li><b>traffic jam</b> (пробка) → <i>traffic jams</i>; <b>income tax</b> (подоходный налог); <b>credit card</b> (кредитная карта); <b>city centre</b> (центр города); <b>toothache / headache</b> (зубная / головная боль).</li>
+  </ul>
+</section>
+
+<section id="rephrasing">
+  <span class="week">Unidad 2 · §6 · Exam Rephrasing</span>
+  <h2>6. Классические шаблоны Rephrasing (Past Simple ↔ Present Perfect)</h2>
+  <p>В задании на перефразирование (<span class="es">Rewrite the sentence keeping the same meaning</span>) почти на каждом экзамене встречаются эти 3 трансформации:</p>
+
+  <div class="box ex"><span class="lbl">Шаблон 1: The last time / Last → Haven't ... since / for</span>
+    <p>Исходное (Past Simple): <i>The last time I saw him was in 2021 / three years ago.</i> (или <i>I last saw him in 2021.</i>)<br>
+    Переделка (Present Perfect отрицание): <b>I haven't seen him since 2021 / for three years.</b></p>
+  </div>
+
+  <div class="box ex"><span class="lbl">Шаблон 2: Started + ago / in → Have been + -ing (или Have + V3) + for / since</span>
+    <p>Исходное (Past Simple): <i>She started working here five months ago.</i><br>
+    Переделка (Present Perfect): <b>She has worked / has been working here for five months.</b></p>
+  </div>
+
+  <div class="box ex"><span class="lbl">Шаблон 3: It's (период) since + Past Simple</span>
+    <p>Исходное: <i>I haven't visited Rome for ten years.</i><br>
+    Переделка: <b>It is (или It has been) ten years since I (last) visited Rome.</b> (Обрати внимание: после <i>since</i> глагол стоит в утвердительном Past Simple!)</p>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>while / whereas</td><td>mientras</td><td>в то время как / пока</td></tr>
+    <tr><td>since / for</td><td>desde / durante</td><td>с (момента) / в течение (периода)</td></tr>
+    <tr><td>used to + inf</td><td>solía + inf</td><td>раньше делал / имел обыкновение</td></tr>
+    <tr><td>be used to + -ing</td><td>estar acostumbrado a</td><td>быть привыкшим к чему-либо</td></tr>
+    <tr><td>get used to + -ing</td><td>acostumbrarse a</td><td>привыкать к чему-либо</td></tr>
+    <tr><td>by the time</td><td>para cuando</td><td>к тому времени как</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Раскрой скобки: "While Elena (walk) to the office, she (drop) her keys."</summary><div class="a"><b>was walking ... dropped</b>. После <i>While</i> идёт длительный фон (Past Continuous), а короткое событие, прервавшее его, ставится в Past Simple.</div></details>
+  <details class="q"><summary>Выбери правильную форму: "I used to (live / living) in Valencia, so I am used to (eat / eating) authentic paella."</summary><div class="a"><b>live ... eating</b>. <i>Used to + инфинитив (live)</i> означает прошлый факт («раньше жил»), а <i>am used to + -ing (eating)</i> означает «привык к чему-то».</div></details>
+  <details class="q"><summary>В каком предложении НЕЛЬЗЯ заменить "used to" на "would"? 1) "We used to play tennis on Sundays." 2) "We used to have a small house in the village."</summary><div class="a">Во втором (<b>We used to have a small house</b>). Глагол <i>have</i> в значении владения — это Stative verb (состояние), а <i>would</i> для прошлого употребляется только с повторяющимися динамическими действиями.</div></details>
+  <details class="q"><summary>Rephrasing: "The last time we spoke to the director was two weeks ago." → "We haven't _________________."</summary><div class="a"><b>We haven't spoken to the director for two weeks.</b> (Переход от <i>The last time + Past Simple + ago</i> к <i>Present Perfect Negative + for</i>).</div></details>
+  <details class="q"><summary>Раскрой скобки: "By the time the firefighters (arrive), the neighbours (already / put out) the fire."</summary><div class="a"><b>arrived ... had already put out</b>. К тому моменту в прошлом, когда приехали пожарные (Past Simple), соседи уже потушили огонь раньше (Past Perfect).</div></details>
+</section>
+</div>
+</body></html>

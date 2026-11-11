@@ -1,0 +1,228 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U7</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 7</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 7 · Блок 3</div>
+  <h1>Passive Voice & Causative Have / Get</h1>
+  <p class="lede">Страдательный залог (Passive Voice) во всех временах: пошаговый алгоритм перевода из Active в Passive, пассив с двумя дополнениями (кому и что), безличный пассив для экзаменационного Rephrasing (It is said that... / He is said to be...) и каузативная конструкция Have / Get something done («услуга чужими руками»).</p>
+  <ul class="toc">
+    <li><a href="#passive">1. Active → Passive (Таблица всех времён)</a></li>
+    <li><a href="#twoobjects">2. Passive with Two Objects</a></li>
+    <li><a href="#impersonal">3. Impersonal Passive (It is said / He is said to)</a></li>
+    <li><a href="#causative">4. Causative: Have / Get something done</a></li>
+    <li><a href="#glosario">5. Словарик</a></li>
+    <li><a href="#test">6. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="passive">
+  <span class="week">Unidad 7 · §1 · Фундамент</span>
+  <h2>1. Active to Passive: формула и таблица всех времён</h2>
+  <p>Пассивный залог (<span class="es">Voz Pasiva</span>) используется, когда объект действия важнее исполнителя или когда исполнитель неизвестен/очевиден. Неизменное ядро любого пассива:</p>
+  <div class="eq"><b>BE</b> (в том же времени, что и активный глагол) + <b>V3 (Past Participle)</b> + (<b>by</b> + исполнитель)<small><i>Active: The company <b>built</b> a new warehouse. → Passive: A new warehouse <b>was built</b> (by the company).</i></small></div>
+
+  <ol class="steps">
+    <li>Найди дополнение (<span class="es">Object</span> — на что направлено действие) сразу после глагола и вынеси его в начало на место нового подлежащего.</li>
+    <li>Определи время глагола в Active и поставь глагол <b>to be</b> в <b>это же самое время</b> (согласовав по числу с новым подлежащим: ед. или мн. ч.!).</li>
+    <li>Основной смысловой глагол поставь в <b>3-ю форму (V3 / -ed)</b>.</li>
+    <li>Если исполнитель важен, добавь его в конце с предлогом <b>by</b>. Но если подлежащее в Active — неопределённое (<i>Somebody, People, They, We, Nobody</i>), то <b>by them / by somebody писать НЕ НУЖНО!</b></li>
+  </ol>
+
+  <div class="tbl"><table>
+    <tr><th>Время (Tense)</th><th>Active Voice (Актив)</th><th>Passive Voice (<b>be + V3</b>)</th></tr>
+    <tr><td><b>Present Simple</b></td><td><i>They <b>make</b> cars.</i></td><td><i>Cars <b>are made</b> (am / is / are + V3).</i></td></tr>
+    <tr><td><b>Present Continuous</b></td><td><i>They <b>are making</b> cars.</i></td><td><i>Cars <b>are being made</b> (am/is/are + <b>being</b> + V3).</i></td></tr>
+    <tr><td><b>Past Simple</b></td><td><i>They <b>made</b> cars.</i></td><td><i>Cars <b>were made</b> (was / were + V3).</i></td></tr>
+    <tr><td><b>Past Continuous</b></td><td><i>They <b>were making</b> cars.</i></td><td><i>Cars <b>were being made</b> (was/were + <b>being</b> + V3).</i></td></tr>
+    <tr><td><b>Present Perfect</b></td><td><i>They <b>have made</b> cars.</i></td><td><i>Cars <b>have been made</b> (have/has + <b>been</b> + V3).</i></td></tr>
+    <tr><td><b>Past Perfect</b></td><td><i>They <b>had made</b> cars.</i></td><td><i>Cars <b>had been made</b> (had + <b>been</b> + V3).</i></td></tr>
+    <tr><td><b>Future Simple (will)</b></td><td><i>They <b>will make</b> cars.</i></td><td><i>Cars <b>will be made</b> (will + <b>be</b> + V3).</i></td></tr>
+    <tr><td><b>Be going to</b></td><td><i>They <b>are going to make</b> cars.</i></td><td><i>Cars <b>are going to be made</b>.</i></td></tr>
+    <tr><td><b>Modals (can/must/should)</b></td><td><i>They <b>must make</b> cars.</i></td><td><i>Cars <b>must be made</b> (modal + <b>be</b> + V3).</i></td></tr>
+    <tr><td><b>Modal Perfects</b></td><td><i>They <b>should have made</b> cars.</i></td><td><i>Cars <b>should have been made</b> (modal + <b>have been</b> + V3).</i></td></tr>
+  </table></div>
+</section>
+
+<section id="twoobjects">
+  <span class="week">Unidad 7 · §2 · Exam Rephrasing №1</span>
+  <h2>2. Passive with Two Objects (Пассив с двумя дополнениями)</h2>
+  <p>После глаголов передачи (<b>give, send, offer, show, pay, lend, tell, teach, promise</b>) часто стоят два дополнения: <b>Кому? (Indirect Object — человек)</b> и <b>Что? (Direct Object — предмет)</b>. В английском языке пассив можно построить <b>двумя способами</b> (и именно со второго — от лица человека — чаще всего начинается строчка в экзаменационном Rephrasing!):</p>
+
+  <div class="box ex"><span class="lbl">Пример трансформации двумя способами</span>
+    <p><b>Active:</b> <i>The bank manager gave <b>me</b> (Кому?) <b>a loan</b> (Что?).</i></p>
+    <ul>
+      <li><b>Способ 1 (Начинаем с ЧЕЛОВЕКА — самый естественный в английском!):</b> Местоимение <i>me</i> превращается в подлежащее <b>I</b>:<br>
+      <span class="f"><b>I was given</b> a loan (by the bank manager).</span> (Дословно: «Я был одарен кредитом» = Мне дали кредит).</li>
+      <li><b>Способ 2 (Начинаем с ПРЕДМЕТА — перед человеком появляется предлог TO!):</b><br>
+      <span class="f"><b>A loan was given to me</b> (by the bank manager).</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="impersonal">
+  <span class="week">Unidad 7 · §3 · Exam Rephrasing №2 (Сложный пассив)</span>
+  <h2>3. Impersonal & Personal Passive: It is said that... / He is said to...</h2>
+  <p>Когда предложение в Active начинается с <span class="es">People say / think / believe / know / expect / report that...</span>, на экзамене просят переделать его в один из двух шаблонов:</p>
+
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Шаблон А: Начинается с IT...</span>
+      <p>Просто ставим <b>It is + V3 (said/believed/known) + that</b> и переписываем вторую часть <b>без изменений</b>!</p>
+      <p><i>People say that the company is losing money.</i><br>→ <b>It is said that</b> the company is losing money.</p>
+    </div>
+    <div class="box trap"><span class="lbl">Шаблон Б: Начинается с подлежащего 2-й части!</span>
+      <p>Формула: <b>Subject + am/is/are + V3 (said/believed) + TO-INFINITIVE</b>!</p>
+      <ul>
+        <li>Если действие в <b>настоящем или будущем</b> → <b>to + V1</b>:<br>
+        <i>People say that <b>he is</b> rich.</i> → <b>He is said to be</b> rich.</li>
+        <li>Если действие уже произошло <b>в прошлом</b> (Past Simple / Present Perfect) → перфектный инфинитив <b>to have + V3</b>:<br>
+        <i>People think that <b>the thief escaped</b> abroad.</i> → <b>The thief is thought to have escaped</b> abroad.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="causative">
+  <span class="week">Unidad 7 · §4 · Exam Rephrasing №3</span>
+  <h2>4. Causative: Have / Get something done («Услуга чужими руками»)</h2>
+  <p>Конструкция <b>Causative</b> используется, когда мы <b>не делаем работу сами</b>, а нанимаем специалиста (парикмахера, механика, врача, маляра), чтобы он выполнил услугу для нас. На русский мы часто переводим «Я подстригся / Я починил машину», но в английском <i>I cut my hair</i> значит «Я сам себя постриг ножницами перед зеркалом»!</p>
+
+  <div class="eq"><b>HAVE / GET</b> (меняется по временам!) + <b>OBJECT (предмет)</b> + <b>V3 (Past Participle)</b><small>Строгий порядок слов: сначала <b>предмет</b>, и только потом <b>V3</b>!</small></div>
+
+  <div class="tbl"><table>
+    <tr><th>Время</th><th>Active (Кто-то делает услугу для меня)</th><th>Causative (<b>have/get + предмет + V3</b>)</th></tr>
+    <tr><td><b>Present Simple</b></td><td><i>A mechanic checks my car every year.</i></td><td><i>I <b>have my car checked</b> every year.</i></td></tr>
+    <tr><td><b>Present Continuous</b></td><td><i>Workers are painting our house now.</i></td><td><i>We <b>are having our house painted</b> now.</i></td></tr>
+    <tr><td><b>Past Simple</b></td><td><i>The hairdresser cut her hair yesterday.</i></td><td><i>She <b>had / got her hair cut</b> yesterday.</i></td></tr>
+    <tr><td><b>Future / Modals</b></td><td><i>An technician will install the air conditioning.</i></td><td><i>We <b>will have the air conditioning installed</b>.</i></td></tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Как узнать Causative на экзамене?</span>
+    <p>Если в исходном предложении кто-то оказывает услугу чьему-то имуществу или телу (<i>A dentist pulled out <b>my</b> tooth / Someone repaired <b>his</b> roof</i>), а новая строчка начинается с владельца (<i>I ... / He ...</i>), это <b>100% Causative</b>: смотри на притяжательное местоимение (<i>my/his/our</i>), ставь глагол <b>have</b> в нужное время + <b>предмет</b> + <b>V3</b>!</p>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>5. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>passive voice</td><td>voz pasiva</td><td>страдательный (пассивный) залог</td></tr>
+    <tr><td>past participle (V3)</td><td>participio pasado</td><td>причастие прошедшего времени (3-я форма)</td></tr>
+    <tr><td>by + agent</td><td>por + complemento agente</td><td>кем-либо (исполнитель действия)</td></tr>
+    <tr><td>It is said / believed that...</td><td>Se dice / se cree que...</td><td>Говорят / считают, что...</td></tr>
+    <tr><td>have / get something done</td><td>mandar hacer algo (causativo)</td><td>заказать услугу (сделать чужими руками)</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>6. Проверь себя</h2>
+  <details class="q"><summary>Переделай в Passive: "Somebody has stolen my bicycle from the garage."</summary><div class="a"><b>My bicycle has been stolen from the garage.</b> (Present Perfect Passive: <i>has been + V3</i>; слово <i>by somebody</i> опускаем!).</div></details>
+  <details class="q"><summary>Переделай в Passive с двумя дополнениями: "The company offered Sarah a promotion." → "Sarah _________________."</summary><div class="a"><b>Sarah was offered a promotion (by the company).</b> (Past Simple Passive от лица получателя <i>Sarah</i>).</div></details>
+  <details class="q"><summary>Rephrasing (Impersonal Passive): "Journalists report that the president resigned yesterday." → 1) "It _________________." 2) "The president _________________."</summary><div class="a">1) <b>It is reported that the president resigned yesterday.</b><br>2) <b>The president is reported to have resigned yesterday.</b> (Так как <i>resigned</i> в прошлом, используем перфектный инфинитив <i>to have resigned</i>!).</div></details>
+  <details class="q"><summary>Rephrasing (Causative): "An optician tested my eyes last week." → "I _________________."</summary><div class="a"><b>I had (или got) my eyes tested last week.</b> (Causative в Past Simple: <i>had + my eyes + tested</i>).</div></details>
+</section>
+</div>
+</body></html>

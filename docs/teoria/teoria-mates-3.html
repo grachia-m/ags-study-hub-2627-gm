@@ -1,0 +1,297 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U3</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 3</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U3 · Недели 9–13</div>
+  <h1>Medidas, Pitágoras, Semejanza y Trigonometría</h1>
+  <p class="lede">Перевод линейных, квадратных и кубических единиц, связь объёма и вместимости в литрах, теоремы Пифагора и Фалеса, масштабы карт и тригонометрия прямоугольного треугольника (включая метод двойного наблюдения).</p>
+  <ul class="toc">
+    <li><a href="#unidades">1. Единицы СИ и лестница</a></li>
+    <li><a href="#pitagoras">2. Teorema de Pitágoras</a></li>
+    <li><a href="#tales">3. Semejanza и Teorema de Tales</a></li>
+    <li><a href="#escalas">4. Escalas en planos y mapas</a></li>
+    <li><a href="#trigonometria">5. Razones trigonométricas</a></li>
+    <li><a href="#doble-observacion">6. Метод двойного наблюдения</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="unidades">
+  <span class="week">Неделя 9 · U3 §1</span>
+  <h2>1. Sistema Internacional и лестница единиц</h2>
+  <p>На лестнице единиц (<span class="es">escalera de unidades</span>): <span class="f">km – hm – dam – m – dm – cm – mm</span> при движении <b>вниз</b> (к более мелким единицам) мы <b>умножаем</b>, при движении <b>вверх</b> — <b>делим</b>. Величина одного шага зависит от степени единицы:</p>
+  <div class="eqs">
+    <div class="eq">Longitud (m)<br>шаг = ×10 / :10<small>1 m = 100 cm</small></div>
+    <div class="eq">Superficie (m²)<br>шаг = ×100 / :100<small>1 m² = 10 000 cm²; 1 ha = 1 hm² = 10 000 m²</small></div>
+    <div class="eq">Volumen (m³)<br>шаг = ×1000 / :1000<small>1 m³ = 1000 dm³ = 1 000 000 cm³</small></div>
+  </div>
+
+  <h3>Мост между объёмом (Volumen) и вместимостью (Capacidad)</h3>
+  <p>Жидкости измеряют в литрах (<span class="f">kL – hL – daL – L – dL – cL – mL</span>, шаг ×10), а размеры баков и бассейнов — в метрах. Три золотых равенства для перехода:</p>
+  <div class="eqs">
+    <div class="eq">1 L = 1 dm³<small>главный мост</small></div>
+    <div class="eq">1 m³ = 1000 L = 1 kL<small>кубометр воды = тонна (1000 кг)</small></div>
+    <div class="eq">1 cm³ = 1 mL<small>кубический сантиметр</small></div>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Перевести <span class="f">4,5 hm²</span> в <span class="f">m²</span> и <span class="f">0,08 m³</span> в литры.</p>
+    <p>1) От <span class="f">hm²</span> до <span class="f">m²</span> два шага вниз по площади (×100 каждый): <span class="f">4,5 · 100 · 100 = 45 000 m²</span>.<br>
+    2) От <span class="f">m³</span> к <span class="f">dm³</span> (литрам) один шаг вниз по объёму (×1000): <span class="f">0,08 · 1000 = 80 dm³ = 80 L</span>.</p>
+  </div>
+</section>
+
+<section id="pitagoras">
+  <span class="week">Неделя 10 · U3 §2</span>
+  <h2>2. Teorema de Pitágoras</h2>
+  <p>Работает <b>только в прямоугольном треугольнике</b> (<span class="es">triángulo rectángulo</span>). Сторона напротив прямого угла — <span class="es">hipotenusa</span> (<span class="f"><i>a</i></span>, самая длинная), две стороны, образующие прямой угол — <span class="es">catetos</span> (<span class="f"><i>b</i></span> и <span class="f"><i>c</i></span>):</p>
+  <div class="eqs">
+    <div class="eq"><i>a</i>² = <i>b</i>² + <i>c</i>²<small>найти гипотенузу: <i>a</i> = √(<i>b</i>² + <i>c</i>²)</small></div>
+    <div class="eq"><i>b</i>² = <i>a</i>² − <i>c</i>²<small>найти катет: <i>b</i> = √(<i>a</i>² − <i>c</i>²)</small></div>
+  </div>
+  <div class="box tip"><span class="lbl">Где прячется прямоугольный треугольник</span>
+    <p>В равнобедренном треугольнике (<span class="es">isósceles</span>) и правильном многоугольнике высота делит основание <b>пополам</b>. В ромбе диагонали пересекаются под прямым углом и делятся пополам. В прямоугольнике диагональ образует прямоугольный треугольник со сторонами.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>Лестница длиной 5 m приставлена к стене так, что её нижний конец отстоит от стены на 1,4 m. На какой высоте находится верхний конец лестницы?</p>
+    <p>Лестница — это гипотенуза (<span class="f"><i>a</i> = 5 m</span>), расстояние по земле — катет (<span class="f"><i>c</i> = 1,4 m</span>). Ищем второй катет: <span class="f"><i>h</i> = √(5² − 1,4²) = √(25 − 1,96) = √23,04 = 4,8 m</span>.</p>
+  </div>
+</section>
+
+<section id="tales">
+  <span class="week">Неделя 11 · U3 §3</span>
+  <h2>3. Semejanza и Teorema de Tales (тени и зеркала)</h2>
+  <p>Две фигуры подобны (<span class="es">semejantes</span>), если они имеют одинаковую форму, их углы равны, а все соответствующие стороны пропорциональны с коэффициентом подобия <span class="f"><i>k</i></span> (<span class="es">razón de semejanza</span>).</p>
+  <div class="eq"><sup>Высота большого</sup>/<sub>Высота малого</sub> = <sup>Тень большого</sup>/<sub>Тень малого</sub> = <i>k</i></div>
+  <figure>
+    <svg viewBox="0 0 560 185" role="img" aria-label="Подобие треугольников: задача с тенью и задача с зеркалом на земле">
+      <g transform="translate(10 10)">
+        <text x="125" y="14" font-size="13" font-weight="700" text-anchor="middle">Задача про тени (sombras)</text>
+        <path class="ax" d="M15 145 H245"/>
+        <path class="ln" stroke-width="3" d="M40 145 V35"/>
+        <path class="ac" stroke-width="3" d="M150 145 V95"/>
+        <path class="wa" stroke-width="1.8" stroke-dasharray="4 3" d="M40 35 L225 145"/>
+        <text x="28" y="90" font-size="13" text-anchor="end">H</text>
+        <text x="142" y="122" font-size="13" text-anchor="end">h</text>
+        <text x="187" y="160" font-size="12" text-anchor="middle" class="mut">s</text>
+        <text x="132" y="160" font-size="12" text-anchor="middle" class="mut">S (вся тень)</text>
+      </g>
+      <g transform="translate(290 10)">
+        <text x="130" y="14" font-size="13" font-weight="700" text-anchor="middle">Задача с зеркалом (espejo)</text>
+        <path class="ax" d="M15 145 H250"/>
+        <path class="ln" stroke-width="3" d="M35 145 V85"/>
+        <path class="ln" stroke-width="3" d="M230 145 V30"/>
+        <rect x="102" y="142" width="16" height="5" class="acf"/>
+        <path class="ac" stroke-width="2" d="M35 85 L110 145 L230 30"/>
+        <text x="27" y="115" font-size="13" text-anchor="end">h</text>
+        <text x="242" y="88" font-size="13">H</text>
+        <text x="72" y="160" font-size="12" text-anchor="middle" class="mut">d₁</text>
+        <text x="170" y="160" font-size="12" text-anchor="middle" class="mut">d₂</text>
+      </g>
+    </svg>
+    <figcaption>Слева: треугольники вложены друг в друга (положение Фалеса). Справа: угол падения луча в зеркало равен углу отражения.</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · тени и зеркало</span>
+    <p><b>А (Тень)</b>: Здание отбрасывает тень 18 m. В тот же момент вертикальный шест высотой 1,5 m отбрасывает тень 2,25 m. Высота здания?<br>
+    <span class="f"><i>H</i> / 1,5 = 18 / 2,25 → <i>H</i> = 1,5 · 18 / 2,25 = 12 m</span>.</p>
+    <p><b>Б (Зеркало)</b>: Человек с глазами на высоте 1,65 m стоит в 1,5 m от зеркала на земле и видит в нём верхушку дерева, стоящего в 6 m от зеркала. Высота дерева?<br>
+    <span class="f"><i>H</i> / 1,65 = 6 / 1,5 → <i>H</i> = 1,65 · 4 = 6,6 m</span>.</p>
+  </div>
+</section>
+
+<section id="escalas">
+  <span class="week">Неделя 11 · U3 §3.3</span>
+  <h2>4. Escalas en planos y mapas (1 : N)</h2>
+  <p>Масштаб <span class="f">1 : <i>N</i></span> означает, что <b>1 единица на карте</b> равна <b><i>N</i> таких же единиц в реальности</b> (например, при <span class="f">1 : 50 000</span> 1 cm на карте = 50 000 cm = 500 m = 0,5 km на местности).</p>
+  <div class="eqs">
+    <div class="eq">L<sub>real</sub> = L<sub>plano</sub> · <i>N</i><small>для длин и периметров (множитель N)</small></div>
+    <div class="eq">Área<sub>real</sub> = Área<sub>plano</sub> · <i>N</i>²<small>для площадей (множитель N²!)</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: площадь и масштаб</span>
+    <p>Отношение площадей подобных фигур равно <b>квадрату</b> коэффициента подобия (<span class="f"><i>k</i>²</span>), а объёмов — <b>кубу</b> (<span class="f"><i>k</i>³</span>). Если масштаб плана <span class="f">1 : 200</span>, а площадь комнаты на плане 15 cm², то реальная площадь: <span class="f">15 · 200² = 15 · 40 000 = 600 000 cm² = 60 m²</span> (или сначала переведи стороны в реальные метры и перемножь — так невозможно ошибиться!).</p>
+  </div>
+</section>
+
+<section id="trigonometria">
+  <span class="week">Неделя 12 · U3 §4</span>
+  <h2>5. Razones trigonométricas в прямоугольном треугольнике</h2>
+  <p>Для острого угла <span class="f">α</span> прямоугольного треугольника (мнемоника <b>SOH-CAH-TOA</b>):</p>
+  <div class="eqs">
+    <div class="eq">sen α = <sup>cateto opuesto</sup>/<sub>hipotenusa</sub></div>
+    <div class="eq">cos α = <sup>cateto contiguo</sup>/<sub>hipotenusa</sub></div>
+    <div class="eq">tan α = <sup>cateto opuesto</sup>/<sub>cateto contiguo</sub></div>
+  </div>
+  <ul>
+    <li><b>Основное тождество</b>: <span class="f">sen² α + cos² α = 1</span> и <span class="f">tan α = sen α / cos α</span>.</li>
+    <li><b>Как выбрать функцию в задаче</b>: посмотри, какие две стороны участвуют (одна дана, другую ищем). Если это два катета (высота башни и расстояние по земле) — всегда берём <b>tan α</b>! Если участвует гипотенуза (трос, лестница, склон) — берём <b>sen α</b> или <b>cos α</b>.</li>
+    <li><b>Как найти сам угол</b> по известному отношению сторон: обратные клавиши <kbd>SHIFT</kbd> + <kbd>sin</kbd> (<span class="f">arcsen</span>), <kbd>cos</kbd> (<span class="f">arccos</span>) или <kbd>tan</kbd> (<span class="f">arctan</span>). Калькулятор обязательно в режиме <b>DEG (D)</b>!</li>
+  </ul>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto</span>
+    <p>С точки на расстоянии 40 m от подножия маяка верхушка видна под углом возвышения (<span class="es">ángulo de elevación</span>) 35°. Найти высоту маяка.</p>
+    <p>Ищем противолежащий катет <span class="f"><i>h</i></span>, дан прилежащий 40 m → используем тангенс: <span class="f">tan 35° = <i>h</i> / 40 → <i>h</i> = 40 · tan 35° ≈ 40 · 0,7002 = 28,01 m</span>.</p>
+  </div>
+</section>
+
+<section id="doble-observacion">
+  <span class="week">Неделя 13 · U3 §4.4</span>
+  <h2>6. Método de doble observación (высота из двух точек)</h2>
+  <p>Классическая экзаменационная задача: к основанию башни/горы нельзя подойти (река, обрыв), поэтому угол измеряют из точки A (<span class="f">α</span>), затем проходят вперёд расстояние <span class="f"><i>d</i></span> до точки B и снова измеряют угол (<span class="f">β</span>).</p>
+  <figure>
+    <svg viewBox="0 0 460 190" role="img" aria-label="Двойное наблюдение высоты башни h из точек A и B">
+      <path class="soft" d="M220 155 L380 155 L380 30 Z"/>
+      <path class="ln" stroke-width="2" d="M50 155 L380 155 L380 30 L50 155"/>
+      <path class="ac" stroke-width="2" d="M220 155 L380 30"/>
+      <path class="ln" stroke-width="1.5" d="M366 155 V141 H380"/>
+      <text x="50" y="173" font-size="13" font-weight="700" text-anchor="middle">A</text>
+      <text x="220" y="173" font-size="13" font-weight="700" text-anchor="middle">B</text>
+      <text x="102" y="148" font-size="14" font-style="italic">α</text>
+      <text x="255" y="148" font-size="14" font-style="italic">β</text>
+      <text x="135" y="173" font-size="13" text-anchor="middle">d</text>
+      <text x="300" y="173" font-size="13" text-anchor="middle" font-style="italic">x</text>
+      <text x="394" y="98" font-size="14" font-weight="700" font-style="italic">h</text>
+    </svg>
+    <figcaption>Два прямоугольных треугольника с общей высотой h: малый с катетом x и большой с катетом (x + d).</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · двойное наблюдение</span>
+    <p>Верхушка антенны видна из точки A под углом <span class="f">30°</span>. Пройдя 50 m по направлению к антенне (точка B), наблюдатель видит её под углом <span class="f">60°</span>. Найти высоту антенны <span class="f"><i>h</i></span>.</p>
+    <ol class="steps">
+      <li>Обозначим неизвестное расстояние от B до антенны за <span class="f"><i>x</i></span>. Тогда расстояние от A до антенны равно <span class="f"><i>x</i> + 50</span>.</li>
+      <li>Запишем тангенс для обоих прямоугольных треугольников и выразим <span class="f"><i>h</i></span>:<br>
+        Из малого (B): <span class="f">tan 60° = <i>h</i> / <i>x</i> → <i>h</i> = <i>x</i> · tan 60° = 1,732<i>x</i></span>.<br>
+        Из большого (A): <span class="f">tan 30° = <i>h</i> / (<i>x</i> + 50) → <i>h</i> = (<i>x</i> + 50) · tan 30° = 0,577(<i>x</i> + 50)</span>.</li>
+      <li>Приравниваем оба выражения для <span class="f"><i>h</i></span> (метод <span class="es">igualación</span>):<br>
+        <span class="f">1,732<i>x</i> = 0,577<i>x</i> + 28,85 → 1,155<i>x</i> = 28,85 → <i>x</i> = 25 m</span>.</li>
+      <li>Находим высоту: <span class="f"><i>h</i> = 25 · 1,732 = 43,3 m</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>longitud / superficie / volumen</td><td>длина / площадь / объём</td><td>capacidad (litro)</td><td>вместимость (литр)</td></tr>
+    <tr><td>hectárea (ha = hm²)</td><td>гектар (10 000 м²)</td><td>hipotenusa / cateto</td><td>гипотенуза / катет</td></tr>
+    <tr><td>semejanza / semejantes</td><td>подобие / подобные</td><td>razón de semejanza</td><td>коэффициент подобия</td></tr>
+    <tr><td>sombra / espejo</td><td>тень / зеркало</td><td>escala del plano</td><td>масштаб плана</td></tr>
+    <tr><td>cateto opuesto / contiguo</td><td>противолежащий / прилежащий</td><td>ángulo de elevación</td><td>угол возвышения</td></tr>
+    <tr><td>ángulo de depresión</td><td>угол снижения (взгляд сверху вниз)</td><td>resolver un triángulo</td><td>найти все стороны и углы</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Сколько литров воды вмещает бак объёмом 2,4 m³? А сколько m² в 3,5 ha?</summary><div class="a">1 m³ = 1000 L → 2,4 m³ = 2400 L. 1 ha = 1 hm² = 10 000 m² → 3,5 ha = 35 000 m².</div></details>
+  <details class="q"><summary>В прямоугольном треугольнике гипотенуза 13 cm, один катет 5 cm. Второй катет?</summary><div class="a">b = √(13² − 5²) = √(169 − 25) = √144 = 12 cm.</div></details>
+  <details class="q"><summary>Фонарь высотой 4,5 m стоит в 3 m от человека ростом 1,8 m. Какова длина тени человека?</summary><div class="a">По Фалесу: 4,5 / 1,8 = (3 + s) / s → 2,5s = 3 + s → 1,5s = 3 → s = 2 m.</div></details>
+  <details class="q"><summary>На плане масштаба 1 : 500 участок имеет размеры 6 cm × 4 cm. Какова его реальная площадь в m²?</summary><div class="a">Реальные стороны: 6·500 = 3000 cm = 30 m и 4·500 = 2000 cm = 20 m. Площадь = 30·20 = 600 m².</div></details>
+  <details class="q"><summary>Трос длиной 20 m натянут от вершины мачты к земле под углом 60° к горизонту. Высота мачты?</summary><div class="a">Трос — гипотенуза, высота — противолежащий катет: h = 20 · sen 60° = 20 · 0,866 = 17,32 m.</div></details>
+</section>
+</div>
+</body></html>

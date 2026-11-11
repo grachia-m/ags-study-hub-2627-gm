@@ -1,0 +1,254 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U9</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 9</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 9 · Блок 3 + Writing</div>
+  <h1>Modals, Gerund/Infinitive & Exam Writing Masterclass</h1>
+  <p class="lede">Финальный модуль курса: модальные глаголы в настоящем и прошлом (Modal Perfects: must/can't/should/may have + V3), правила выбора между Gerund (-ing) и To-Infinitive (включая глаголы, меняющие смысл: remember, forget, stop, try, regret), а также готовые шаблоны, связки и структура для эссе (Opinion, For & Against) и официального письма (Formal Letter).</p>
+  <ul class="toc">
+    <li><a href="#modals">1. Modal Verbs (Mustn't vs Don't have to, Deduction)</a></li>
+    <li><a href="#modalperfects">2. Modal Perfects (Modal + have + V3)</a></li>
+    <li><a href="#gerundinf">3. Gerund (-ing) vs. To-Infinitive</a></li>
+    <li><a href="#meaningchange">4. Глаголы, меняющие смысл (Stop, Remember, Try)</a></li>
+    <li><a href="#writing">5. Exam Writing Masterclass (Шаблоны и коннекторы)</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="modals">
+  <span class="week">Unidad 9 · §1</span>
+  <h2>1. Modal Verbs: Обязанность, Запрет, Совет и Дедукция</h2>
+  <p>После чистых модальных глаголов (<b>can, could, must, may, might, should, ought to, needn't</b>) всегда идёт <b>голый инфинитив без частицы to (<span class="f">V1</span>)</b> (исключения с <i>to</i>: <i>have to, ought to, be able to, need to</i>).</p>
+
+  <div class="box trap"><span class="lbl">Главная ловушка: MUSTN'T vs. DON'T HAVE TO (NEEDN'T)</span>
+    <ul>
+      <li><b>MUSTN'T</b> = <b>Строгий ЗАПРЕТ (<span class="es">Prohibición</span>: It is forbidden / not allowed)</b>! «Нельзя, запрещено!»: <i>You <b>mustn't smoke</b> in the office.</i></li>
+      <li><b>DON'T HAVE TO / NEEDN'T</b> = <b>Отсутствие необходимости (<span class="es">Falta de obligación</span>: It isn't necessary)</b>! «Не нужно, не обязательно (но если хочешь — можно)»: <i>Today is Sunday, so I <b>don't have to / needn't get up</b> early.</i></li>
+    </ul>
+  </div>
+
+  <h3>Модальные глаголы предположения (Logical Deduction in the Present)</h3>
+  <div class="tbl"><table>
+    <tr><th>Степень уверенности</th><th>Модальный глагол</th><th>Пример (в настоящем: <b>Modal + V1 / be + -ing</b>)</th></tr>
+    <tr><td><b>99% ДА</b> (Точно / Должно быть)</td><td><b>MUST + V1</b></td><td><i>He has three Ferraris — he <b>must be</b> very rich!</i></td></tr>
+    <tr><td><b>50% ВОЗМОЖНО</b> (Может быть)</td><td><b>MAY / MIGHT / COULD + V1</b></td><td><i>Take a coat; it <b>might / may rain</b> later.</i> (НЕ: <i>can rain</i>!)</td></tr>
+    <tr><td><b>99% НЕТ</b> (Не может быть!)</td><td><b>CAN'T + V1</b> (НЕ <i>mustn't</i>!)</td><td><i>She just ate a huge pizza — she <b>can't be</b> hungry!</i></td></tr>
+  </table></div>
+</section>
+
+<section id="modalperfects">
+  <span class="week">Unidad 9 · §2 · Любимая тема Rephrasing</span>
+  <h2>2. Modal Perfects: оценка событий в ПРОШЛОМ</h2>
+  <p>Когда мы делаем выводы или выражаем упрёк по поводу того, что <b>уже произошло в прошлом</b>, после модального глагола ставится перфектный инфинитив: <span class="f"><b>Modal + HAVE + V3 (Past Participle)</b></span>:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Формула</th><th>Значение (ключ для Rephrasing)</th><th>Пример трансформации для экзамена</th></tr>
+    <tr><td><b>MUST HAVE + V3</b></td><td><b>99% уверенность, что это БЫЛО</b> в прошлом (<span class="es">I am sure that it happened</span>).</td><td><i>I'm sure she forgot the meeting.</i><br>→ <b>She must have forgotten</b> the meeting.</td></tr>
+    <tr><td><b>CAN'T / COULDN'T HAVE + V3</b></td><td><b>99% уверенность, что этого НЕ МОГЛО БЫТЬ</b> (<span class="es">It is impossible that it happened</span>).</td><td><i>It's impossible that Tom stole the money.</i><br>→ <b>Tom can't have stolen</b> the money.</td></tr>
+    <tr><td><b>MAY / MIGHT / COULD HAVE + V3</b></td><td><b>50% вероятность в прошлом</b> (<span class="es">Perhaps / Maybe it happened</span>).</td><td><i>Perhaps they missed the bus.</i><br>→ <b>They might / may have missed</b> the bus.</td></tr>
+    <tr><td><b>SHOULD / OUGHT TO HAVE + V3</b></td><td><b>Упрёк / критика / сожаление о прошлом:</b> «Следовало сделать (но ты не сделал!)».</td><td><i>It was a mistake not to back up the files.</i><br>→ <b>You should have backed up</b> the files.</td></tr>
+    <tr><td><b>NEEDN'T HAVE + V3</b></td><td>«Зря сделал!» (Не нужно было делать, но человек уже потратил силы и сделал).</td><td><i>We bought bread, but there was plenty at home.</i><br>→ <b>We needn't have bought</b> bread.</td></tr>
+  </table></div>
+</section>
+
+<section id="gerundinf">
+  <span class="week">Unidad 9 · §3</span>
+  <h2>3. Gerund (-ing) vs. To-Infinitive vs. Bare Infinitive</h2>
+  <div class="tbl"><table>
+    <tr><th>Когда ставим GERUND (<b>V-ing</b>)</th><th>Когда ставим TO-INFINITIVE (<b>to + V1</b>)</th></tr>
+    <tr>
+      <td>
+        1) <b>После ЛЮБОГО предлога</b> (<i>interested <b>in</b>, good <b>at</b>, tired <b>of</b>, before/after, without, instead <b>of</b>, look forward <b>to + -ing</b>!</i>).<br>
+        2) <b>В роли подлежащего</b> в начале предложения: <i><b>Smoking</b> is bad for you.</i><br>
+        3) <b>После глаголов:</b> <b>enjoy, mind / don't mind, finish, avoid, suggest, admit, deny, keep, practise, imagine, miss, risk, spend time, can't help, can't stand, feel like, it's no use</b>.
+      </td>
+      <td>
+        1) <b>Для выражения ЦЕЛИ</b> (отвечает на вопрос «зачем? / для того чтобы»): <i>I went to London <b>to learn</b> English.</i><br>
+        2) <b>После прилагательных</b> (<i>easy, difficult, happy, glad, surprised, too/enough</i>): <i>It is nice <b>to meet</b> you.</i><br>
+        3) <b>После глаголов:</b> <b>want, decide, hope, expect, plan, promise, offer, refuse, agree, manage, afford, learn, seem, tend, would like / would love</b>.
+      </td>
+    </tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Две классические ловушки экзамена</span>
+    <ul>
+      <li><b>Look forward to + V-ING:</b> в выражении <i>I look forward to <b>hearing</b> from you</i> («С нетерпением жду ответа») слово <b>to</b> — это предлог, поэтому после него ставится <b>-ing</b>! То же самое в <i>be/get used to <b>+ -ing</b></i> и <i>object to <b>+ -ing</b></i>.</li>
+      <li><b>Make и Let + BARE INFINITIVE (без to!):</b> в активном залоге после <b>make</b> (заставлять) и <b>let</b> (позволять) частица <i>to</i> НЕ ставится: <i>My boss <b>made me work</b> late</i> / <i>She <b>let me use</b> her car</i>. (Но в пассиве <i>to</i> возвращается: <i>I <b>was made to work</b></i>!).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="meaningchange">
+  <span class="week">Unidad 9 · §4</span>
+  <h2>4. Глаголы, меняющие смысл с -ing и to + V1</h2>
+  <div class="tbl"><table>
+    <tr><th>Глагол</th><th><b>+ GERUND (V-ing)</b> (взгляд в прошлое / процесс)</th><th><b>+ TO-INFINITIVE (to + V1)</b> (цель впереди)</th></tr>
+    <tr><td><b>REMEMBER / FORGET</b></td><td>Помнить / забыть о том, что <b>уже сделал в прошлом</b>:<br><i>I clearly <b>remember locking</b> the door</i> (Я помню, как закрывал дверь).<br><i>I'll never <b>forget meeting</b> her</i> (Никогда не забуду, как встретил её).</td><td>Не забыть / забыть <b>выполнить обязанность</b>:<br><i>Please <b>remember to lock</b> the door!</i> (Не забудь закрыть дверь!).<br><i>He <b>forgot to send</b> the email</i> (Забыл отправить).</td></tr>
+    <tr><td><b>STOP</b></td><td><b>Бросить / прекратить</b> само это действие:<br><i>He <b>stopped smoking</b> two years ago</i> (Бросил курить).</td><td><b>Остановиться (прервать путь/работу), ЧТОБЫ</b> сделать что-то другое:<br><i>He <b>stopped to smoke</b> a cigarette</i> (Остановился, чтобы покурить).</td></tr>
+    <tr><td><b>TRY</b></td><td><b>Попробовать как эксперимент</b> (один из способов):<br><i>If you have a headache, <b>try taking</b> an aspirin.</i></td><td><b>Пытаться, прилагать усилия</b> (трудная задача):<br><i>I <b>tried to open</b> the suitcase, but it was jammed.</i></td></tr>
+    <tr><td><b>REGRET</b></td><td><b>Сожалеть о сделанном в прошлом</b>:<br><i>I <b>regret saying</b> that</i> (Жалею, что сказал это).</td><td>Официальная формула «С сожалением сообщаем вам...»:<br><i>We <b>regret to inform</b> you that your flight is delayed.</i></td></tr>
+  </table></div>
+</section>
+
+<section id="writing">
+  <span class="week">Unidad 9 · §5 · Мастер-класс по Writing</span>
+  <h2>5. Exam Writing Masterclass: структура, коннекторы и шаблоны</h2>
+  <p>Письменная часть экзамена (100–120 слов) оценивается по 4 критериям: <b>1) Структура и деление на абзацы</b>, <b>2) Богатство коннекторов (Linking words)</b>, <b>3) Разнообразие грамматики</b> (вставь хотя бы один Passive, Conditional и Relative clause!), <b>4) Точность лексики и орфографии</b>.</p>
+
+  <div class="pair">
+    <div class="box ex"><span class="lbl">Тип 1: Opinion Essay («Ваше мнение»)</span>
+      <ul>
+        <li><b>Абзац 1 (Introduction):</b> перефразируй тему и сразу чётко заяви свою позицию: <i>Nowadays, it is often said that... In my opinion, I strongly believe that...</i></li>
+        <li><b>Абзац 2 (First argument):</b> <i><b>First of all / Firstly</b>, the main reason is that... <b>For instance</b>, ...</i></li>
+        <li><b>Абзац 3 (Second argument + контраргумент):</b> <i><b>Furthermore / In addition</b>, ... <b>However</b>, some people argue that...</i></li>
+        <li><b>Абзац 4 (Conclusion):</b> <i><b>In conclusion / To sum up</b>, it seems clear to me that...</i></li>
+      </ul>
+    </div>
+    <div class="box tip"><span class="lbl">Тип 2: For and Against Essay («Плюсы и минусы»)</span>
+      <ul>
+        <li><b>Абзац 1 (Introduction):</b> нейтральное введение (<b>БЕЗ личного мнения в начале!</b>): <i>... is a controversial topic today. There are arguments both for and against it.</i></li>
+        <li><b>Абзац 2 (Advantages / Плюсы):</b> <i><b>On the one hand</b>, the main advantage is that... <b>Moreover</b>, ...</i></li>
+        <li><b>Абзац 3 (Disadvantages / Минусы):</b> <i><b>On the other hand</b>, there are also drawbacks. <b>Firstly</b>, ...</i></li>
+        <li><b>Абзац 4 (Conclusion + личный вывод):</b> <i><b>To sum up</b>, taking everything into account, I believe that the advantages outweigh the disadvantages.</i></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Тип 3: Formal Letter / Email (Официальное письмо / Жалоба / Отклик на вакансию)</h3>
+  <ul>
+    <li><b>Никаких сокращений</b> (пиши <i>I am, do not, I would</i> вместо <i>I'm, don't, I'd</i>)!</li>
+    <li><b>Приветствие и концовка (Золотая пара):</b>
+      <br>• Если имя получателя <b>неизвестно</b>: <b>Dear Sir or Madam,</b> → ... → <b>Yours faithfully,</b> (+ твоё имя и фамилия).
+      <br>• Если фамилия <b>известна</b>: <b>Dear Mr / Ms Smith,</b> → ... → <b>Yours sincerely,</b> (+ твоё имя и фамилия).</li>
+    <li><b>Полезные фразы:</b> <i>I am writing in response to your advertisement / to complain about...</i> → <i>I would be grateful if you could send me further information...</i> → <i>I look forward to hearing from you soon.</i></li>
+  </ul>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>mustn't vs. don't have to</td><td>prohibido vs. no es necesario</td><td>нельзя (запрет) vs. не нужно</td></tr>
+    <tr><td>must have + V3 / can't have + V3</td><td>debe de haber... / no puede haber...</td><td>должно быть, сделал / не мог сделать</td></tr>
+    <tr><td>should have + V3</td><td>debería haber hecho (reproche)</td><td>следовало сделать (упрёк в прошлом)</td></tr>
+    <tr><td>look forward to + V-ing</td><td>esperar con ganas / quedar a la espera</td><td>с нетерпением ждать (+ герундий -ing!)</td></tr>
+    <tr><td>On the one hand / On the other hand</td><td>Por un lado / Por otro lado</td><td>С одной стороны / С другой стороны</td></tr>
+    <tr><td>Furthermore / Moreover</td><td>Además</td><td>Более того / Кроме того</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Rephrasing (Modal Perfects): 1) "I am sure that Paul left his keys at the office." 2) "It was a bad idea for you to drive so fast in the rain."</summary><div class="a">1) <b>Paul must have left his keys at the office.</b> (99% уверенность в прошлом → <i>must have + V3</i>).<br>2) <b>You shouldn't have driven so fast in the rain.</b> (Критика прошлого действия → <i>should(n't) have + V3</i>).</div></details>
+  <details class="q"><summary>Выбери правильный модальный глагол: "Entrance to the museum is free on Sundays, so you (mustn't / don't have to) pay for a ticket, but you (mustn't / don't have to) touch the paintings."</summary><div class="a"><b>don't have to ... mustn't</b>. Платить нет необходимости (<i>don't have to</i>), а трогать картины строго запрещено (<i>mustn't</i>).</div></details>
+  <details class="q"><summary>Раскрой скобки (Gerund vs. Infinitive): "I look forward to (meet) you on Friday. Please remember (bring) the signed documents."</summary><div class="a"><b>meeting ... to bring</b>. После <i>look forward to</i> всегда идёт <b>-ing</b> (<i>meeting</i>), а <i>remember to bring</i> означает «не забудь принести» (обязанность впереди).</div></details>
+  <details class="q"><summary>В чём разница между "He stopped talking" и "He stopped to talk"?</summary><div class="a"><b>He stopped talking</b> = Он перестал разговаривать (замолкнул). <b>He stopped to talk</b> = Он остановился (шёл по улице и остановился), чтобы поговорить.</div></details>
+  <details class="q"><summary>Если официальное письмо начинается с "Dear Sir or Madam,", какой фразой его нужно закончить перед подписью: "Yours sincerely," или "Yours faithfully,"?</summary><div class="a"><b>Yours faithfully,</b> (когда мы не знаем имени адресата). Если имя известно (<i>Dear Ms García,</i>), пишется <i>Yours sincerely,</i>.</div></details>
+</section>
+</div>
+</body></html>

@@ -18,6 +18,16 @@ import {
   daysBetweenStr,
 } from './data/scheduleData.js';
 import { buildGoogleCalendarUrl, downloadIcsFile } from './utils/calendarExport.js';
+import {
+  loadCloudConfig,
+  saveCloudConfig,
+  consumeUrlCloudParams,
+  isCloudConfigured,
+  buildMagicSyncUrl,
+  pushStateToCloud,
+  pullStateFromCloud,
+  createNewCloudGist,
+} from './utils/cloudSync.js';
 
 const STORAGE_KEY = 'ags_study_hub_state_v3';
 
@@ -58,6 +68,9 @@ function loadState() {
         readerModalTitle: '',
         solutionConfirmModal: null, // { subjectId, unitNum, title, fileUrl, fileName }
         activeSolutionPage: null, // { subjectId, unitNum, highlightUrl }
+        cloudSyncModalOpen: false,
+        cloudSyncStatus: 'idle', // 'idle' | 'syncing' | 'ok' | 'error'
+        cloudSyncMessage: '',
       };
     }
   } catch (e) {
@@ -92,22 +105,79 @@ function loadState() {
     readerModalTitle: '',
     solutionConfirmModal: null,
     activeSolutionPage: null,
+    cloudSyncModalOpen: false,
+    cloudSyncStatus: 'idle',
+    cloudSyncMessage: '',
   };
 }
 
 const state = loadState();
+let cloudPushTimer = null;
 
-function saveState() {
+function saveState(skipCloudPush = false) {
   try {
     const toSave = {
       ...state,
       readerModalUrl: null,
       readerModalTitle: '',
       solutionConfirmModal: null,
+      cloudSyncModalOpen: false,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+
+    if (!skipCloudPush) {
+      const cfg = loadCloudConfig();
+      if (isCloudConfigured(cfg) && cfg.autoSync) {
+        if (cloudPushTimer) clearTimeout(cloudPushTimer);
+        cloudPushTimer = setTimeout(async () => {
+          try {
+            state.cloudSyncStatus = 'syncing';
+            await pushStateToCloud(state, cfg);
+            state.cloudSyncStatus = 'ok';
+            state.cloudSyncMessage = `Синхронизировано в ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+            const badgeEl = document.getElementById('cloud-sync-btn-label');
+            if (badgeEl) badgeEl.textContent = '🟢 Облако: Синхр.';
+          } catch (err) {
+            console.error('Auto cloud push failed:', err);
+            state.cloudSyncStatus = 'error';
+            state.cloudSyncMessage = err.message || 'Ошибка синхронизации';
+          }
+        }, 450);
+      }
+    }
   } catch (e) {
     console.error('Failed to save state', e);
+  }
+}
+
+async function syncFromCloudOnStartup() {
+  if (typeof window === 'undefined' || !window.location) return;
+  const { connectedFromUrl, config } = consumeUrlCloudParams();
+  if (!isCloudConfigured(config)) return;
+
+  try {
+    state.cloudSyncStatus = 'syncing';
+    const res = await pullStateFromCloud(config);
+    if (!res.empty && res.state) {
+      Object.assign(state, res.state);
+      saveState(true);
+      state.cloudSyncStatus = 'ok';
+      state.cloudSyncMessage = connectedFromUrl
+        ? '✅ Устройство успешно привязано к облачной БД и синхронизировано!'
+        : `Данные загружены из БД (${res.updatedAt ? new Date(res.updatedAt).toLocaleString('ru-RU') : 'актуально'})`;
+      renderApp();
+    } else if (connectedFromUrl) {
+      // Если база ещё пустая, сразу отправляем текущее состояние в неё
+      await pushStateToCloud(state, config);
+      state.cloudSyncStatus = 'ok';
+      state.cloudSyncMessage = '✅ Устройство привязано, начальные данные сохранены в облачную БД!';
+      renderApp();
+    }
+  } catch (err) {
+    console.error('Initial cloud pull failed:', err);
+    state.cloudSyncStatus = 'error';
+    state.cloudSyncMessage = err.message || 'Ошибка подключения к БД';
+    renderApp();
   }
 }
 
@@ -212,11 +282,14 @@ function renderTopbar() {
     { id: 'daily', label: '1. План по дням и Часы' },
     { id: 'weeks', label: '2. Недели W01–W30' },
     { id: 'calendar', label: '3. Календарь и Тутории' },
-    { id: 'subjects', label: '4. Предметы и Файлы' },
+    { id: 'subjects', label: '4. Предметы и Конспекты' },
     { id: 'solutions', label: '🔒 Решения (Solucionarios)' },
     { id: 'envios', label: '5. Сдачи Envío и Ловушки' },
     { id: 'grades', label: '6. Калькулятор оценок' },
   ];
+
+  const cfg = loadCloudConfig();
+  const cloudActive = isCloudConfigured(cfg);
 
   return `
     <header class="topbar">
@@ -240,6 +313,21 @@ function renderTopbar() {
             .join('')}
         </nav>
         <div class="nav-actions">
+          <button
+            type="button"
+            class="btn btn-sm ${cloudActive ? '' : 'btn-primary'}"
+            id="btn-open-cloud-modal"
+            style="${cloudActive ? 'border-color:var(--ok); color:var(--ok);' : ''}"
+            title="Облачная синхронизация между телефоном, ноутбуком и разными браузерами"
+          >
+            <span id="cloud-sync-btn-label">${
+              cloudActive
+                ? state.cloudSyncStatus === 'error'
+                  ? '⚠️ Облако: Ошибка'
+                  : '🟢 Облако: Синхр.'
+                : '☁️ Синхр. (БД / Телефон)'
+            }</span>
+          </button>
           <a href="${COURSE_META.platformUrl}" target="_blank" rel="noopener" class="btn btn-sm">Aeducar ↗</a>
           <a href="${COURSE_META.driveFolderUrl}" target="_blank" rel="noopener" class="btn btn-sm">Google Drive ↗</a>
           <button type="button" class="btn btn-sm" id="btn-toggle-theme" title="Переключить тему">
@@ -589,7 +677,7 @@ function renderDailyTab() {
               : sched.cards
                   .map((card) => {
                     const subj = getSubject(card.subjectId);
-                    const guideUnit = subj.units ? subj.units.find((u) => u.guideUrl) : null;
+                    const guideUnits = subj.units ? subj.units.filter((u) => u.guideUrl) : [];
                     const solFiles = subj.units
                       ? subj.units.flatMap((u) =>
                           (u.files || [])
@@ -800,11 +888,12 @@ function renderDailyTab() {
                         }
 
                         <div class="task-links" style="margin-top:12px;">
-                          ${
-                            guideUnit && guideUnit.guideUrl
-                              ? `<button type="button" class="btn btn-sm" data-action="open-reader" data-url="${guideUnit.guideUrl}" data-title="Конспект: ${subj.shortName}">📖 Открыть конспект U1</button>`
-                              : ''
-                          }
+                          ${guideUnits
+                            .map((gu) => {
+                              const isCurrentEval = Number(gu.eval) === Number(sched.weekObj.eval);
+                              return `<button type="button" class="btn btn-sm ${isCurrentEval ? 'btn-primary' : ''}" data-action="open-reader" data-url="${gu.guideUrl}" data-title="${subj.shortName} — ${gu.title}">📖 Конспект U${gu.num}</button>`;
+                            })
+                            .join('')}
                           ${
                             subj.id !== 'all'
                               ? `<button type="button" class="btn btn-sm" data-action="open-subject" data-subj="${subj.id}">📂 Все материалы ${subj.shortName}</button>`
@@ -1848,6 +1937,166 @@ function renderSolutionConfirmModal() {
   `;
 }
 
+function renderCloudSyncModal() {
+  if (!state.cloudSyncModalOpen) return '';
+  const isCfg = isCloudConfigured(cloudConfig);
+  const magicUrl = isCfg ? buildMagicSyncUrl(cloudConfig) : '';
+
+  return `
+    <div class="modal-backdrop" id="cloud-sync-backdrop">
+      <div class="confirm-modal-window" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="cloud-modal-title">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="subj-pill subj-digital">☁️ Облачная БД</span>
+            <span class="badge-mono">${isCfg ? '🟢 Подключено' : '⚙️ Настройка'}</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="btn-close-cloud-modal">✕ Закрыть</button>
+        </div>
+
+        <h3 id="cloud-modal-title" style="font:700 18.5px/1.3 var(--f-display); margin:0 0 8px;">
+          Синхронизация прогресса между браузерами и телефоном
+        </h3>
+        <p style="margin:0 0 14px; font-size:13.8px; color:var(--ink-secondary);">
+          Подключите облачную базу данных (<b>Firebase Realtime Database</b> или <b>GitHub Gist</b>). Все ваши отмеченные параграфы, переносы дат, заметки, выбранные предметы и оценки будут автоматически сохраняться в облако и подгружаться при открытии на телефоне или в другом браузере.
+        </p>
+
+        <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+          <button
+            type="button"
+            class="btn btn-sm ${cloudConfig.provider !== 'gist' ? 'btn-primary' : ''}"
+            data-action="select-cloud-provider"
+            data-provider="firebase"
+          >
+            🔥 Firebase Realtime DB (Рекомендуется)
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm ${cloudConfig.provider === 'gist' ? 'btn-primary' : ''}"
+            data-action="select-cloud-provider"
+            data-provider="gist"
+          >
+            🐙 GitHub Gist Cloud DB
+          </button>
+        </div>
+
+        ${
+          cloudConfig.provider !== 'gist'
+            ? `
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+            <label style="font-size:13px; font-weight:600;">
+              URL вашей базы Firebase Realtime Database:
+              <input
+                type="url"
+                id="input-firebase-url"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="https://ваш-проект-default-rtdb.europe-west1.firebasedatabase.app"
+                value="${cloudConfig.firebaseUrl || ''}"
+              />
+            </label>
+            <label style="font-size:13px; font-weight:600;">
+              Ключ профиля (Sync Key — одинаковый на ноутбуке и телефоне):
+              <input
+                type="text"
+                id="input-sync-key"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="grachia-ags-2627"
+                value="${cloudConfig.syncKey || 'grachia-ags-2627'}"
+              />
+            </label>
+            <div class="alert-box" style="margin:0; font-size:12.5px;">
+              <strong>💡 Как создать бесплатную БД Firebase за 1 минуту:</strong><br/>
+              1. Откройте <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">console.firebase.google.com</a> → <b>Create a project</b>.<br/>
+              2. В меню слева выберите <b>Build → Realtime Database → Create Database</b> (выберите режим <i>Start in test mode</i>).<br/>
+              3. Скопируйте URL вида <code>https://...firebasedatabase.app</code> и вставьте в поле выше!
+            </div>
+          </div>
+        `
+            : `
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+            <label style="font-size:13px; font-weight:600;">
+              GitHub Personal Access Token (с правом <code>gist</code>):
+              <input
+                type="password"
+                id="input-github-token"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="ghp_... или github_pat_..."
+                value="${cloudConfig.githubToken || ''}"
+              />
+            </label>
+            <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
+              <label style="font-size:13px; font-weight:600; flex:1;">
+                Gist ID (оставьте пустым и нажмите «Создать Gist», если создаёте впервые):
+                <input
+                  type="text"
+                  id="input-gist-id"
+                  class="notes-area"
+                  style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                  placeholder="например: a1b2c3d4e5f6..."
+                  value="${cloudConfig.gistId || ''}"
+                />
+              </label>
+              <button type="button" class="btn btn-sm" id="btn-create-new-gist" style="height:38px;">
+                ✨ Создать новую БД Gist
+              </button>
+            </div>
+          </div>
+        `
+        }
+
+        ${
+          cloudSyncStatus.message
+            ? `<div class="alert-box ${cloudSyncStatus.state === 'error' ? 'danger' : 'warn'}" style="margin:0 0 14px; font-size:13px;">
+                <b>Статус:</b> ${cloudSyncStatus.message}
+              </div>`
+            : ''
+        }
+
+        ${
+          magicUrl
+            ? `
+          <div style="padding:10px 12px; border:1px dashed var(--accent); border-radius:var(--radius-sm); background:var(--accent-soft); margin-bottom:14px; font-size:12.8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+              <strong>📲 Быстрый вход на телефоне или в другом браузере (Magic-ссылка):</strong>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-copy-magic-link">📋 Скопировать ссылку для телефона</button>
+            </div>
+            <div style="color:var(--muted); word-break:break-all; font-family:var(--f-mono); font-size:11.5px;">${magicUrl}</div>
+          </div>
+        `
+            : ''
+        }
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px solid var(--line);">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" id="btn-save-and-sync-cloud">
+              💾 Сохранить и синхронизировать
+            </button>
+            ${
+              isCfg
+                ? `
+              <button type="button" class="btn btn-sm" id="btn-force-pull-cloud" title="Загрузить свежие данные из облака в этот браузер">
+                ⬇️ Загрузить из БД
+              </button>
+              <button type="button" class="btn btn-sm" id="btn-force-push-cloud" title="Отправить данные этого браузера в облако">
+                ⬆️ Выгрузить в БД
+              </button>
+            `
+                : ''
+            }
+          </div>
+          ${
+            isCfg
+              ? `<button type="button" class="btn btn-sm" id="btn-disconnect-cloud" style="color:var(--err);">Отключить облако</button>`
+              : ''
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderApp() {
   applyTheme();
   const root = document.getElementById('app');
@@ -1870,6 +2119,7 @@ function renderApp() {
     </main>
     ${renderReaderModal()}
     ${renderSolutionConfirmModal()}
+    ${renderCloudSyncModal()}
   `;
 
   attachEvents();
@@ -1882,6 +2132,208 @@ function attachEvents() {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       saveState();
       renderApp();
+    });
+  }
+
+  // Открытие и управление модальным окном Облачной БД (Firebase / GitHub Gist)
+  const btnOpenCloud = document.getElementById('btn-open-cloud-sync');
+  if (btnOpenCloud) {
+    btnOpenCloud.addEventListener('click', () => {
+      state.cloudSyncModalOpen = true;
+      renderApp();
+    });
+  }
+
+  const btnCloseCloud = document.getElementById('btn-close-cloud-modal');
+  if (btnCloseCloud) {
+    btnCloseCloud.addEventListener('click', () => {
+      state.cloudSyncModalOpen = false;
+      renderApp();
+    });
+  }
+
+  const cloudBackdrop = document.getElementById('cloud-sync-backdrop');
+  if (cloudBackdrop) {
+    cloudBackdrop.addEventListener('click', (e) => {
+      if (e.target === cloudBackdrop) {
+        state.cloudSyncModalOpen = false;
+        renderApp();
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-action="select-cloud-provider"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      cloudConfig.provider = el.getAttribute('data-provider') || 'firebase';
+      saveCloudConfig(cloudConfig);
+      renderApp();
+    });
+  });
+
+  const readCloudInputsIntoConfig = () => {
+    const fbInput = document.getElementById('input-firebase-url');
+    const keyInput = document.getElementById('input-sync-key');
+    const ghTokenInput = document.getElementById('input-github-token');
+    const gistIdInput = document.getElementById('input-gist-id');
+    if (fbInput) cloudConfig.firebaseUrl = fbInput.value.trim();
+    if (keyInput) cloudConfig.syncKey = keyInput.value.trim() || 'grachia-ags-2627';
+    if (ghTokenInput) cloudConfig.githubToken = ghTokenInput.value.trim();
+    if (gistIdInput) cloudConfig.gistId = gistIdInput.value.trim();
+    cloudConfig.enabled = isCloudConfigured(cloudConfig);
+    saveCloudConfig(cloudConfig);
+  };
+
+  const btnCreateGist = document.getElementById('btn-create-new-gist');
+  if (btnCreateGist) {
+    btnCreateGist.addEventListener('click', async () => {
+      readCloudInputsIntoConfig();
+      if (!cloudConfig.githubToken) {
+        cloudSyncStatus = { state: 'error', message: 'Введите GitHub Personal Access Token (с правом gist).' };
+        renderApp();
+        return;
+      }
+      try {
+        cloudSyncStatus = { state: 'syncing', message: 'Создание приватного Gist в вашем GitHub...' };
+        renderApp();
+        const newGistId = await createNewCloudGist(cloudConfig.githubToken, state);
+        cloudConfig.gistId = newGistId;
+        cloudConfig.enabled = true;
+        saveCloudConfig(cloudConfig);
+        cloudSyncStatus = {
+          state: 'ok',
+          message: `Приватный Gist успешно создан (${newGistId}) и синхронизирован!`,
+        };
+        renderApp();
+      } catch (err) {
+        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка создания Gist' };
+        renderApp();
+      }
+    });
+  }
+
+  const btnSaveSyncCloud = document.getElementById('btn-save-and-sync-cloud');
+  if (btnSaveSyncCloud) {
+    btnSaveSyncCloud.addEventListener('click', async () => {
+      readCloudInputsIntoConfig();
+      if (!isCloudConfigured(cloudConfig)) {
+        cloudSyncStatus = {
+          state: 'error',
+          message: 'Укажите URL базы Firebase (или GitHub Token + Gist ID) для включения синхронизации.',
+        };
+        renderApp();
+        return;
+      }
+      try {
+        cloudSyncStatus = { state: 'syncing', message: 'Проверка облачной БД и синхронизация...' };
+        renderApp();
+        const remote = await pullStateFromCloud(cloudConfig);
+        const localTime = Number(state.updatedAt || 0);
+        const remoteTime = Number(remote?.updatedAt || 0);
+        if (remote && remoteTime > localTime) {
+          Object.assign(state, structuredClone( DEFAULT_STATE ), remote);
+          state.cloudSyncModalOpen = true;
+          saveState({ skipCloud: true });
+          cloudSyncStatus = {
+            state: 'ok',
+            message: `Загружена более свежая версия из облака (${new Date(remoteTime).toLocaleString('ru-RU')})!`,
+          };
+        } else {
+          state.updatedAt = Date.now();
+          saveState({ skipCloud: true });
+          await pushStateToCloud(state, cloudConfig);
+          cloudSyncStatus = {
+            state: 'ok',
+            message: `Прогресс успешно сохранён в облачную БД (${new Date().toLocaleTimeString('ru-RU')})!`,
+          };
+        }
+        renderApp();
+      } catch (err) {
+        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка подключения к облачной БД' };
+        renderApp();
+      }
+    });
+  }
+
+  const btnForcePull = document.getElementById('btn-force-pull-cloud');
+  if (btnForcePull) {
+    btnForcePull.addEventListener('click', async () => {
+      readCloudInputsIntoConfig();
+      try {
+        cloudSyncStatus = { state: 'syncing', message: 'Загрузка прогресса из облачной БД...' };
+        renderApp();
+        const remote = await pullStateFromCloud(cloudConfig);
+        if (remote && typeof remote === 'object') {
+          Object.assign(state, structuredClone(DEFAULT_STATE), remote);
+          state.cloudSyncModalOpen = true;
+          saveState({ skipCloud: true });
+          cloudSyncStatus = {
+            state: 'ok',
+            message: `Данные успешно загружены из облака (${new Date(remote.updatedAt || Date.now()).toLocaleString('ru-RU')})!`,
+          };
+        } else {
+          cloudSyncStatus = { state: 'warn', message: 'В облачной БД пока нет сохранённых данных.' };
+        }
+        renderApp();
+      } catch (err) {
+        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка чтения из облака' };
+        renderApp();
+      }
+    });
+  }
+
+  const btnForcePush = document.getElementById('btn-force-push-cloud');
+  if (btnForcePush) {
+    btnForcePush.addEventListener('click', async () => {
+      readCloudInputsIntoConfig();
+      try {
+        cloudSyncStatus = { state: 'syncing', message: 'Выгрузка прогресса в облачную БД...' };
+        renderApp();
+        state.updatedAt = Date.now();
+        saveState({ skipCloud: true });
+        await pushStateToCloud(state, cloudConfig);
+        cloudSyncStatus = {
+          state: 'ok',
+          message: `Прогресс этого браузера успешно отправлен в облако (${new Date().toLocaleTimeString('ru-RU')})!`,
+        };
+        renderApp();
+      } catch (err) {
+        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка записи в облако' };
+        renderApp();
+      }
+    });
+  }
+
+  const btnDisconnectCloud = document.getElementById('btn-disconnect-cloud');
+  if (btnDisconnectCloud) {
+    btnDisconnectCloud.addEventListener('click', () => {
+      cloudConfig = {
+        enabled: false,
+        provider: 'firebase',
+        firebaseUrl: '',
+        syncKey: 'grachia-ags-2627',
+        githubToken: '',
+        gistId: '',
+      };
+      saveCloudConfig(cloudConfig);
+      cloudSyncStatus = { state: 'idle', message: 'Облачная синхронизация отключена.' };
+      renderApp();
+    });
+  }
+
+  const btnCopyMagicLink = document.getElementById('btn-copy-magic-link');
+  if (btnCopyMagicLink) {
+    btnCopyMagicLink.addEventListener('click', async () => {
+      const url = buildMagicSyncUrl(cloudConfig);
+      try {
+        await navigator.clipboard.writeText(url);
+        cloudSyncStatus = {
+          state: 'ok',
+          message: '📲 Ссылка скопирована в буфер обмена! Отправьте её себе в Telegram/WhatsApp и откройте на телефоне.',
+        };
+        renderApp();
+      } catch (e) {
+        prompt('Скопируйте ссылку для входа на телефоне:', url);
+      }
     });
   }
 
@@ -2428,3 +2880,13 @@ function attachEvents() {
 }
 
 renderApp();
+syncFromCloudOnStartup();
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isCloudConfigured(cloudConfig)) {
+      syncFromCloudOnStartup();
+    }
+  });
+}
+

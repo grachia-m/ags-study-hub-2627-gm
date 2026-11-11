@@ -1,0 +1,261 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Física UD5: Vibraciones, Ondas, Sonido y Luz</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#6D3FD9;--subj-soft:#EFE9FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#B69CFF;--subj-soft:#2A2046}}:root[data-theme="dark"]{--subj:#B69CFF;--subj-soft:#2A2046}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Física · конспект 5</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Física · UD5 · Недели 25–30</div>
+  <h1>Vibraciones, Ondas, Sonido y Luz</h1>
+  <p class="lede">Гармонические колебания (MAS), период пружинного и математического маятника, уравнение бегущей волны, акустика (интенсивность звука и децибелы), геометрическая оптика (закон преломления Снеллиуса и полное внутреннее отражение).</p>
+  <ul class="toc">
+    <li><a href="#mas">1. Гармонические колебания (MAS)</a></li>
+    <li><a href="#ondas">2. Ondas armónicas и их уравнение</a></li>
+    <li><a href="#acustica">3. Acústica: интенсивность и децибелы</a></li>
+    <li><a href="#optica">4. Óptica: закон Снеллиуса и угол полного отражения</a></li>
+    <li><a href="#erratas">5. Опечатки в апунтах UD5</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="mas">
+  <span class="week">Неделя 25–26 · UD5 §1</span>
+  <h2>1. Movimiento Armónico Simple (MAS)</h2>
+  <p>Тело совершает гармонические колебания около положения равновесия (<span class="f"><i>x</i> = 0</span>) с максимальным отклонением — амплитудой <span class="es">amplitud (A)</span> и циклической частотой <span class="f">ω = 2π/<i>T</i> = 2π<i>f</i></span> (в <span class="f">rad/s</span>):</p>
+  <div class="eqs">
+    <div class="eq"><i>x</i>(<i>t</i>) = <i>A</i> · sen(ω<i>t</i> + φ₀)<small>Elongación x(t) (положение, m); аргумент под sen в радианах (RAD)!</small></div>
+    <div class="eq"><i>v</i>(<i>t</i>) = <i>A</i>ω · cos(ω<i>t</i> + φ₀)<small>Velocidad: v_máx = A·ω в центре (x = 0); на краях (x = ±A) v = 0</small></div>
+    <div class="eq"><i>a</i>(<i>t</i>) = −ω² · <i>x</i><small>Aceleración: a_máx = ω²·A на краях (x = ±A); в центре (x = 0) a = 0</small></div>
+  </div>
+  <h3>Период пружинного и нитяного маятника</h3>
+  <div class="pair">
+    <div class="eq"><i>T</i> = 2π · √(<sup><i>m</i></sup>/<sub><i>k</i></sub>)<small>Пружинный маятник (muelle: от амплитуды A не зависит!)</small></div>
+    <div class="eq"><i>T</i> = 2π · √(<sup><i>L</i></sup>/<sub><i>g</i></sub>)<small>Математический маятник (péndulo: от массы груза m не зависит!)</small></div>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · MAS</span>
+    <p>Колебание задано уравнением <span class="f"><i>x</i>(<i>t</i>) = 0,05 · sen(4π<i>t</i>)</span> (в единицах СИ). Найти амплитуду, циклическую частоту, период, частоту, максимальную скорость и максимальное ускорение.</p>
+    <p>Сравниваем с <span class="f"><i>A</i>·sen(ω<i>t</i> + φ₀)</span>: <span class="f"><i>A</i> = 0,05 m (5 cm)</span>, <span class="f">ω = 4π rad/s</span>. Тогда <span class="f"><i>T</i> = 2π / (4π) = 0,5 s</span>, <span class="f"><i>f</i> = 1 / 0,5 = 2 Hz</span>. Максимумы: <span class="f"><i>v</i><sub>máx</sub> = <i>A</i>ω = 0,05 · 4π = 0,628 m/s</span>; <span class="f"><i>a</i><sub>máx</sub> = ω²<i>A</i> = (4π)² · 0,05 = 7,90 m/s²</span>.</p>
+  </div>
+</section>
+
+<section id="ondas">
+  <span class="week">Неделя 27 · UD5 §2–3</span>
+  <h2>2. Ondas mecánicas и уравнение гармонической волны</h2>
+  <p>Волна переносит энергию без переноса вещества. В <b>поперечных волнах (<span class="es">transversales</span>)</b> частицы колеблются перпендикулярно направлению бега волны (свет, волна на струне), а в <b>продольных (<span class="es">longitudinales</span>)</b> — вдоль направления распространения (звук в воздухе).</p>
+  <div class="eqs">
+    <div class="eq"><i>v</i> = λ · <i>f</i> = <sup>λ</sup>/<sub><i>T</i></sub><small>Скорость волны v (m/s), длина волны λ (m)</small></div>
+    <div class="eq"><i>k</i> = <sup>2π</sup>/<sub>λ</sub><small>Número de onda k (rad/m) — пространственная частота</small></div>
+    <div class="eq"><i>y</i>(<i>x</i>, <i>t</i>) = <i>A</i> · sen(ω<i>t</i> ∓ <i>kx</i> + φ₀)<small>«−kx» → волна бежит вправо (+X); «+kx» → влево (−X)</small></div>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · чтение уравнения волны</span>
+    <p>Волна задана уравнением <span class="f"><i>y</i>(<i>x</i>, <i>t</i>) = 0,2 · sen(10π<i>t</i> − 2π<i>x</i>)</span> (в СИ). Найти <span class="f"><i>A</i>, <i>f</i>, λ</span> и скорость распространения волны <span class="f"><i>v</i></span>.</p>
+    <ol class="steps">
+      <li>Из уравнения сразу выписываем: <span class="f"><i>A</i> = 0,2 m</span>, <span class="f">ω = 10π rad/s</span>, <span class="f"><i>k</i> = 2π rad/m</span> (знак «минус» перед <span class="f"><i>kx</i></span> значит: волна бежит вдоль положительного направления оси X).</li>
+      <li>Частота: <span class="f"><i>f</i> = ω / (2π) = 10π / (2π) = 5 Hz</span> (период <span class="f"><i>T</i> = 0,2 s</span>).</li>
+      <li>Длина волны: <span class="f">λ = 2π / <i>k</i> = 2π / (2π) = 1 m</span>.</li>
+      <li>Скорость волны: <span class="f"><i>v</i> = λ · <i>f</i> = 1 · 5 = 5 m/s</span> (или <span class="f"><i>v</i> = ω / <i>k</i> = 10π / 2π = 5 m/s</span>).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="acustica">
+  <span class="week">Неделя 28 · UD5 §4</span>
+  <h2>3. Acústica: интенсивность звука и уровень в децибелах (dB)</h2>
+  <p>Точечный источник звука мощностью <span class="f"><i>P</i></span> (в ваттах) равномерно распределяет энергию по сфере площади <span class="f">4π<i>r</i>²</span>. Уровень громкости (<span class="es">nivel de sensación sonora β</span>) измеряется по логарифмической шкале в <b>децибелах (dB)</b> относительно порога слышимости <span class="f"><i>I</i>₀ = 10⁻¹² W/m²</span>:</p>
+  <div class="eqs">
+    <div class="eq"><i>I</i> = <sup><i>P</i></sup>/<sub>4π<i>r</i>²</sub><small>Intensidad sonora I (W/m²) на расстоянии r от источника</small></div>
+    <div class="eq">β = 10 · log₁₀(<sup><i>I</i></sup>/<sub><i>I</i>₀</sub>)<small>Nivel sonoro β (dB), где I₀ = 10⁻¹² W/m²; обратно: I = I₀ · 10^(β/10)</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: децибелы НЕ складываются!</span>
+    <p>Если работают две одинаковые колонки по <span class="f">70 dB</span> каждая, в сумме будет <b>не 140 dB</b>! Складываются физические интенсивности <span class="f"><i>I</i><sub>total</sub> = 2<i>I</i></span>, а удвоение интенсивности всегда прибавляет ровно <b>+3 dB</b> (<span class="f">10·log₁₀ 2 ≈ 3 dB</span>) → итого <span class="f">73 dB</span>. Увеличение интенсивности в 10 раз прибавляет <b>+10 dB</b>.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · звук на расстоянии</span>
+    <p>Сирена излучает звуковую мощность <span class="f"><i>P</i> = 0,4π W ≈ 1,257 W</span>. Найти интенсивность звука и уровень громкости в децибелах на расстоянии <span class="f"><i>r</i> = 10 m</span>.</p>
+    <p>1) Интенсивность: <span class="f"><i>I</i> = 0,4π / (4π · 10²) = 0,1 / 100 = 10⁻³ W/m²</span>.<br>
+    2) Уровень в децибелах: <span class="f">β = 10 · log₁₀(10⁻³ / 10⁻¹²) = 10 · log₁₀(10⁹) = 10 · 9 = 90 dB</span>.</p>
+  </div>
+</section>
+
+<section id="optica">
+  <span class="week">Неделя 29–30 · UD5 §5</span>
+  <h2>4. Óptica geométrica: закон Снеллиуса и угол полного отражения</h2>
+  <p>В вакууме (и практически в воздухе, <span class="f"><i>n</i><sub>aire</sub> = 1</span>) свет летит со скоростью <span class="f"><i>c</i> = 3·10⁸ m/s</span>. В прозрачной среде (воде, стекле) его скорость в <span class="f"><i>n</i></span> раз меньше (<span class="es">índice de refracción n</span>):</p>
+  <div class="eqs">
+    <div class="eq"><i>n</i> = <sup><i>c</i></sup>/<sub><i>v</i></sub> ≥ 1<small>Показатель преломления среды (безразмерен; при переходе частота f не меняется!)</small></div>
+    <div class="eq"><i>n</i>₁ · sen <i>î</i> = <i>n</i>₂ · sen <i>r̂</i><small>Ley de Snell преломления света (углы отсчитываются от НОРМАЛИ!)</small></div>
+    <div class="eq">sen <i>î</i><sub>lím</sub> = <sup><i>n</i>₂</sup>/<sub><i>n</i>₁</sub> &nbsp;(при <i>n</i>₁ &gt; <i>n</i>₂)<small>Ángulo límite (предельный угол полного внутреннего отражения, r̂ = 90°)</small></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 520 185" role="img" aria-label="Преломление света по закону Снеллиуса и угол полного внутреннего отражения">
+      <g transform="translate(15 10)">
+        <text x="115" y="14" font-size="13" font-weight="700" text-anchor="middle">Refracción (n₁ &lt; n₂)</text>
+        <rect x="10" y="90" width="210" height="70" class="soft"/>
+        <path class="ln" stroke-width="1.8" d="M10 90 H220"/>
+        <path class="ax" stroke-dasharray="4 3" d="M115 24 V160"/>
+        <path class="ac" stroke-width="2.5" d="M50 30 L115 90 L150 155"/>
+        <text x="100" y="55" font-size="13" font-style="italic">î</text>
+        <text x="123" y="132" font-size="13" font-style="italic">r̂</text>
+        <text x="20" y="45" font-size="12" class="mut">n₁ (воздух)</text>
+        <text x="20" y="148" font-size="12" class="mut">n₂ (вода)</text>
+      </g>
+      <g transform="translate(275 10)">
+        <text x="115" y="14" font-size="13" font-weight="700" text-anchor="middle">Ángulo límite (n₁ &gt; n₂, r̂ = 90°)</text>
+        <rect x="10" y="90" width="210" height="70" class="soft"/>
+        <path class="ln" stroke-width="1.8" d="M10 90 H220"/>
+        <path class="ax" stroke-dasharray="4 3" d="M115 24 V160"/>
+        <path class="ac" stroke-width="2.5" d="M55 152 L115 90"/>
+        <path class="wa" stroke-width="2.5" d="M115 90 H210"/>
+        <text x="95" y="134" font-size="13" font-style="italic">î_lím</text>
+        <text x="165" y="82" font-size="12.5" font-weight="700">r̂ = 90°</text>
+        <text x="20" y="45" font-size="12" class="mut">n₂ (воздух)</text>
+        <text x="20" y="148" font-size="12" class="mut">n₁ (стекло)</text>
+      </g>
+    </svg>
+    <figcaption>Все углы в оптике отсчитываются строго от перпендикуляра (нормали) к границе сред, а не от самой поверхности!</figcaption>
+  </figure>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · закон Снеллиуса и угол полного отражения</span>
+    <p>Луч света переходит из стекла (<span class="f"><i>n</i>₁ = 1,5</span>) в воздух (<span class="f"><i>n</i>₂ = 1</span>). 1) Найти скорость света в стекле. 2) Найти угол преломления при угле падения <span class="f"><i>î</i> = 30°</span>. 3) Найти предельный угол полного внутреннего отражения <span class="f"><i>î</i><sub>lím</sub></span>.</p>
+    <ol class="steps">
+      <li>Скорость в стекле: <span class="f"><i>v</i> = <i>c</i> / <i>n</i>₁ = 3·10⁸ / 1,5 = 2·10⁸ m/s</span>.</li>
+      <li>По закону Снеллиуса: <span class="f">1,5 · sen 30° = 1 · sen <i>r̂</i> → sen <i>r̂</i> = 1,5 · 0,5 = 0,75 → <i>r̂</i> = arcsen(0,75) = 48,59°</span>.</li>
+      <li>Предельный угол (<span class="f"><i>r̂</i> = 90°</span>): <span class="f">sen <i>î</i><sub>lím</sub> = 1 / 1,5 = 0,667 → <i>î</i><sub>lím</sub> = arcsen(0,667) = 41,81°</span> (при любом угле падения больше <span class="f">41,81°</span> луч не выходит в воздух, а полностью отражается внутри стекла — так работает оптоволокно!).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="erratas">
+  <h2>5. Опечатки в апунтах UD5</h2>
+  <div class="box errata"><span class="lbl">UD5 Vibraciones y ondas</span>
+    <ul>
+      <li>§2: в формуле скорости волны напечатано «<span class="f"><i>v</i> = <i>A</i>/<i>T</i></span>» — опечатка! Должно быть <b><span class="f"><i>v</i> = λ/<i>T</i></span></b> (длина волны делить на период, а не амплитуда).</li>
+      <li>§3: «sentido positivo del eje Y» — волна распространяется вдоль оси <b>X</b>, а вдоль оси Y колеблются точки среды.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>movimiento armónico simple (MAS)</td><td>гармоническое колебание</td><td>elongación (x) / amplitud (A)</td><td>смещение / амплитуда</td></tr>
+    <tr><td>pulsación / frecuencia angular (ω)</td><td>циклическая частота (рад/с)</td><td>fase inicial (φ₀)</td><td>начальная фаза (рад)</td></tr>
+    <tr><td>péndulo simple</td><td>математический маятник</td><td>onda transversal / longitudinal</td><td>поперечная / продольная волна</td></tr>
+    <tr><td>longitud de onda (λ)</td><td>длина волны (м)</td><td>número de onda (k = 2π/λ)</td><td>волновое число (рад/м)</td></tr>
+    <tr><td>intensidad sonora (W/m²)</td><td>интенсивность звука</td><td>nivel sonoro (decibelio, dB)</td><td>уровень громкости (децибел)</td></tr>
+    <tr><td>umbral de audición (I₀)</td><td>порог слышимости (10⁻¹² Вт/м²)</td><td>índice de refracción (n = c/v)</td><td>показатель преломления</td></tr>
+    <tr><td>reflexión / refracción</td><td>отражение / преломление</td><td>ángulo límite / reflexión total</td><td>предельный угол / полное отражение</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Математический маятник длиной L = 0,98 m колеблется на Земле (g = 9,8 m/s²). Чему равен его период T? Изменится ли он, если подвесить гирю вдвое тяжелее?</summary><div class="a">T = 2π·√(0,98 / 9,8) = 2π·√0,1 ≈ 1,99 s. От массы груза период маятника НЕ зависит!</div></details>
+  <details class="q"><summary>Звуковая волна частотой 680 Hz распространяется в воздухе со скоростью 340 m/s. Какова её длина волны λ?</summary><div class="a">λ = v / f = 340 / 680 = 0,5 m.</div></details>
+  <details class="q"><summary>Интенсивность звука в точке равна I = 10⁻⁵ W/m². Чему равен уровень звука β в децибелах (I₀ = 10⁻¹² W/m²)?</summary><div class="a">β = 10 · log₁₀(10⁻⁵ / 10⁻¹²) = 10 · log₁₀(10⁷) = 70 dB.</div></details>
+  <details class="q"><summary>Луч света падает на плоскую поверхность стекла под углом 25° к ПОВЕРХНОСТИ стекла. Чему равен угол падения î в законе Снеллиуса?</summary><div class="a">Угол падения отсчитывается от перпендикуляра (нормали) к поверхности: î = 90° − 25° = 65°!</div></details>
+</section>
+</div>
+</body></html>

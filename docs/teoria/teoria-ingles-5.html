@@ -1,0 +1,247 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U5</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 5</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 5 · Блок 2</div>
+  <h1>Comparatives, Superlatives & Too / Enough</h1>
+  <p class="lede">Порядок прилагательных перед существительным (формула OSASCOMP), сравнительная и превосходная степень (включая исключения и конструкции as...as / the more... the more), экзаменационный Rephrasing с too ↔ enough и so ↔ such, предлоги времени/места/движения (at/in/on/to/into) и суффиксы профессий.</p>
+  <ul class="toc">
+    <li><a href="#osascomp">1. Order of Adjectives (OSASCOMP)</a></li>
+    <li><a href="#comparatives">2. Comparatives & Superlatives</a></li>
+    <li><a href="#tooenough">3. Rephrasing: Too ↔ Enough</a></li>
+    <li><a href="#sosuch">4. Rephrasing: So ↔ Such</a></li>
+    <li><a href="#prepositions">5. Prepositions: at, in, on, to, into</a></li>
+    <li><a href="#suffixes">6. Agent Suffixes (-er, -or, -ist, -ian)</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="osascomp">
+  <span class="week">Unidad 5 · §1</span>
+  <h2>1. Order of Adjectives: мнемоника OSASCOMP</h2>
+  <p>Когда перед существительным стоит сразу несколько прилагательных, в английском языке они выстраиваются по строгому порядку от субъективного мнения к объективному материалу и назначению — <b>OSASCOMP</b>:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Код</th><th>Категория</th><th>Примеры</th></tr>
+    <tr><td><b>1. O</b></td><td><b>Opinion</b> (Мнение)</td><td><i>beautiful, nice, expensive, horrible, comfortable</i></td></tr>
+    <tr><td><b>2. S</b></td><td><b>Size</b> (Размер)</td><td><i>big, small, large, tiny, tall, huge</i></td></tr>
+    <tr><td><b>3. A</b></td><td><b>Age</b> (Возраст)</td><td><i>new, old, young, ancient, modern</i></td></tr>
+    <tr><td><b>4. S</b></td><td><b>Shape</b> (Форма)</td><td><i>round, square, rectangular, flat</i></td></tr>
+    <tr><td><b>5. C</b></td><td><b>Colour</b> (Цвет)</td><td><i>black, red, white, dark blue</i></td></tr>
+    <tr><td><b>6. O</b></td><td><b>Origin</b> (Происхождение / Страна)</td><td><i>Spanish, Italian, German, Japanese</i></td></tr>
+    <tr><td><b>7. M</b></td><td><b>Material</b> (Материал)</td><td><i>wooden, leather, silk, plastic, metal, glass</i></td></tr>
+    <tr><td><b>8. P</b></td><td><b>Purpose</b> (Назначение) + Noun</td><td><i>sleeping (bag), running (shoes), office (chair)</i></td></tr>
+  </table></div>
+  <div class="box ex"><span class="lbl">Пример</span>
+    <p><i>A <b>beautiful</b> (Opinion) <b>big</b> (Size) <b>old</b> (Age) <b>round</b> (Shape) <b>brown</b> (Colour) <b>Italian</b> (Origin) <b>wooden</b> (Material) <b>dining</b> (Purpose) table.</i></p>
+  </div>
+</section>
+
+<section id="comparatives">
+  <span class="week">Unidad 5 · §2</span>
+  <h2>2. Comparatives & Superlatives (Степени сравнения)</h2>
+  <div class="tbl"><table>
+    <tr><th>Тип прилагательного</th><th>Comparative (Сравнительная: <i>чем = than</i>)</th><th>Superlative (Превосходная: <i>с артиклем the</i>)</th></tr>
+    <tr><td><b>Короткие (1 слог и 2 слога на -y):</b><br><i>fast, big, easy, happy</i></td><td><b>-er + than</b><br><i>faster than, bigger than, easier than</i></td><td><b>the + -est</b> (<i>in</i> the world / <i>of</i> all)<br><i>the fastest, the biggest, the easiest</i></td></tr>
+    <tr><td><b>Длинные (2+ слога):</b><br><i>modern, expensive, comfortable</i></td><td><b>more / less + adj + than</b><br><i>more expensive than</i></td><td><b>the most / the least + adj</b><br><i>the most expensive</i></td></tr>
+    <tr><td><b>Исключения (Irregulars):</b><br>• <b>good / well</b> (хороший/хорошо)<br>• <b>bad / badly</b> (плохой/плохо)<br>• <b>far</b> (далёкий/далеко)</td><td><br>• <b>better than</b><br>• <b>worse than</b><br>• <b>farther / further than</b></td><td><br>• <b>the best</b><br>• <b>the worst</b><br>• <b>the farthest / the furthest</b></td></tr>
+  </table></div>
+
+  <h3>Специальные сравнительные конструкции для Rephrasing</h3>
+  <ul>
+    <li><b>Равенство / Неравенство (<span class="f">as + adj + as</span>):</b> прилагательное внутри <span class="f">as ... as</span> всегда стоит в <b>базовой (нулевой) форме</b>!
+      <br>Переделка на экзамене: <i>Madrid is bigger than Seville</i> ↔ <b>Seville isn't as big as Madrid</b> (или <i>Seville is smaller than Madrid</i>).</li>
+    <li><b>Двойное сравнение (<span class="f">The + comparative ..., the + comparative ...</span> — «Чем ..., тем ...»):</b>
+      <br><i><b>The harder</b> you study, <b>the better</b> marks you will get.</i> (Чем усерднее учишься, тем лучше оценки получишь).</li>
+  </ul>
+</section>
+
+<section id="tooenough">
+  <span class="week">Unidad 5 · §3 · Exam Rephrasing №1</span>
+  <h2>3. Too vs. Enough: правила места и перефразирование</h2>
+  <p><b>Too</b> («слишком» — больше, чем нужно, негативный оттенок) и <b>Enough</b> («достаточно») имеют <b>противоположное место</b> относительно прилагательного:</p>
+
+  <div class="eqs">
+    <div class="eq"><b>TOO</b> + Adjective / Adverb<small><i>too cold, too expensive, too slowly</i><br>(ставится <b>ПЕРЕД</b> прилагательным)</small></div>
+    <div class="eq">Adjective / Adverb + <b>ENOUGH</b><small><i>warm enough, cheap enough, fast enough</i><br>(ставится <b>ПОСЛЕ</b> прилагательного!)</small></div>
+  </div>
+  <p>Но внимание: с <b>существительным</b> слово <i>enough</i> ставится <b>ПЕРЕД</b> ним: <span class="f">enough + Noun</span> (<i>We don't have <b>enough money</b></i>).</p>
+
+  <div class="box ex"><span class="lbl">Золотая формула Rephrasing: TOO + adj ↔ NOT + антоним + ENOUGH</span>
+    <p>Чтобы переделать предложение с <i>too</i> в <i>enough</i> (и наоборот), замени глагол на отрицательный, а прилагательное — на его <b>антоним</b>:</p>
+    <ul>
+      <li><i>This box is <b>too heavy</b> (for me) to lift.</i> ↔ <b>This box isn't light enough (for me) to lift.</b></li>
+      <li><i>The coffee isn't <b>hot enough</b> to drink.</i> ↔ <b>The coffee is too cold to drink.</b></li>
+      <li><i>He spoke <b>too fast</b> for us to understand.</i> ↔ <b>He didn't speak slowly enough for us to understand.</b></li>
+    </ul>
+  </div>
+</section>
+
+<section id="sosuch">
+  <span class="week">Unidad 5 · §4 · Exam Rephrasing №2</span>
+  <h2>4. Clauses of Result: SO ... THAT ↔ SUCH ... THAT</h2>
+  <p>Обе конструкции переводятся «настолько / такой ..., что ...», но различаются наличием существительного:</p>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">SO + Adjective / Adverb + that</span>
+      <p>После <b>so</b> стоит <b>только прилагательное или наречие</b> (БЕЗ существительного!):</p>
+      <p><i>The exam was <b>so difficult that</b> nobody passed.</i></p>
+      <p>Исключение (количество): <b>so much / so many / so little / so few</b> + Noun!</p>
+    </div>
+    <div class="box tip"><span class="lbl">SUCH + (a/an) + Adjective + NOUN + that</span>
+      <p>После <b>such</b> обязательно идёт <b>словосочетание с существительным</b>:</p>
+      <p><i>It was <b>such a difficult exam that</b> nobody passed.</i></p>
+      <p>Если сущ. неисчисляемое или во мн. ч. — артикль <i>a/an</i> опускается: <i>such good weather, such nice people</i>.</p>
+    </div>
+  </div>
+</section>
+
+<section id="prepositions">
+  <span class="week">Unidad 5 · §5</span>
+  <h2>5. Prepositions of Time, Place & Movement</h2>
+  <div class="tbl"><table>
+    <tr><th>Предлог</th><th>Время (Time)</th><th>Место (Place)</th></tr>
+    <tr><td><b>AT</b> (точка)</td><td>Точные часы (<i><b>at</b> 5 o'clock</i>), праздники без слова Day (<i>at Christmas, at Easter</i>), <b>at night, at the weekend, at noon</b>.</td><td>Конкретная точка/функция места: <i><b>at</b> the bus stop, at the door, at home, at work, at school/university, at the top/bottom</i>.</td></tr>
+    <tr><td><b>ON</b> (поверхность / день)</td><td><b>Дни недели и любые даты:</b> <i><b>on</b> Monday, on 15th May, on Christmas Day, on my birthday, on Tuesday morning</i>.</td><td>На поверхности или линии, этажи, общественный транспорт: <i><b>on</b> the table, on the wall, on the second floor, on a bus/train/plane</i>.</td></tr>
+    <tr><td><b>IN</b> (внутри / длинный период)</td><td>Месяцы, времена года, годы, века, части суток: <i><b>in</b> July, in summer, in 2026, <b>in the morning/afternoon/evening</b></i>.</td><td>Внутри объёма, города, страны, легковое авто/такси: <i><b>in</b> a box, in Madrid, in Spain, <b>in a car / in a taxi</b></i>.</td></tr>
+    <tr><td><b>TO / INTO</b> (движение)</td><td colspan="2"><b>to</b> — направление к цели (<i>go <b>to</b> work, fly <b>to</b> London</i>; но <i>arrive <b>in</b> a city / arrive <b>at</b> the station</i>, <i>go Ø home</i>); <b>into</b> — движение внутрь объёма (<i>walk <b>into</b> the room</i>).</td></tr>
+  </table></div>
+</section>
+
+<section id="suffixes">
+  <span class="week">Unidad 5 · §6</span>
+  <h2>6. Agent Suffixes: суффиксы профессий и деятелей</h2>
+  <ul>
+    <li><b>-er:</b> <i>teach → teach<b>er</b>, manage → manag<b>er</b>, employ → employ<b>er</b> (работодатель) / employ<b>ee</b> (наёмный работник), bank<b>er</b>, build<b>er</b></i>.</li>
+    <li><b>-or:</b> <i>direct → direct<b>or</b>, act → act<b>or</b>, translate → translat<b>or</b>, invest → invest<b>or</b>, supervis<b>or</b></i>.</li>
+    <li><b>-ist:</b> <i>econom<b>ist</b>, journal<b>ist</b>, scient<b>ist</b>, reception<b>ist</b>, tour<b>ist</b>, psycholog<b>ist</b></i>.</li>
+    <li><b>-ian / -ant:</b> <i>music<b>ian</b>, politic<b>ian</b>, electric<b>ian</b>, technic<b>ian</b>; account<b>ant</b> (бухгалтер), assist<b>ant</b>, consult<b>ant</b></i>.</li>
+  </ul>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>farther / further</td><td>más lejos / adicional</td><td>дальше / дополнительный</td></tr>
+    <tr><td>as ... as</td><td>tan ... como</td><td>такой же ... как</td></tr>
+    <tr><td>too + adj / adj + enough</td><td>demasiado ... / bastante ...</td><td>слишком ... / достаточно ...</td></tr>
+    <tr><td>so + adj / such a + noun</td><td>tan + adj / tal + sustantivo</td><td>настолько ... / такой ...</td></tr>
+    <tr><td>employer / employee</td><td>empleador / empleado</td><td>работодатель / сотрудник</td></tr>
+    <tr><td>accountant / consultant</td><td>contable / consultor</td><td>бухгалтер / консультант</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Расставь прилагательные в правильном порядке (OSASCOMP): "She bought a (leather / black / stylish / small / Italian) handbag."</summary><div class="a"><b>She bought a stylish (Opinion) small (Size) black (Colour) Italian (Origin) leather (Material) handbag.</b></div></details>
+  <details class="q"><summary>Rephrasing: "The apartment is too small for our family." → "The apartment isn't _________________."</summary><div class="a"><b>The apartment isn't big (или large) enough for our family.</b> (Заменили <i>too + small</i> на <i>not + антоним big + enough</i>).</div></details>
+  <details class="q"><summary>Rephrasing: "It was such a boring film that we left the cinema." → "The film was _________________."</summary><div class="a"><b>The film was so boring that we left the cinema.</b> (После <i>The film was</i> нет существительного, поэтому <i>such a boring film</i> меняется на <i>so boring</i>).</div></details>
+  <details class="q"><summary>Вставь предлоги (at / in / on): "The meeting starts ___ 9 am ___ Monday morning, ___ 12th October, ___ the third floor."</summary><div class="a"><b>at</b> 9 am (часы), <b>on</b> Monday morning (день недели), <b>on</b> 12th October (дата), <b>on</b> the third floor (этаж).</div></details>
+</section>
+</div>
+</body></html>

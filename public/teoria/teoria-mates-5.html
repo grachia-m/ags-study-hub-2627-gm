@@ -1,0 +1,239 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U5</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 5</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U5 · Недели 19–24</div>
+  <h1>Estadística Unidimensional y Bidimensional</h1>
+  <p class="lede">Генеральная совокупность и выборка, полная таблица частот, параметры централизации (среднее, мода, медиана, квартили), параметры разброса (дисперсия, стандартное отклонение, коэффициент вариации) и двумерная статистика с линией регрессии.</p>
+  <ul class="toc">
+    <li><a href="#conceptos">1. Понятия и типы переменных</a></li>
+    <li><a href="#tabla">2. Tabla de frecuencias</a></li>
+    <li><a href="#centralizacion">3. Централизация и квартили</a></li>
+    <li><a href="#dispersion">4. Разброс: σ², σ и CV</a></li>
+    <li><a href="#bidimensional">5. Bidimensional и регрессия</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="conceptos">
+  <span class="week">Неделя 19 · U5 §1</span>
+  <h2>1. Población, muestra и типы переменных</h2>
+  <ul>
+    <li><span class="es">Población</span> (генеральная совокупность) — все объекты исследования; <span class="es">muestra</span> (выборка) — часть совокупности, которую реально опросили; <span class="es">tamaño muestral (N)</span> — объём выборки.</li>
+    <li><span class="es">Variable cualitativa</span> — выражается словами, а не числами (цвет глаз, профессия).</li>
+    <li><span class="es">Variable cuantitativa discreta</span> — принимает отдельные (обычно целые) значения: число детей в семье, число ошибок в тесте.</li>
+    <li><span class="es">Variable cuantitativa continua</span> — может принимать любые промежуточные значения на отрезке (рост, вес, зарплата) и группируется в интервалы <span class="f">[<i>a</i>, <i>b</i>)</span>. Для расчётов каждый интервал заменяют его серединой — <span class="es">marca de clase</span>: <span class="f"><i>x</i><sub>i</sub> = (<i>a</i> + <i>b</i>)/2</span>.</li>
+  </ul>
+</section>
+
+<section id="tabla">
+  <span class="week">Неделя 20 · U5 §2</span>
+  <h2>2. Полная таблица частот (Tabla de frecuencias)</h2>
+  <p>Все столбцы таблицы частот строятся по строгим правилам и имеют встроенную самопроверку:</p>
+  <div class="tbl"><table>
+    <tr><th>Символ</th><th>Название на испанском</th><th>Как считать</th><th>Проверка</th></tr>
+    <tr><td><span class="f"><i>x</i><sub>i</sub></span></td><td>Valor / Marca de clase</td><td>Значение признака или середина интервала</td><td>По возрастанию</td></tr>
+    <tr><td><span class="f"><i>f</i><sub>i</sub></span></td><td>Frecuencia absoluta</td><td>Сколько раз встретилось значение <span class="f"><i>x</i><sub>i</sub></span></td><td><span class="f">Σ<i>f</i><sub>i</sub> = <i>N</i></span></td></tr>
+    <tr><td><span class="f"><i>F</i><sub>i</sub></span></td><td>Frecuencia absoluta acumulada</td><td>Накопленная сумма <span class="f"><i>f</i><sub>i</sub></span> сверху вниз (<span class="f"><i>F</i><sub>i</sub> = <i>F</i><sub>i−1</sub> + <i>f</i><sub>i</sub></span>)</td><td>Последнее <span class="f"><i>F</i><sub>k</sub> = <i>N</i></span></td></tr>
+    <tr><td><span class="f"><i>h</i><sub>i</sub></span></td><td>Frecuencia relativa</td><td>Доля от общего числа: <span class="f"><i>h</i><sub>i</sub> = <i>f</i><sub>i</sub> / <i>N</i></span></td><td><span class="f">Σ<i>h</i><sub>i</sub> = 1</span></td></tr>
+    <tr><td><span class="f"><i>H</i><sub>i</sub></span></td><td>Frecuencia relativa acumulada</td><td>Накопленная сумма <span class="f"><i>h</i><sub>i</sub></span> (или <span class="f"><i>F</i><sub>i</sub> / <i>N</i></span>)</td><td>Последнее <span class="f"><i>H</i><sub>k</sub> = 1</span></td></tr>
+    <tr><td><span class="f">%</span></td><td>Porcentaje</td><td><span class="f"><i>h</i><sub>i</sub> · 100</span></td><td>Сумма = <span class="f">100 %</span></td></tr>
+  </table></div>
+</section>
+
+<section id="centralizacion">
+  <span class="week">Неделя 21 · U5 §3.1</span>
+  <h2>3. Parámetros de centralización y posición</h2>
+  <div class="eqs">
+    <div class="eq"><i>x̄</i> = <sup>Σ(<i>x</i><sub>i</sub> · <i>f</i><sub>i</sub>)</sup>/<sub><i>N</i></sub><small>Media aritmética (среднее)</small></div>
+    <div class="eq"><i>Mo</i> = <i>x</i><sub>i</sub> с наибольшим <i>f</i><sub>i</sub><small>Moda (самое частое значение)</small></div>
+    <div class="eq"><i>Me</i>: первое <i>x</i><sub>i</sub>, где <i>F</i><sub>i</sub> ≥ <i>N</i>/2<small>Mediana (делит выборку 50% / 50%)</small></div>
+  </div>
+  <p><b>Квартили (<span class="es">Cuartiles Q₁, Q₂, Q₃</span>)</b> делят упорядоченный ряд на четыре равные части по 25%: для <span class="f"><i>Q</i>₁</span> ищем в столбце накопленных частот <span class="f"><i>F</i><sub>i</sub></span> первое значение <span class="f">≥ <i>N</i>/4</span> (25%), <span class="f"><i>Q</i>₂ = <i>Me</i></span> (50%), а для <span class="f"><i>Q</i>₃</span> — первое <span class="f"><i>F</i><sub>i</sub> ≥ 3<i>N</i>/4</span> (75%). Если <span class="f"><i>F</i><sub>i</sub></span> в точности равно порогу, берут полусумму <span class="f"><i>x</i><sub>i</sub></span> и <span class="f"><i>x</i><sub>i+1</sub></span>.</p>
+</section>
+
+<section id="dispersion">
+  <span class="week">Неделя 22 · U5 §3.2</span>
+  <h2>4. Parámetros de dispersión (разброс данных)</h2>
+  <p>Показывают, насколько плотно значения сгруппированы вокруг среднего <span class="f"><i>x̄</i></span>:</p>
+  <div class="eqs">
+    <div class="eq"><i>R</i> = <i>x</i><sub>máx</sub> − <i>x</i><sub>mín</sub><small>Rango o recorrido (размах)</small></div>
+    <div class="eq">σ² = <sup>Σ(<i>x</i><sub>i</sub>² · <i>f</i><sub>i</sub>)</sup>/<sub><i>N</i></sub> − <i>x̄</i>²<small>Varianza (дисперсия)</small></div>
+    <div class="eq">σ = √(σ²)<small>Desviación típica (станд. отклонение)</small></div>
+    <div class="eq"><i>CV</i> = <sup>σ</sup>/<sub><i>x̄</i></sub><small>Coeficiente de variación (в долях или %)</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Две классические ловушки при расчёте дисперсии σ²</span>
+    <ul>
+      <li>В столбце <span class="f"><i>x</i><sub>i</sub>² · <i>f</i><sub>i</sub></span> в квадрат возводится <b>только <span class="f"><i>x</i><sub>i</sub></span></b>, а не <span class="f"><i>f</i><sub>i</sub></span>! Удобнее всего умножить уже готовый столбец <span class="f">(<i>x</i><sub>i</sub> · <i>f</i><sub>i</sub>)</span> ещё раз на <span class="f"><i>x</i><sub>i</sub></span>.</li>
+      <li>В конце формулы не забудь вычесть <b>квадрат среднего <span class="f"><i>x̄</i>²</span></b>. Дисперсия <span class="f">σ²</span> никогда не может получиться отрицательной!</li>
+    </ul>
+  </div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · полный расчёт по таблице</span>
+    <p>Оценки 10 студентов (<span class="f"><i>N</i> = 10</span>): четверо получили 5, четверо — 6, двое — 9.</p>
+    <div class="tbl"><table>
+      <tr><th><span class="f"><i>x</i><sub>i</sub></span></th><th class="num"><span class="f"><i>f</i><sub>i</sub></span></th><th class="num"><span class="f"><i>F</i><sub>i</sub></span></th><th class="num"><span class="f"><i>h</i><sub>i</sub></span></th><th class="num"><span class="f"><i>x</i><sub>i</sub> · <i>f</i><sub>i</sub></span></th><th class="num"><span class="f"><i>x</i><sub>i</sub>² · <i>f</i><sub>i</sub></span></th></tr>
+      <tr><td>5</td><td class="num">4</td><td class="num">4</td><td class="num">0,4</td><td class="num">20</td><td class="num">100</td></tr>
+      <tr><td>6</td><td class="num">4</td><td class="num">8</td><td class="num">0,4</td><td class="num">24</td><td class="num">144</td></tr>
+      <tr><td>9</td><td class="num">2</td><td class="num">10</td><td class="num">0,2</td><td class="num">18</td><td class="num">162</td></tr>
+      <tr><td><b>Σ</b></td><td class="num"><b>10</b></td><td class="num"></td><td class="num"><b>1,0</b></td><td class="num"><b>62</b></td><td class="num"><b>406</b></td></tr>
+    </table></div>
+    <p>1) Среднее: <span class="f"><i>x̄</i> = 62 / 10 = 6,2</span>. Мода: бимодальное распределение (<span class="f"><i>Mo</i> = 5 и 6</span>). Медиана (<span class="f"><i>N</i>/2 = 5</span> → первое <span class="f"><i>F</i><sub>i</sub> ≥ 5</span> это 8): <span class="f"><i>Me</i> = 6</span>.<br>
+    2) Дисперсия: <span class="f">σ² = 406/10 − 6,2² = 40,6 − 38,44 = 2,16</span>.<br>
+    3) Стандартное отклонение: <span class="f">σ = √2,16 ≈ 1,47</span>. Коэффициент вариации: <span class="f"><i>CV</i> = 1,47 / 6,2 ≈ 0,237 (23,7 %)</span> — чем меньше <span class="f"><i>CV</i></span>, тем однороднее группа (<span class="es">más homogénea</span>).</p>
+  </div>
+</section>
+
+<section id="bidimensional">
+  <span class="week">Неделя 23–24 · U5 §4</span>
+  <h2>5. Estadística bidimensional: корреляция и регрессия</h2>
+  <p>У каждого объекта измеряют сразу <b>две</b> переменные <span class="f">(<i>x</i><sub>i</sub>, <i>y</i><sub>i</sub>)</span> — например, часы подготовки <span class="f"><i>X</i></span> и оценку на экзамене <span class="f"><i>Y</i></span>. Точки на плоскости образуют облако точек (<span class="es">nube de puntos / diagrama de dispersión</span>).</p>
+  <div class="eqs">
+    <div class="eq">σ<sub>xy</sub> = <sup>Σ(<i>x</i><sub>i</sub> · <i>y</i><sub>i</sub>)</sup>/<sub><i>N</i></sub> − <i>x̄</i> · <i>ȳ</i><small>Covarianza (ковариация)</small></div>
+    <div class="eq"><i>r</i> = <sup>σ<sub>xy</sub></sup>/<sub>σ<sub>x</sub> · σ<sub>y</sub></sub><small>Correlación de Pearson (−1 ≤ r ≤ 1)</small></div>
+    <div class="eq"><i>y</i> − <i>ȳ</i> = <sup>σ<sub>xy</sub></sup>/<sub>σ<sub>x</sub>²</sub> (<i>x</i> − <i>x̄</i>)<small>Recta de regresión de Y sobre X</small></div>
+  </div>
+  <ul>
+    <li><b>Знак <span class="f">σ<sub>xy</sub></span> и <span class="f"><i>r</i></span></b>: если <span class="f"><i>r</i> &gt; 0</span> — связь прямая (<span class="es">correlación directa / positiva</span>: растёт <span class="f"><i>X</i></span> → растёт <span class="f"><i>Y</i></span>); если <span class="f"><i>r</i> &lt; 0</span> — обратная (<span class="es">inversa / negativa</span>).</li>
+    <li><b>Сила связи</b>: чем ближе <span class="f">|<i>r</i>|</span> к <b>1</b> (например, <span class="f">0,92</span> или <span class="f">−0,95</span>), тем сильнее линейная зависимость (<span class="es">fuerte</span>) и тем надёжнее прогноз по прямой регрессии. Если <span class="f"><i>r</i> ≈ 0</span> — связи нет.</li>
+  </ul>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · прогноз по прямой регрессии</span>
+    <p>По данным 5 наблюдений получено: <span class="f"><i>x̄</i> = 4, <i>ȳ</i> = 10, σ<sub>x</sub> = 2 (σ<sub>x</sub>² = 4), σ<sub>y</sub> = 5, σ<sub>xy</sub> = 9</span>. Найти коэффициент корреляции <span class="f"><i>r</i></span>, уравнение прямой регрессии и оценить <span class="f"><i>y</i></span> при <span class="f"><i>x</i> = 6</span>.</p>
+    <ol class="steps">
+      <li>Корреляция Пирсона: <span class="f"><i>r</i> = 9 / (2 · 5) = 0,90</span> (сильная положительная связь, прогноз надёжен).</li>
+      <li>Прямая регрессии <span class="f"><i>Y</i></span> по <span class="f"><i>X</i></span>: <span class="f"><i>y</i> − 10 = (9/4)(<i>x</i> − 4) → <i>y</i> = 2,25<i>x</i> − 9 + 10 → <i>y</i> = 2,25<i>x</i> + 1</span>.</li>
+      <li>Прогноз для <span class="f"><i>x</i> = 6</span>: <span class="f"><i>y</i>(6) = 2,25 · 6 + 1 = 14,5</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>población / muestra</td><td>ген. совокупность / выборка</td><td>variable discreta / continua</td><td>дискретная / непрерывная</td></tr>
+    <tr><td>marca de clase (x_i)</td><td>середина интервала</td><td>frecuencia absoluta (f_i)</td><td>абсолютная частота</td></tr>
+    <tr><td>frecuencia relativa (h_i)</td><td>относительная частота</td><td>acumulada (F_i, H_i)</td><td>накопленная частота</td></tr>
+    <tr><td>media / moda / mediana</td><td>среднее / мода / медиана</td><td>cuartiles (Q1, Q2, Q3)</td><td>квартили (25%, 50%, 75%)</td></tr>
+    <tr><td>rango / varianza (σ²)</td><td>размах / дисперсия</td><td>desviación típica (σ)</td><td>стандартное отклонение</td></tr>
+    <tr><td>coeficiente de variación (CV)</td><td>коэффициент вариации</td><td>covarianza (σ_xy)</td><td>ковариация</td></tr>
+    <tr><td>correlación de Pearson (r)</td><td>коэф. корреляции Пирсона</td><td>recta de regresión</td><td>прямая регрессии</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Какова середина интервала (marca de clase) для [20, 30)?</summary><div class="a">x_i = (20 + 30) / 2 = 25.</div></details>
+  <details class="q"><summary>В выборке из N = 40 элементов значение встретилось f_i = 6 раз. Чему равны h_i и процент?</summary><div class="a">h_i = 6 / 40 = 0,15; процент = 15 %.</div></details>
+  <details class="q"><summary>Найди медиану, моду и среднее ряда: 2, 3, 3, 5, 7.</summary><div class="a">N = 5: среднее x̄ = (2+3+3+5+7)/5 = 4; мода Mo = 3 (встречается дважды); медиана (центральное 3-е число) Me = 3.</div></details>
+  <details class="q"><summary>Если Σ(x_i²·f_i)/N = 53, а среднее x̄ = 7, чему равны дисперсия σ² и стандартное отклонение σ?</summary><div class="a">σ² = 53 − 7² = 53 − 49 = 4; σ = √4 = 2.</div></details>
+  <details class="q"><summary>Что означает коэффициент корреляции Пирсона r = −0,94?</summary><div class="a">Между переменными сильная обратная (отрицательная) линейная связь: с ростом X переменная Y убывает.</div></details>
+</section>
+</div>
+</body></html>

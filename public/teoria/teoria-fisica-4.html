@@ -1,0 +1,226 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Física UD4: Electromagnetismo</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#6D3FD9;--subj-soft:#EFE9FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#B69CFF;--subj-soft:#2A2046}}:root[data-theme="dark"]{--subj:#B69CFF;--subj-soft:#2A2046}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Física · конспект 4</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Física · UD4 · Недели 19–24</div>
+  <h1>Electromagnetismo</h1>
+  <p class="lede">Закон Кулона, напряжённость и потенциал электрического поля, магнитное поле, сила Лоренца и сила Ампера, поле прямого провода и соленоида, магнитный поток и закон электромагнитной индукции Фарадея–Ленца.</p>
+  <ul class="toc">
+    <li><a href="#coulomb">1. Заряд и закон Кулона</a></li>
+    <li><a href="#campo-electrico">2. Campo eléctrico (E) и Potencial (V)</a></li>
+    <li><a href="#magnetico">3. Campo magnético: Lorentz и проводник</a></li>
+    <li><a href="#fuentes">4. Поле провода и соленоида</a></li>
+    <li><a href="#faraday">5. Магнитный поток и закон Фарадея–Ленца</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="coulomb">
+  <span class="week">Неделя 19 · UD4 §1</span>
+  <h2>1. Carga eléctrica и Ley de Coulomb</h2>
+  <p>Электрический заряд (<span class="es">carga eléctrica q</span>) измеряется в <b>кулонах (C)</b>. В задачах заряды почти всегда даны с приставками: <span class="f">1 mC = 10⁻³ C</span>, <span class="f">1 µC = 10⁻⁶ C</span>, <span class="f">1 nC = 10⁻⁹ C</span>. Одноимённые заряды отталкиваются (<span class="es">se repelen</span>), разноимённые притягиваются (<span class="es">se atraen</span>).</p>
+  <div class="eq"><i>F</i> = <i>K</i> · <sup>|<i>q</i>₁ · <i>q</i>₂|</sup>/<sub><i>r</i>²</sub><small>Ley de Coulomb: K = 9·10⁹ N·m²/C² (в вакууме/воздухе), r — расстояние в метрах (m)</small></div>
+  <div class="box trap"><span class="lbl">Ловушка: знаки зарядов и сантиметры</span>
+    <p>В формулу модуля силы Кулона и напряжённости поля <span class="f"><i>E</i></span> заряды подставляют <b>по модулю (без минуса)</b>! Знаки зарядов нужны только для того, чтобы нарисовать на чертеже, куда смотрит стрелка вектора (притяжение или отталкивание). И не забывай переводить сантиметры в метры перед возведением <span class="f"><i>r</i>²</span> в квадрат.</p>
+  </div>
+</section>
+
+<section id="campo-electrico">
+  <span class="week">Неделя 20 · UD4 §2</span>
+  <h2>2. Campo eléctrico (E⃗) и Potencial eléctrico (V)</h2>
+  <p>Вокруг любого заряда <span class="f"><i>Q</i></span> существует электрическое поле. В каждой точке пространства оно характеризуется двумя величинами — векторной напряжённостью <span class="f"><i>E⃗</i></span> и скалярным потенциалом <span class="f"><i>V</i></span>:</p>
+  <div class="eqs">
+    <div class="eq"><i>E</i> = <i>K</i> · <sup>|<i>Q</i>|</sup>/<sub><i>r</i>²</sub> &nbsp;&nbsp; (<i>F⃗</i> = <i>q</i> · <i>E⃗</i>)<small>Intensidad de campo E (N/C или V/m) — вектор (от «+» вовне, к «−» внутрь)</small></div>
+    <div class="eq"><i>V</i> = <i>K</i> · <sup><i>Q</i></sup>/<sub><i>r</i></sub><small>Potencial eléctrico V (вольт, V = J/C) — скаляр (знак Q сохраняется!)</small></div>
+    <div class="eq"><i>W</i><sub>A→B</sub> = <i>q</i> · (<i>V</i><sub>A</sub> − <i>V</i><sub>B</sub>) = −Δ<i>E</i><sub>p</sub><small>работа поля по перемещению заряда q из точки A в точку B</small></div>
+  </div>
+  <p><b>Принцип суперпозиции (<span class="es">principio de superposición</span>)</b>: если поле создаётся несколькими зарядами, то напряжённости <span class="f"><i>E⃗</i> = <i>E⃗</i>₁ + <i>E⃗</i>₂</span> складываются <b>векторно</b> (с учётом направления стрелок), а потенциалы <span class="f"><i>V</i> = <i>V</i>₁ + <i>V</i>₂</span> — <b>алгебраически</b> (просто как числа со своими знаками «+» и «−»!).</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · поле и потенциал двух зарядов</span>
+    <p>Два заряда <span class="f"><i>q</i>₁ = +4 µC</span> и <span class="f"><i>q</i>₂ = −2 µC</span> находятся на расстоянии 2 m друг от друга. Найти напряжённость <span class="f"><i>E</i></span> и потенциал <span class="f"><i>V</i></span> в точке M ровно посередине между ними (<span class="f"><i>r</i>₁ = <i>r</i>₂ = 1 m</span>).</p>
+    <ol class="steps">
+      <li>Направление векторов в точке M: от положительного <span class="f"><i>q</i>₁</span> вектор <span class="f"><i>E⃗</i>₁</span> направлен вправо (к <span class="f"><i>q</i>₂</span>), и к отрицательному <span class="f"><i>q</i>₂</span> вектор <span class="f"><i>E⃗</i>₂</span> тоже направлен вправо! Значит, их модули складываются.</li>
+      <li><span class="f"><i>E</i>₁ = 9·10⁹ · 4·10⁻⁶ / 1² = 36 000 N/C</span>; <span class="f"><i>E</i>₂ = 9·10⁹ · 2·10⁻⁶ / 1² = 18 000 N/C</span> → <span class="f"><i>E</i><sub>total</sub> = 54 000 N/C</span> (в сторону <span class="f"><i>q</i>₂</span>).</li>
+      <li>Потенциал (скаляр, подставляем со знаками): <span class="f"><i>V</i> = 9·10⁹·(4·10⁻⁶)/1 + 9·10⁹·(−2·10⁻⁶)/1 = 36 000 − 18 000 = +18 000 V</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="magnetico">
+  <span class="week">Неделя 21–22 · UD4 §3</span>
+  <h2>3. Campo magnético (B⃗), сила Лоренца и сила Ампера</h2>
+  <p>Магнитное поле создаётся движущимися зарядами (токами) и постоянными магнитами. Вектор магнитной индукции <span class="es">inducción magnética (B⃗)</span> измеряется в <b>теслах (T)</b> (<span class="f">1 G (гаусс) = 10⁻⁴ T</span>).</p>
+  <div class="eqs">
+    <div class="eq"><i>F</i> = |<i>q</i>| · <i>v</i> · <i>B</i> · sen α<small>Fuerza de Lorentz на заряд q, летящий со скоростью v под углом α к B⃗</small></div>
+    <div class="eq"><i>R</i> = <sup><i>m</i> · <i>v</i></sup>/<sub>|<i>q</i>| · <i>B</i></sub><small>Радиус круговой орбиты заряда при влёте перпендикулярно полю (α = 90°)</small></div>
+    <div class="eq"><i>F</i> = <i>I</i> · <i>L</i> · <i>B</i> · sen α<small>Сила Ампера (Laplace) на прямой проводник длиной L с током I (в амперах A)</small></div>
+  </div>
+  <div class="box tip"><span class="lbl">Важные следствия из формулы Лоренца</span>
+    <ul>
+      <li>На <b>неподвижный заряд (<span class="f"><i>v</i> = 0</span>)</b> или заряд, летящий <b>вдоль линий поля (<span class="f">α = 0°</span> или <span class="f">180°</span>)</b>, магнитное поле НЕ действует (<span class="f"><i>F</i> = 0</span>).</li>
+      <li>Сила Лоренца всегда перпендикулярна скорости (<span class="f"><i>F⃗</i> ⊥ <i>v⃗</i></span>), поэтому она <b>не совершает работы (<span class="f"><i>W</i> = 0</span>)</b> и не меняет модуль скорости, а только искривляет траекторию по окружности (<span class="f"><i>F</i><sub>Lorentz</sub> = <i>m·v</i>²/<i>R</i></span>).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="fuentes">
+  <span class="week">Неделя 23 · UD4 §4</span>
+  <h2>4. Магнитное поле прямого провода и соленоида</h2>
+  <p>Магнитная проницаемость вакуума: <span class="f">μ₀ = 4π · 10⁻⁷ T·m/A</span>. Направление линий поля находится по правилу буравчика / правой руки (<span class="es">regla de la mano derecha</span>):</p>
+  <div class="eqs">
+    <div class="eq"><i>B</i> = <sup>μ₀ · <i>I</i></sup>/<sub>2π · <i>r</i></sub><small>Прямой бесконечный провод (hilo rectilíneo) на расстоянии r (m)</small></div>
+    <div class="eq"><i>B</i> = <sup>μ₀ · <i>N</i> · <i>I</i></sup>/<sub><i>L</i></sub><small>Внутри соленоида (катушки из N витков длиной L метров)</small></div>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · поле провода</span>
+    <p>По прямому проводу течёт ток <span class="f"><i>I</i> = 15 A</span>. Найти магнитную индукцию <span class="f"><i>B</i></span> на расстоянии 5 cm от провода.</p>
+    <p><span class="f"><i>r</i> = 0,05 m</span>. Подставляем: <span class="f"><i>B</i> = (4π·10⁻⁷ · 15) / (2π · 0,05) = (2·10⁻⁷ · 15) / 0,05 = 6 · 10⁻⁵ T</span>.</p>
+  </div>
+</section>
+
+<section id="faraday">
+  <span class="week">Неделя 24 · UD4 §5</span>
+  <h2>5. Flujo magnético (Φ) и Ley de Faraday–Lenz</h2>
+  <p><span class="es">Flujo magnético (Φ)</span> характеризует число линий магнитного поля, пронизывающих рамку площадью <span class="f"><i>S</i></span>, и измеряется в <b>веберах (<span class="f">1 Wb = 1 T · 1 m²</span>)</b>:</p>
+  <div class="eqs">
+    <div class="eq">Φ = <i>B</i> · <i>S</i> · cos α<small>α — угол между вектором B⃗ и нормалью (перпендикуляром) к рамке!</small></div>
+    <div class="eq">ε = −<i>N</i> · <sup>ΔΦ</sup>/<sub>Δ<i>t</i></sub><small>Ley de Faraday-Lenz: ЭДС индукции ε (в вольтах V) в катушке из N витков</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка с углом α в магнитном потоке</span>
+    <p>Когда плоскость рамки <b>перпендикулярна</b> линиям магнитного поля (поток максимален!), вектор нормали параллелен полю, то есть <span class="f">α = 0°</span> и <span class="f">cos 0° = 1 → Φ<sub>máx</sub> = <i>B · S</i></span>. А когда линии поля скользят параллельно плоскости рамки, <span class="f">α = 90°</span> и поток равен нулю (<span class="f">Φ = 0</span>). Знак «минус» в законе Ленца означает, что индукционный ток препятствует изменению потока.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · закон Фарадея–Ленца</span>
+    <p>Катушка из <span class="f"><i>N</i> = 200</span> витков площадью <span class="f"><i>S</i> = 50 cm²</span> каждый расположена перпендикулярно однородному магнитному полю (<span class="f">α = 0°</span>). За время <span class="f">Δ<i>t</i> = 0,1 s</span> магнитная индукция равномерно возрастает от <span class="f">0,2 T</span> до <span class="f">0,8 T</span>. Найти наведённую ЭДС индукции <span class="f">|ε|</span>.</p>
+    <ol class="steps">
+      <li>Переводим площадь в СИ: <span class="f"><i>S</i> = 50 · 10⁻⁴ m² = 0,005 m²</span>.</li>
+      <li>Изменение потока через один виток: <span class="f">ΔΦ = (<i>B</i><sub>f</sub> − <i>B</i><sub>0</sub>)·<i>S</i>·cos 0° = (0,8 − 0,2) · 0,005 · 1 = 0,003 Wb</span>.</li>
+      <li>ЭДС индукции: <span class="f">ε = −200 · (0,003 / 0,1) = −6 V</span> (по модулю <span class="f">6 V</span>).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>carga eléctrica (culombio, C)</td><td>электрический заряд (кулон)</td><td>atraerse / repelerse</td><td>притягиваться / отталкиваться</td></tr>
+    <tr><td>intensidad de campo eléctrico (E)</td><td>напряжённость эл. поля</td><td>potencial eléctrico (voltio, V)</td><td>электрический потенциал (вольт)</td></tr>
+    <tr><td>principio de superposición</td><td>принцип суперпозиции</td><td>campo magnético (tesla, T)</td><td>магнитное поле (тесла)</td></tr>
+    <tr><td>fuerza de Lorentz</td><td>сила Лоренца</td><td>conductor rectilíneo / hilo</td><td>прямой проводник / провод</td></tr>
+    <tr><td>espira / bobina / solenoide</td><td>виток / катушка / соленоид</td><td>flujo magnético (weber, Wb)</td><td>магнитный поток (вебер)</td></tr>
+    <tr><td>inducción electromagnética</td><td>электромагнитная индукция</td><td>fuerza electromotriz (fem, ε)</td><td>ЭДС индукции (В)</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Как изменится сила Кулона между двумя точечными зарядами, если расстояние между ними уменьшить в 3 раза?</summary><div class="a">Увеличится в 9 раз (так как в знаменателе стоит r²: (1/3)² = 1/9).</div></details>
+  <details class="q"><summary>Какую работу совершает электрическое поле при перемещении заряда q = 2 µC из точки с потенциалом V_A = 500 V в точку с V_B = 100 V?</summary><div class="a">W = q · (V_A − V_B) = 2·10⁻⁶ · (500 − 100) = 8·10⁻⁴ J.</div></details>
+  <details class="q"><summary>Электрон влетает в магнитное поле параллельно линиям магнитной индукции B⃗. По какой траектории он будет двигаться?</summary><div class="a">По прямой с постоянной скоростью (MRU)! Угол α = 0° (или 180°), sen α = 0 → сила Лоренца F = 0.</div></details>
+  <details class="q"><summary>Прямой провод длиной 0,4 m с током 5 A находится в магнитном поле 0,3 T перпендикулярно линиям поля. Чему равна действующая на него сила?</summary><div class="a">F = I · L · B · sen 90° = 5 · 0,4 · 0,3 · 1 = 0,6 N.</div></details>
+</section>
+</div>
+</body></html>

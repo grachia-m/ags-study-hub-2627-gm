@@ -1,0 +1,254 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U6</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 6</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U6 · Недели 25–30</div>
+  <h1>Probabilidad, Árboles y Tablas de Contingencia</h1>
+  <p class="lede">Пространство элементарных исходов, операции над событиями, правило Лапласа, условная вероятность, таблицы сопряжённости 2×2 и деревья вероятностей (формула полной вероятности и теорема Байеса).</p>
+  <ul class="toc">
+    <li><a href="#sucesos">1. Пространство Ω и операции</a></li>
+    <li><a href="#laplace">2. Regla de Laplace и свойства</a></li>
+    <li><a href="#condicionada">3. Probabilidad condicionada</a></li>
+    <li><a href="#contingencia">4. Tablas de contingencia 2×2</a></li>
+    <li><a href="#arboles">5. Деревья, Полная вероятность и Байес</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="sucesos">
+  <span class="week">Неделя 25 · U6 §1</span>
+  <h2>1. Espacio muestral Ω и операции над событиями</h2>
+  <p><span class="es">Espacio muestral (Ω или E)</span> — множество всех возможных исходов случайного опыта (например, при броске кубика <span class="f">Ω = {1, 2, 3, 4, 5, 6}</span>). Любое подмножество исходов называется событием (<span class="es">suceso</span>).</p>
+  <div class="tbl"><table>
+    <tr><th>Операция</th><th>Запись</th><th>Смысл и ключевой союз в тексте задачи</th></tr>
+    <tr><td><span class="es">Unión</span> (объединение)</td><td><span class="f"><i>A</i> ∪ <i>B</i></span></td><td>Происходит <b>хотя бы одно</b> из событий: союз <b>«O» (или)</b>, «al menos uno».</td></tr>
+    <tr><td><span class="es">Intersección</span> (пересечение)</td><td><span class="f"><i>A</i> ∩ <i>B</i></span></td><td>Происходят <b>оба</b> события одновременно: союз <b>«Y» (и)</b>, «ambos a la vez».</td></tr>
+    <tr><td><span class="es">Suceso contrario</span> (противоположное)</td><td><span class="f"><i>Ā</i></span> (или <span class="f"><i>A</i><sup>c</sup></span>)</td><td>Событие <span class="f"><i>A</i></span> <b>не</b> происходит: частица <b>«NO»</b>.</td></tr>
+    <tr><td><span class="es">Sucesos incompatibles</span> (несовместные)</td><td><span class="f"><i>A</i> ∩ <i>B</i> = ∅</span></td><td>Не могут произойти вместе (<span class="f"><i>P</i>(<i>A</i> ∩ <i>B</i>) = 0</span>).</td></tr>
+  </table></div>
+</section>
+
+<section id="laplace">
+  <span class="week">Неделя 26 · U6 §2</span>
+  <h2>2. Regla de Laplace и свойства вероятности</h2>
+  <p>Если все элементарные исходы равновозможны (<span class="es">equiprobables</span>), действует классическая формула Лапласа:</p>
+  <div class="eq"><i>P</i>(<i>A</i>) = <sup>casos favorables a <i>A</i></sup>/<sub>casos posibles totales</sub><small>всегда число от 0 до 1: 0 ≤ P(A) ≤ 1 (или от 0 % до 100 %)</small></div>
+  <div class="eqs">
+    <div class="eq"><i>P</i>(<i>Ā</i>) = 1 − <i>P</i>(<i>A</i>)<small>противоположное событие</small></div>
+    <div class="eq"><i>P</i>(<i>A</i> ∪ <i>B</i>) = <i>P</i>(<i>A</i>) + <i>P</i>(<i>B</i>) − <i>P</i>(<i>A</i> ∩ <i>B</i>)<small>общая формула сложения вероятностей</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: забыть вычесть пересечение P(A ∩ B)</span>
+    <p>При подсчёте <span class="f"><i>P</i>(<i>A</i> ∪ <i>B</i>)</span> исходы, входящие одновременно в <span class="f"><i>A</i></span> и в <span class="f"><i>B</i></span>, учитываются дважды — поэтому мы обязательно вычитаем <span class="f"><i>P</i>(<i>A</i> ∩ <i>B</i>)</span>. Например, в испанской колоде (<span class="es">baraja española</span>, 40 карт: 4 масти по 10 карт, в каждой масти 3 картинки — <span class="es">sota, caballo, rey</span>, всего 12 фигур) вероятность вытянуть <i>золото (<span class="es">oros</span>) ИЛИ фигуру</i> равна <span class="f">10/40 + 12/40 − 3/40 = 19/40</span> (вычли 3 золотые фигуры!).</p>
+  </div>
+</section>
+
+<section id="condicionada">
+  <span class="week">Неделя 27 · U6 §3</span>
+  <h2>3. Probabilidad condicionada и независимость событий</h2>
+  <p>Условная вероятность <span class="f"><i>P</i>(<i>A</i> | <i>B</i>)</span> — вероятность события <span class="f"><i>A</i></span> при условии, что событие <span class="f"><i>B</i></span> <b>уже произошло</b> (в тексте: <span class="es">«sabiendo que B…», «si ha ocurrido B…», «dado que B…»</span>). То, что известно наверняка (<span class="f"><i>B</i></span>), всегда идёт в знаменатель:</p>
+  <div class="eqs">
+    <div class="eq"><i>P</i>(<i>A</i> | <i>B</i>) = <sup><i>P</i>(<i>A</i> ∩ <i>B</i>)</sup>/<sub><i>P</i>(<i>B</i>)</sub><small>делим пересечение на условие B</small></div>
+    <div class="eq"><i>P</i>(<i>A</i> ∩ <i>B</i>) = <i>P</i>(<i>A</i>) · <i>P</i>(<i>B</i> | <i>A</i>)<small>правило умножения</small></div>
+  </div>
+  <p>Два события называются <b>независимыми (<span class="es">independientes</span>)</b>, если наступление одного никак не меняет вероятность другого: <span class="f"><i>P</i>(<i>A</i> | <i>B</i>) = <i>P</i>(<i>A</i>)</span>, что равносильно условию <span class="f"><i>P</i>(<i>A</i> ∩ <i>B</i>) = <i>P</i>(<i>A</i>) · <i>P</i>(<i>B</i>)</span>.</p>
+  <div class="box trap"><span class="lbl">Не путай: incompatibles ≠ independientes</span>
+    <p><span class="es">Incompatibles</span> (несовместные) → <span class="f"><i>P</i>(<i>A</i> ∩ <i>B</i>) = 0</span>. <span class="es">Independientes</span> (независимые) → <span class="f"><i>P</i>(<i>A</i> ∩ <i>B</i>) = <i>P</i>(<i>A</i>) · <i>P</i>(<i>B</i>)</span>.</p>
+  </div>
+</section>
+
+<section id="contingencia">
+  <span class="week">Неделя 28 · U6 §3.2</span>
+  <h2>4. Tablas de contingencia 2×2 — самый быстрый инструмент</h2>
+  <p>Когда совокупность классифицирована сразу по двум признакам (например, пол и курение, или смена и брак), строим таблицу 2×2 с суммами по строкам и столбцам (<span class="es">totales marginales</span>). Тогда любая вероятность считывается за секунду без сложных формул:</p>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · таблица сопряжённости</span>
+    <p>В группе из 100 студентов 60 девушек (<span class="f"><i>M</i></span>) и 40 юношей (<span class="f"><i>H</i></span>). Очки носят (<span class="f"><i>G</i></span>) 25 девушек и 15 юношей.</p>
+    <div class="tbl"><table>
+      <tr><th></th><th class="num">Con gafas (<span class="f"><i>G</i></span>)</th><th class="num">Sin gafas (<span class="f"><i>Ḡ</i></span>)</th><th class="num">Total</th></tr>
+      <tr><td><b>Mujeres (<span class="f"><i>M</i></span>)</b></td><td class="num">25</td><td class="num">35</td><td class="num"><b>60</b></td></tr>
+      <tr><td><b>Hombres (<span class="f"><i>H</i></span>)</b></td><td class="num">15</td><td class="num">25</td><td class="num"><b>40</b></td></tr>
+      <tr><td><b>Total</b></td><td class="num"><b>40</b></td><td class="num"><b>60</b></td><td class="num"><b>100</b></td></tr>
+    </table></div>
+    <ul>
+      <li><b>Пересечение «И»</b> (делим клетку на общий итог 100): <span class="f"><i>P</i>(<i>M</i> ∩ <i>G</i>) = 25 / 100 = 0,25</span>.</li>
+      <li><b>Условная «sabiendo que…»</b> (делим клетку на итог только нужной строки или столбца!):<br>
+        Вероятность того, что студент в очках, <i>если известно, что это девушка</i>: <span class="f"><i>P</i>(<i>G</i> | <i>M</i>) = 25 / 60 ≈ 0,417</span>.<br>
+        Вероятность того, что это девушка, <i>если известно, что студент в очках</i>: <span class="f"><i>P</i>(<i>M</i> | <i>G</i>) = 25 / 40 = 0,625</span>.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="arboles">
+  <span class="week">Неделя 29–30 · U6 §4</span>
+  <h2>5. Diagramas de árbol, Probabilidad Total и Teorema de Bayes</h2>
+  <p>Для опытов в два этапа рисуем дерево вероятностей (<span class="es">diagrama de árbol</span>). При извлечении шаров из урны внимательно читай условие:</p>
+  <ul>
+    <li><span class="es">Con reemplazamiento (con devolución)</span> — шар возвращают обратно: знаменатель и состав урны на втором шаге <b>не меняются</b>.</li>
+    <li><span class="es">Sin reemplazamiento (sin devolución)</span> — шар не возвращают (или вынимают «одновременно два шара»): на втором шаге общее число шаров в знаменателе <b>уменьшается на 1</b>, и число шаров вытянутого цвета тоже уменьшается на 1!</li>
+  </ul>
+
+  <figure>
+    <svg viewBox="0 0 540 195" role="img" aria-label="Дерево вероятностей для урны с 3 красными и 2 синими шарами без возвращения">
+      <circle cx="35" cy="98" r="5" class="acf"/>
+      <path class="ac" stroke-width="2" d="M40 98 L175 48 M40 98 L175 148"/>
+      <text x="102" y="62" font-size="13">3/5</text>
+      <text x="102" y="140" font-size="13">2/5</text>
+      <rect x="178" y="34" width="38" height="26" rx="4" class="surf"/>
+      <text x="197" y="52" font-size="13" font-weight="700" text-anchor="middle">R₁</text>
+      <rect x="178" y="134" width="38" height="26" rx="4" class="surf"/>
+      <text x="197" y="152" font-size="13" font-weight="700" text-anchor="middle">A₁</text>
+      <path class="ac2" stroke-width="2" d="M218 47 L335 24 M218 47 L335 72 M218 147 L335 124 M218 147 L335 172"/>
+      <text x="275" y="28" font-size="12.5">2/4</text>
+      <text x="275" y="72" font-size="12.5">2/4</text>
+      <text x="275" y="128" font-size="12.5">3/4</text>
+      <text x="275" y="172" font-size="12.5">1/4</text>
+      <text x="345" y="28" font-size="13"><b>R₂</b> → P(R₁∩R₂) = 3/5 · 2/4 = 6/20</text>
+      <text x="345" y="76" font-size="13"><b>A₂</b> → P(R₁∩A₂) = 3/5 · 2/4 = 6/20</text>
+      <text x="345" y="128" font-size="13"><b>R₂</b> → P(A₁∩R₂) = 2/5 · 3/4 = 6/20</text>
+      <text x="345" y="176" font-size="13"><b>A₂</b> → P(A₁∩A₂) = 2/5 · 1/4 = 2/20</text>
+    </svg>
+    <figcaption>Вдоль ветки мы умножаем («И»), а между разными подходящими ветками — складываем («ИЛИ»).</figcaption>
+  </figure>
+
+  <div class="eqs">
+    <div class="eq"><i>P</i>(<i>B</i>) = Σ <i>P</i>(<i>A</i><sub>i</sub>) · <i>P</i>(<i>B</i> | <i>A</i><sub>i</sub>)<small>Teorema de la Probabilidad Total (сумма всех веток, ведущих к B)</small></div>
+    <div class="eq"><i>P</i>(<i>A</i><sub>k</sub> | <i>B</i>) = <sup><i>P</i>(<i>A</i><sub>k</sub>) · <i>P</i>(<i>B</i> | <i>A</i><sub>k</sub>)</sup>/<sub><i>P</i>(<i>B</i>)</sub><small>Teorema de Bayes («одна нужная ветка / сумма всех веток к B»)</small></div>
+  </div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · Полная вероятность и Байес</span>
+    <p>На фабрике станок A делает 60% деталей (из них 2% брак <span class="f"><i>D</i></span>), а станок B — 40% деталей (из них 5% брак <span class="f"><i>D</i></span>). 1) Какова вероятность того, что случайная деталь бракованная? 2) Если деталь оказалась бракованной, какова вероятность, что её сделал станок B?</p>
+    <ol class="steps">
+      <li><b>Probabilidad Total</b> (складываем обе ветки, ведущие к браку <span class="f"><i>D</i></span>):<br>
+        <span class="f"><i>P</i>(<i>D</i>) = <i>P</i>(<i>A</i>)·<i>P</i>(<i>D</i>|<i>A</i>) + <i>P</i>(<i>B</i>)·<i>P</i>(<i>D</i>|<i>B</i>) = 0,60 · 0,02 + 0,40 · 0,05 = 0,012 + 0,020 = 0,032 (3,2 %)</span>.</li>
+      <li><b>Teorema de Bayes</b> (делим ветку станка B на полную вероятность брака):<br>
+        <span class="f"><i>P</i>(<i>B</i> | <i>D</i>) = 0,020 / 0,032 = 20 / 32 = 0,625 (62,5 %)</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>espacio muestral (Ω)</td><td>пространство исходов</td><td>suceso seguro / imposible</td><td>достоверное / невозможное</td></tr>
+    <tr><td>unión (∪) / intersección (∩)</td><td>объединение (или) / пересечение (и)</td><td>suceso contrario (Ā)</td><td>противоположное событие</td></tr>
+    <tr><td>incompatibles / independientes</td><td>несовместные / независимые</td><td>regla de Laplace</td><td>правило Лапласа</td></tr>
+    <tr><td>probabilidad condicionada</td><td>условная вероятность</td><td>tabla de contingencia</td><td>таблица сопряжённости</td></tr>
+    <tr><td>con / sin reemplazamiento</td><td>с возвращением / без возвращения</td><td>diagrama de árbol</td><td>дерево вероятностей</td></tr>
+    <tr><td>probabilidad total</td><td>формула полной вероятности</td><td>teorema de Bayes</td><td>теорема Байеса</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Известно, что P(A) = 0,5, P(B) = 0,4 и P(A ∩ B) = 0,2. Найди P(A ∪ B), P(Ā) и P(A | B).</summary><div class="a">P(A ∪ B) = 0,5 + 0,4 − 0,2 = 0,7. P(Ā) = 1 − 0,5 = 0,5. P(A | B) = P(A ∩ B)/P(B) = 0,2 / 0,4 = 0,5. (Заметь: P(A|B) = P(A), значит A и B независимы!).</div></details>
+  <details class="q"><summary>В урне 4 белых и 6 чёрных шаров. Вынимают 2 шара подряд БЕЗ возвращения. Вероятность того, что оба белые?</summary><div class="a">P(B₁ ∩ B₂) = (4/10) · (3/9) = 12/90 = 2/15 ≈ 0,133.</div></details>
+  <details class="q"><summary>В той же урне (4 белых, 6 чёрных) вынимают 2 шара без возвращения. Вероятность того, что они разного цвета?</summary><div class="a">Две ветки (Белый-Чёрный ИЛИ Чёрный-Белый): (4/10)·(6/9) + (6/10)·(4/9) = 24/90 + 24/90 = 48/90 = 8/15.</div></details>
+  <details class="q"><summary>Как быстро найти вероятность «хотя бы один раз выпадет шестёрка» при 3 бросках кубика?</summary><div class="a">Через противоположное событие «ни разу не выпала шестёрка»: P = 1 − (5/6)³ = 1 − 125/216 = 91/216 ≈ 0,421.</div></details>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,237 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U6</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 6</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 6 · Блок 2</div>
+  <h1>Reported Speech & Clauses of Cause / Result</h1>
+  <p class="lede">Косвенная речь (Reported Speech) от А до Я: полная таблица сдвига времён на шаг назад (Backshift) и замены обстоятельств времени/места, утверждения (said vs. told), вопросы в косвенной речи (if/whether + прямой порядок слов), приказы и просьбы (told/asked sb not to + inf), специальные Reporting Verbs, союзы причины/следствия (because vs. because of / due to) и суффиксы существительных.</p>
+  <ul class="toc">
+    <li><a href="#backshift">1. Таблица Backshift (Времена и маркеры)</a></li>
+    <li><a href="#statements">2. Statements, Questions & Commands</a></li>
+    <li><a href="#reportingverbs">3. Специальные Reporting Verbs</a></li>
+    <li><a href="#causeresult">4. Clauses of Cause & Result</a></li>
+    <li><a href="#suffixes">5. Noun Suffixes (-tion, -ment, -ness, -ity)</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="backshift">
+  <span class="week">Unidad 6 · §1 · База для экзамена</span>
+  <h2>1. Reported Speech: сдвиг времён (Backshift) и указателей</h2>
+  <p>Когда глагол, вводящий косвенную речь, стоит в прошедшем времени (<b>said, told, asked, explained</b>), все глаголы внутри высказывания делают <b>один шаг назад в прошлое (<span class="es">Backshift</span>)</b>, а местоимения и слова времени/места меняются по смыслу:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Direct Speech (Прямая речь)</th><th>Reported Speech (Косвенная речь — шаг в прошлое)</th></tr>
+    <tr><td><b>Present Simple</b> (<i>"I work here"</i>)</td><td>→ <b>Past Simple</b> (<i>He said he <b>worked</b> there</i>)</td></tr>
+    <tr><td><b>Present Continuous</b> (<i>"I am working"</i>)</td><td>→ <b>Past Continuous</b> (<i>He said he <b>was working</b></i>)</td></tr>
+    <tr><td><b>Past Simple</b> (<i>"I worked"</i>)<br><b>Present Perfect</b> (<i>"I have worked"</i>)</td><td>→ <b>Past Perfect</b> (<i>He said he <b>had worked</b></i>)</td></tr>
+    <tr><td><b>Past Continuous</b> (<i>"I was working"</i>)<br><b>Present Perfect Continuous</b> (<i>"I have been working"</i>)</td><td>→ <b>Past Perfect Continuous</b> (<i>He said he <b>had been working</b></i>)</td></tr>
+    <tr><td><b>Past Perfect</b> (<i>"I had worked"</i>)</td><td>→ <b>Past Perfect</b> (не меняется: дальше двигать некуда!)</td></tr>
+    <tr><td><b>will</b> / <b>can</b> / <b>may</b></td><td>→ <b>would</b> / <b>could</b> / <b>might</b></td></tr>
+    <tr><td><b>must</b> (обязанность) / <b>have to</b></td><td>→ <b>had to</b> (но <i>mustn't, should, could, might, would</i> остаются без изменений!)</td></tr>
+  </table></div>
+
+  <h3>Обязательная замена слов времени и места (Time & Place Expressions)</h3>
+  <div class="tbl"><table>
+    <tr><th>Direct Speech</th><th>Reported Speech</th><th>Direct Speech</th><th>Reported Speech</th></tr>
+    <tr><td><b>today / tonight</b></td><td><b>that day / that night</b></td><td><b>now</b></td><td><b>then / at that moment</b></td></tr>
+    <tr><td><b>yesterday</b></td><td><b>the day before / the previous day</b></td><td><b>here</b></td><td><b>there</b></td></tr>
+    <tr><td><b>tomorrow</b></td><td><b>the next day / the following day</b></td><td><b>this / these</b></td><td><b>that / those</b></td></tr>
+    <tr><td><b>last week / year</b></td><td><b>the week / year before (the previous...)</b></td><td><b>next week / month</b></td><td><b>the following week / month</b></td></tr>
+    <tr><td><b>... days ago</b></td><td><b>... days before / earlier</b></td><td></td><td></td></tr>
+  </table></div>
+</section>
+
+<section id="statements">
+  <span class="week">Unidad 6 · §2</span>
+  <h2>2. Statements, Questions & Commands в косвенной речи</h2>
+  <div class="box trap"><span class="lbl">Разница между SAY и TELL</span>
+    <ul>
+      <li><b>SAY</b> — без косвенного адресата (или с предлогом <i>to</i>): <span class="f">He <b>said (that)</b> he was tired</span> / <span class="f">He <b>said to me</b> that...</span> (НЕЛЬЗЯ: <i>He said me</i>!).</li>
+      <li><b>TELL</b> — <b>обязательно</b> требует сразу после себя адресата (<b>кому?</b> без <i>to</i>): <span class="f">He <b>told me (that)</b> he was tired</span> (НЕЛЬЗЯ: <i>He told that...</i> или <i>He told to me</i>!).</li>
+    </ul>
+  </div>
+
+  <h3>1. Косвенные вопросы (Reported Questions)</h3>
+  <p>При переводе вопроса в косвенную речь: <b>1)</b> делаем сдвиг времени назад (Backshift), <b>2)</b> убираем вопросительный знак и вспомогательные <i>do / does / did</i>, <b>3)</b> ставим <b>прямой порядок слов (Подлежащее + Глагол)</b>!</p>
+  <ul>
+    <li><b>Yes/No Questions (Общие вопросы без вопросительного слова):</b> соединяем с помощью союза <b>if</b> или <b>whether</b> («ли»):
+      <br><i>"Are you ready?" she asked me</i> → <b>She asked me if / whether I was ready.</b> (НЕ: <i>if was I ready</i>!)</li>
+    <li><b>Wh- Questions (Специальные вопросы):</b> союз — само вопросительное слово (<i>where, when, why, what, how</i>):
+      <br><i>"Where did you buy this computer?" he asked</i> → <b>He asked where I had bought that computer.</b></li>
+  </ul>
+
+  <h3>2. Приказы и просьбы (Reported Commands & Requests)</h3>
+  <p>В повелительном наклонении время сдвигать не нужно — просто используй инфинитив с частицей <b>to</b> (а для запрета <i>Don't...</i> — <b>not to + V1</b>!):</p>
+  <div class="eq">told / asked / ordered + somebody + <b>(not) to + V1</b><small><i>"Open the window, please"</i> → <i>She <b>asked me to open</b> the window.</i><br><i>"<b>Don't touch</b> my laptop!"</i> → <i>He <b>told me not to touch</b> his laptop.</i> (НЕ: <i>to not touch / didn't touch</i>!)</small></div>
+</section>
+
+<section id="reportingverbs">
+  <span class="week">Unidad 6 · §3 · Важно для Rephrasing</span>
+  <h2>3. Специальные глаголы косвенной речи (Reporting Verbs Patterns)</h2>
+  <p>На экзамене часто дают начало предложения с глаголом <i>suggested, promised, refused, apologized, accused</i>. Запомни, какой грамматический «хвост» требует каждый из них:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Формула после глагола</th><th>Глаголы (Reporting Verbs)</th><th>Пример трансформации для экзамена</th></tr>
+    <tr><td><b>+ TO + V1</b><br>(Инфинитив)</td><td><b>agree</b> (согласиться), <b>offer</b> (предложить свою помощь), <b>promise</b> (пообещать), <b>refuse</b> (отказаться), <b>threaten</b> (пригрозить)</td><td><i>"I won't help you!"</i> → He <b>refused to help</b> me.<br><i>"I'll carry your bag."</i> → She <b>offered to carry</b> my bag.</td></tr>
+    <tr><td><b>+ SOMEBODY + TO + V1</b><br>(Кому-то сделать)</td><td><b>advise</b> (посоветовать), <b>ask</b>, <b>beg</b>, <b>encourage</b>, <b>invite</b>, <b>order</b>, <b>persuade</b>, <b>remind</b> (напомнить), <b>tell</b>, <b>warn</b> (предупредить)</td><td><i>"You should see a lawyer."</i> → She <b>advised me to see</b> a lawyer.<br><i>"Don't forget to lock the door."</i> → He <b>reminded me to lock</b> the door.</td></tr>
+    <tr><td><b>+ V-ING</b> (Герундий)<br>(или <i>that + S + (should) + V1</i>)</td><td><b>admit</b> (признать), <b>deny</b> (отрицать), <b>recommend</b>, <b>suggest</b> (предложить идею всем вместе: <i>"Let's..." / "Why don't we...?"</i>)</td><td><i>"Let's go to the cinema."</i> → He <b>suggested going</b> to the cinema (или <i>suggested that we go</i>). <b>НЕЛЬЗЯ: suggested to go!</b></td></tr>
+    <tr><td><b>+ Предлог + V-ING</b></td><td><b>apologize (to sb) for + -ing</b> (извиниться за)<br><b>insist on + -ing</b> (настоять на)<br><b>accuse sb of + -ing</b> (обвинить в)<br><b>blame sb for + -ing</b> (винить за)<br><b>congratulate sb on + -ing</b> (поздравить с)</td><td><i>"I'm sorry I arrived late."</i> → She <b>apologized for arriving</b> late.<br><i>"You stole the money!"</i> → They <b>accused him of stealing</b> the money.</td></tr>
+  </table></div>
+</section>
+
+<section id="causeresult">
+  <span class="week">Unidad 6 · §4 · Exam Rephrasing</span>
+  <h2>4. Clauses of Cause & Result (Причина и Следствие)</h2>
+  <div class="pair">
+    <div class="box ex"><span class="lbl">Because / Since / As + S + V</span>
+      <p>После союзов <b>because</b> (потому что), <b>since / as</b> (так как) обязательно идёт <b>Подлежащее + Глагол (S + V)</b>:</p>
+      <p><i>The flight was cancelled <b>because the weather was bad</b>.</i></p>
+    </div>
+    <div class="box trap"><span class="lbl">Because of / Due to / Owing to + NOUN / -ing</span>
+      <p>После предлогов <b>because of, due to, owing to</b> («из-за / по причине») идёт <b>только существительное (Noun) или герундий (-ing)</b> (либо костыль <i>the fact that + S + V</i>):</p>
+      <p><i>The flight was cancelled <b>because of / due to the bad weather</b>.</i></p>
+    </div>
+  </div>
+  <p><b>Союзы следствия (Result):</b> <b>so</b> (поэтому), <b>therefore / consequently / as a result</b> (следовательно, в результате — ставятся в начале нового предложения или после точки с запятой и отделяются запятой): <i>It rained heavily; <b>therefore,</b> the match was postponed.</i></p>
+</section>
+
+<section id="suffixes">
+  <span class="week">Unidad 6 · §5</span>
+  <h2>5. Noun Suffixes: образование существительных</h2>
+  <div class="tbl"><table>
+    <tr><th>Суффикс</th><th>От чего образуется</th><th>Примеры</th></tr>
+    <tr><td><b>-tion / -sion</b></td><td>От глаголов</td><td><i>inform → informa<b>tion</b>, educate → educa<b>tion</b>, decide → deci<b>sion</b>, permit → permis<b>sion</b></i></td></tr>
+    <tr><td><b>-ment</b></td><td>От глаголов</td><td><i>develop → develop<b>ment</b>, improve → improve<b>ment</b>, agree → agree<b>ment</b>, employ<b>ment</b>, manage<b>ment</b></i></td></tr>
+    <tr><td><b>-ness</b></td><td>От прилагательных</td><td><i>happy → happi<b>ness</b>, kind → kind<b>ness</b>, ill → ill<b>ness</b>, weak<b>ness</b>, dark<b>ness</b>, aware<b>ness</b></i></td></tr>
+    <tr><td><b>-ity / -ty</b></td><td>От прилагательных</td><td><i>possible → possibil<b>ity</b>, active → activ<b>ity</b>, responsible → responsibil<b>ity</b>, safe → safe<b>ty</b>, punctual<b>ity</b></i></td></tr>
+  </table></div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>the day before / the previous day</td><td>el día anterior</td><td>за день до этого (вместо yesterday)</td></tr>
+    <tr><td>the next / following day</td><td>el día siguiente</td><td>на следующий день (вместо tomorrow)</td></tr>
+    <tr><td>suggest / admit / deny + -ing</td><td>sugerir / admitir / negar</td><td>предложить / признать / отрицать (+ -ing!)</td></tr>
+    <tr><td>refuse / offer / promise + to</td><td>negarse a / ofrecer / prometer</td><td>отказаться / предложить / пообещать (+ to!)</td></tr>
+    <tr><td>because of / due to / owing to</td><td>debido a / a causa de (+ sust.)</td><td>из-за / по причине (+ существительное)</td></tr>
+    <tr><td>therefore / consequently</td><td>por lo tanto / en consecuencia</td><td>поэтому / следовательно</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Переведи в косвенную речь: "I will send you the contract tomorrow," Laura told me.</summary><div class="a"><b>Laura told me (that) she would send me the contract the next day (или the following day).</b> (Сдвинули <i>will → would</i>, поменяли <i>I → she, you → me</i> и <i>tomorrow → the next day</i>).</div></details>
+  <details class="q"><summary>Переведи вопрос в косвенную речь: "Have you ever worked in a bank?" the interviewer asked David.</summary><div class="a"><b>The interviewer asked David if / whether he had ever worked in a bank.</b> (Общий вопрос вводится через <i>if/whether</i>, Present Perfect сдвигается в Past Perfect <i>had worked</i>, порядок слов прямой!).</div></details>
+  <details class="q"><summary>Переведи в косвенную речь: 1) "Don't be late!" my boss told me. 2) "Why don't we take a break?" Marta said.</summary><div class="a">1) <b>My boss told me not to be late.</b><br>2) <b>Marta suggested taking a break</b> (или <i>Marta suggested that we (should) take a break</i>). Помни: после <i>suggest</i> никогда не ставится <i>to + инфинитив</i>!</div></details>
+  <details class="q"><summary>Rephrasing: "We stayed at home because it was snowing heavily." → "Due to _________________."</summary><div class="a"><b>Due to the heavy snow, we stayed at home</b> (или <i>Due to the fact that it was snowing heavily...</i>).</div></details>
+</section>
+</div>
+</body></html>

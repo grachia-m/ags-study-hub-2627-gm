@@ -138,7 +138,7 @@ export const SUBJECTS = [
         topics: 'Enteros, jerarquía de operaciones, fracciones («del resto»), porcentajes (índice de variación, encadenados, tasa de variación), proporcionalidad simple y compuesta, repartos directa e inversamente proporcionales.',
         guideUrl: './teoria/teoria-mates-1.html',
         files: [
-          { name: 'Конспект теории U1 (HTML)', url: './teoria/teoria-mates-1.html', type: 'html', isLocal: true },
+          { name: 'Конспект теории U1 (HTML · RU/ES)', url: './teoria/teoria-mates-1.html', type: 'html', isLocal: true },
           { name: 'Apuntes completos v1.0.pdf (весь курс)', id: '1GbR-fd96uSAEFZAohzXUIuMKryI8XaG3', type: 'pdf', isNew: true },
           { name: 'Actividades de envío unidad 1.pdf', id: '1_SB0g5vTwuZfK7SNwcE4mrywIs6PkioW', type: 'envio' },
           { name: 'Soluciones ejercicios unidad 1.pdf', id: '11WhyhW8QV3UXTUtG_YwBBTBvGCZxo4Wm', type: 'sol', isNew: true },
@@ -149,7 +149,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Unidad 2: Ecuaciones y sistemas',
         topics: 'Expresiones algebraicas, polinomios, identidades notables, ecuaciones de 1er y 2º grado, sistemas 2×2 (sustitución, igualación, reducción), sistemas 3×3 (método de Gauss), planteamiento de problemas.',
+        guideUrl: './teoria/teoria-mates-2.html',
         files: [
+          { name: 'Конспект теории U2: Уравнения и Гаусс 3×3 (HTML · RU/ES)', url: './teoria/teoria-mates-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Actividades de envío unidad 2 (26-27).pdf', id: '1zB2PyBZXFwT_V9Nrw8SbvkpbmbtZn6j-', type: 'envio' },
           { name: 'Soluciones ejercicios apuntes unidad 2.pdf', id: '1NqK7OwE6CHd7mMWD8LWnRONVOZguCu0J', type: 'sol' },
         ],
@@ -159,7 +161,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 3: Medidas y longitudes',
         topics: 'Magnitudes, Sistema Internacional, factores de conversión, Teorema de Pitágoras, semejanza, Teorema de Tales, escalas y mapas, razones trigonométricas y resolución de triángulos rectángulos.',
+        guideUrl: './teoria/teoria-mates-3.html',
         files: [
+          { name: 'Конспект теории U3: Пифагор, Фалес и Тригонометрия (HTML · RU/ES)', url: './teoria/teoria-mates-3.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Actividades de envío unidad 3 (26-27).pdf', id: '1Knz0QWA9z0kEsSU-fT7cS4uXbli01dUF', type: 'envio', isNew: true },
         ],
       },
@@ -168,7 +172,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 4: Áreas y volúmenes',
         topics: 'Polígonos (áreas y perímetros), poliedros (prismas, pirámides), cuerpos de revolución (cilindro, cono, esfera), geometría aplicada y densidad.',
+        guideUrl: './teoria/teoria-mates-4.html',
         files: [
+          { name: 'Конспект теории U4: Площади, Объёмы и Плотность (HTML · RU/ES)', url: './teoria/teoria-mates-4.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Actividades de envío unidad 4 (26-27).pdf', id: '1cJLvgfyJSLz_TzdYP8XEpIcqMM_eAYFS', type: 'envio', isNew: true },
         ],
       },
@@ -177,7 +183,9 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Unidad 5: Estadística',
         topics: 'Tablas de frecuencias, gráficos estadísticos, media, mediana, moda, cuartiles/percentiles, varianza, desviación típica, coeficiente de variación, variables bidimensionales y correlación.',
+        guideUrl: './teoria/teoria-mates-5.html',
         files: [
+          { name: 'Конспект теории U5: Статистика и Регрессия (HTML · RU/ES)', url: './teoria/teoria-mates-5.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Apuntes completos v1.0.pdf (раздел U5)', id: '1GbR-fd96uSAEFZAohzXUIuMKryI8XaG3', type: 'pdf' },
         ],
       },
@@ -186,7 +194,9 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Unidad 6: Probabilidad',
         topics: 'Experimentos aleatorios, sucesos, regla de Laplace, probabilidad condicionada, sucesos independientes, diagramas de árbol y tablas de contingencia.',
+        guideUrl: './teoria/teoria-mates-6.html',
         files: [
+          { name: 'Конспект теории U6: Вероятность, Дерево и Байес (HTML · RU/ES)', url: './teoria/teoria-mates-6.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Apuntes completos v1.0.pdf (раздел U6)', id: '1GbR-fd96uSAEFZAohzXUIuMKryI8XaG3', type: 'pdf' },
         ],
       },
@@ -220,7 +230,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Tema 1: Búsqueda de información',
         topics: 'Operadores booleanos (AND, OR, NOT) y comandos avanzados (site:, filetype:, intitle:, comillas), IA generativa y diseño de prompts, evaluación crítica de fuentes (método SIFT), almacenamiento, derechos de autor y licencias Creative Commons, formato Word.',
+        guideUrl: './teoria/teoria-digital-1.html',
         files: [
+          { name: 'Конспект теории Tema 1: Поиск, SIFT, Лицензии CC и Word (HTML · RU/ES)', url: './teoria/teoria-digital-1.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Tema1_Búsqueda información.pdf', id: '1OA2N7uOYFr8cEPBqfGm0gwfLz3TDNqxW', type: 'pdf' },
           { name: 'Grachia_Martirosian_Unidad 1. Actividades Envio.pdf (Задание и рубрика)', id: '1pP4_WWNLy7ZlQByPAuMu8oIpX7b80PG5', type: 'envio', isNew: true },
         ],
@@ -230,7 +242,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Tema 2: Creación de contenidos',
         topics: 'Herramientas y entornos digitales, comunicación y colaboración en línea, netiqueta, identidad y huella digital, creación y edición de contenidos, formatos de archivo, licencias y citación.',
+        guideUrl: './teoria/teoria-digital-2.html',
         files: [
+          { name: 'Конспект теории Tema 2: Контент, Netiqueta и Цифровой след (HTML · RU/ES)', url: './teoria/teoria-digital-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Tema 2_Creación de contenidos.pdf', id: '1Iy1lbsy-Sx_kK3hGhsN3eTvw77EDXNW4', type: 'pdf' },
         ],
       },
@@ -239,7 +253,9 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Tema 3: Seguridad y sostenibilidad',
         topics: 'Amenazas (malware, phishing, ingeniería social), contraseñas seguras, 2FA, cifrado, copias de seguridad 3-2-1, ergonomía y bienestar digital, redes y conectividad, sostenibilidad ambiental (regla de las 9R).',
+        guideUrl: './teoria/teoria-digital-3.html',
         files: [
+          { name: 'Конспект теории Tema 3: Кибербезопасность, Бэкап 3-2-1 и Правило 9R (HTML · RU/ES)', url: './teoria/teoria-digital-3.html', type: 'html', isLocal: true, isNew: true },
           { name: 'Tema 3_Seguridad y sostenibilidad.pdf', id: '1GNyYWvyom29a6VDVAFWuSw6GtcRqimGf', type: 'pdf' },
         ],
       },
@@ -277,7 +293,7 @@ export const SUBJECTS = [
         topics: 'SI, vectores, posición, desplazamiento, velocidad, aceleración, MRU, MRUA, caída libre y lanzamiento vertical, tiro horizontal, tiro parabólico, movimiento circular uniforme (MCU).',
         guideUrl: './teoria/teoria-fisica-1.html',
         files: [
-          { name: 'Конспект теории UD1 (HTML)', url: './teoria/teoria-fisica-1.html', type: 'html', isLocal: true },
+          { name: 'Конспект теории UD1: Кинематика, Парабола и MCU (HTML · RU/ES)', url: './teoria/teoria-fisica-1.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UD1 Cinemática.pdf', id: '1yAS1Kbe3Ak4mhKdekESQhB9C9b5QobSt', type: 'pdf' },
           { name: 'Formulario UD1 Cinemática.pdf', id: '1DCC8NI0LKcMxUb2ksaMGP4Tn5j1yAfYF', type: 'pdf', isNew: true },
         ],
@@ -287,7 +303,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Unidad 2: Estática y Dinámica',
         topics: 'Fuerza como vector, leyes de Newton, peso, normal, fuerza de rozamiento, plano inclinado, equilibrio estático en cables (tensiones), poleas y cuerpos enlazados, ley de Hooke.',
+        guideUrl: './teoria/teoria-fisica-2.html',
         files: [
+          { name: 'Конспект теории UD2: Статика, Тросы и Динамика (HTML · RU/ES)', url: './teoria/teoria-fisica-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UD2 Dinámica.pdf (полный учебник 7.6 МБ)', id: '19t9qpZaY-_QrcML9AXHb8QnTSeXGfnjD', type: 'pdf', isNew: true },
           { name: 'Formulario UD2 Dinámica.pdf', id: '1UIl4zVWNhLYmkri01L7148WB_ffgIi4N', type: 'pdf', isNew: true },
           { name: 'Envío 1 - Física AGS.pdf (UD1 + UD2)', id: '1ZDl6iQARx6dB7HfSWUuFov_qwfgS0Jvj', type: 'envio', isNew: true },
@@ -298,7 +316,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 3: Energía',
         topics: 'Trabajo mecánico, potencia y rendimiento, energía cinética (teorema de las fuerzas vivas), energía potencial gravitatoria y elástica, conservación de la energía mecánica y trabajo de rozamiento.',
+        guideUrl: './teoria/teoria-fisica-3.html',
         files: [
+          { name: 'Конспект теории UD3: Работа, Мощность и Энергия (HTML · RU/ES)', url: './teoria/teoria-fisica-3.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UD3 Energía.pdf', id: '1UDXMouG1aJ6fkmHg9aMvgUqaOBOWtxrc', type: 'pdf' },
           { name: 'Formulario UD3 Energía.pdf', id: '1bbVImtovsVK5rAJaEcYXXLa_op7V8Wkp', type: 'pdf' },
         ],
@@ -308,7 +328,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 4: Electromagnetismo',
         topics: 'Carga eléctrica, ley de Coulomb, campo eléctrico, potencial y trabajo eléctrico, campo magnético, fuerza de Lorentz (carga y conductor), campo de hilo y solenoide, inducción de Faraday-Lenz.',
+        guideUrl: './teoria/teoria-fisica-4.html',
         files: [
+          { name: 'Конспект теории UD4: Электромагнетизм и Индукция (HTML · RU/ES)', url: './teoria/teoria-fisica-4.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UD4 Electromagnetismo.pdf', id: '14jrCpvr5uP_C18QbCoYLqaLNnfcx0CDx', type: 'pdf', isNew: true },
           { name: 'Formulario UD4 Electromagnetismo.pdf', id: '1WcZ8Tms9WKnQkb3bewsjld3K7VYR9Z6-', type: 'pdf', isNew: true },
           { name: 'Envío 2 - Física AGS.docx.pdf (UD3 + UD4)', id: '1ZyhFWiBPyPPYwFmnYrYjOQX0sWCnVnEj', type: 'envio', isNew: true },
@@ -319,7 +341,9 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Unidad 5: Vibraciones y Ondas',
         topics: 'Movimiento armónico simple (MAS), ondas mecánicas transversales y longitudinales, ecuación de onda armónica y(x,t), intensidad sonora y sonoridad (dB), reflexión, refracción (ley de Snell) y ángulo límite.',
+        guideUrl: './teoria/teoria-fisica-5.html',
         files: [
+          { name: 'Конспект теории UD5: Колебания, Волны, Звук и Оптика (HTML · RU/ES)', url: './teoria/teoria-fisica-5.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UD5 Vibraciones y Ondas.pdf', id: '14KDKUCaI3hxYpnAzox8J4EKx21V7HIS6', type: 'pdf' },
           { name: 'Formulario UD5 Vibraciones y ondas.pdf', id: '1uSB1be-AW4FRxbErIY92D3gtu4bsbyw0', type: 'pdf' },
           { name: 'Envío 3 - Física AGS.pdf (UD5)', id: '1Lte0_mL4kk3LhgW5_yPUbMjwOhNqHNDj', type: 'envio', isNew: true },
@@ -355,7 +379,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Unidad 1: Present Tenses, Pronouns & Questions',
         topics: 'Personal pronouns, possessives, Present Simple vs Present Continuous, frequency adverbs, question formation, compound adjectives, Reading True/False quoting lines.',
+        guideUrl: './teoria/teoria-ingles-1.html',
         files: [
+          { name: 'Конспект теории U1: Present Tenses, Вопросы и Reading T/F (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-1.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 1.pdf', id: '1a6a4m7FPvnzSIoTTyUrzvYdnbyTIvLjw', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 1 ing.pdf', id: '1vAsrWtVrIIK88KFBu39j6rVDJLCouOv_', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u1_mexamen26.pdf (Модель экзамена U1)', id: '1MNH57qtwgEqiy0uDyH-lKuCNkFwXU-T1', type: 'pdf', isNew: true },
@@ -367,7 +393,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Unidad 2: Past & Perfect Tenses, Used to',
         topics: 'Past Simple vs Past Continuous, Present Perfect Simple & Continuous (for/since/just/already/yet), Past Perfect, used to / would, compound nouns, rephrasing.',
+        guideUrl: './teoria/teoria-ingles-2.html',
         files: [
+          { name: 'Конспект теории U2: Past & Perfect, Used to и Rephrasing (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 2.pdf', id: '1ihf_3etj5myI1Ou0BTIdk_0TUqPGiyND', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 2 ing.pdf', id: '17McTpo9Wf6pY5XNk5HnngnTltGPc7ejd', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u2_mexamen26.pdf (Модель экзамена U2)', id: '1KP2B9WFkZGN2vGeXeYoSfXteUfQ-_opn', type: 'pdf', isNew: true },
@@ -379,7 +407,9 @@ export const SUBJECTS = [
         eval: 1,
         title: 'Unidad 3: Future Forms, Time Clauses & Indirect Questions',
         topics: 'Future with will, be going to, Present Continuous & Present Simple, Future Continuous & Future Perfect, time clauses (when, as soon as, until), subject/object & indirect questions, prefixes.',
+        guideUrl: './teoria/teoria-ingles-3.html',
         files: [
+          { name: 'Конспект теории U3: Future Forms, Time Clauses и Indirect Questions (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-3.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 3.pdf', id: '1QqZjFI-wQqu4uePcYOIYM7kBWUtXxpak', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 3 ing.pdf', id: '1YNNjIeVFVvZkEIWsbGVi4yunDY67p0Jn', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u3_mexamen26.pdf (Модель экзамена U3)', id: '1NIERv7VQfKD4jI8TOHwk2m74VFe0-41C', type: 'pdf', isNew: true },
@@ -392,7 +422,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 4: Quantifiers, Articles & Clauses of Contrast',
         topics: 'There is/are, countable & uncountable nouns, plurals, articles (a/an/the/zero), some/any/no, quantifiers (much, many, a lot of, few, little), clauses of contrast (although, despite, in spite of), negative prefixes.',
+        guideUrl: './teoria/teoria-ingles-4.html',
         files: [
+          { name: 'Конспект теории U4: Quantifiers, Артикли и Although vs Despite (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-4.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 4.pdf', id: '17Ys0GBM2uTCAmIIlED9dsbzF9X2WTCn_', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 4 ing.pdf', id: '1M_EG1M8yzOGsxow3GIeZl6cb-U1oxWap', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u4_mexamen26.pdf', id: '1JGUBBBYy8wYvk2W1DXygKmgM0Xz-Hizf', type: 'pdf', isNew: true },
@@ -404,7 +436,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 5: Comparatives, Superlatives & Too/Enough',
         topics: 'Adjectives order, comparative and superlative structures (as...as, the more...the more), too and enough, prepositions of place/time/movement, agent nouns.',
+        guideUrl: './teoria/teoria-ingles-5.html',
         files: [
+          { name: 'Конспект теории U5: Сравнения, Too/Enough и So vs Such (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-5.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS ING Unidad 5.pdf', id: '1pkcZC9dhCi0pDZT5SXhdHl-vtsaPaZmZ', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 5 ing.pdf', id: '15AZgFtXlkeJKLHlE38rrPgYZ0PaReaEr', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u5_mexamen26.pdf', id: '1pU_o_TLDfT2Nbri8BQ6Cu9xkn7saCHEg', type: 'pdf', isNew: true },
@@ -415,7 +449,9 @@ export const SUBJECTS = [
         eval: 2,
         title: 'Unidad 6: Reported Speech & Clauses of Cause',
         topics: 'Imperatives, Reported Speech (statements, questions, commands, requests, suggestions, reporting verbs), clauses of cause and result (because, since, as, so/such...that), noun suffixes.',
+        guideUrl: './teoria/teoria-ingles-6.html',
         files: [
+          { name: 'Конспект теории U6: Косвенная речь (Reported Speech) и Cause/Result (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-6.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 6.pdf', id: '1bB4EsfUH85A2q8KATRp6RxyEz6fmcDDb', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 6 ing.pdf', id: '14cZ-mjiNVpkqCB2th5tcTfE2yDZWAGt0', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u6_mexamen26.pdf', id: '1XXvofqSmok83NOSI0i_vGQ4f5gG9SaUM', type: 'pdf', isNew: true },
@@ -428,7 +464,9 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Unidad 7: Passive Voice & Causative Have/Get',
         topics: 'Passive voice in all tenses, two-object passives, impersonal passive (It is said that / He is said to...), causative have/get something done.',
+        guideUrl: './teoria/teoria-ingles-7.html',
         files: [
+          { name: 'Конспект теории U7: Passive Voice, Impersonal Passive и Have sth done (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-7.html', type: 'html', isLocal: true, isNew: true },
           { name: 'AGS INGLÉS Unidad 7.pdf', id: '19OcR1iazSxwqh-xu-LG1OqCDDZC7MroW', type: 'pdf', isNew: true },
           { name: 'solucionario autoevaluaciones unidad 7 ing.pdf', id: '1xAkANaIZmIDQ-kUA6MLQWneubQm0k8GU', type: 'sol', isNew: true },
           { name: 'ACGS_Ingles_u7_mexamen26.pdf', id: '1VZvB3aNFQNRJdVdMZyJvx8Gbm2jKsrf7', type: 'pdf', isNew: true },
@@ -440,14 +478,20 @@ export const SUBJECTS = [
         eval: 3,
         title: 'Unidad 8: Conditionals & Relative Clauses',
         topics: 'Zero, First, Second, Third and Mixed Conditionals, unless / provided that / in case, I wish / If only, defining and non-defining relative clauses.',
-        files: [],
+        guideUrl: './teoria/teoria-ingles-8.html',
+        files: [
+          { name: 'Конспект теории U8: Conditionals (0–3), I wish и Relative Clauses (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-8.html', type: 'html', isLocal: true, isNew: true },
+        ],
       },
       {
         num: 9,
         eval: 3,
         title: 'Unidad 9: Modals, Gerund/Infinitive & Exam Writing',
         topics: 'Modal verbs (ability, obligation, deduction, modal perfects), gerund vs infinitive, Opinion Essay, For & Against Essay, Formal Letter + Actividad Tercer Envío.',
-        files: [],
+        guideUrl: './teoria/teoria-ingles-9.html',
+        files: [
+          { name: 'Конспект теории U9: Modals, Gerund/Infinitive и Шаблоны Эссе (HTML · RU/EN/ES)', url: './teoria/teoria-ingles-9.html', type: 'html', isLocal: true, isNew: true },
+        ],
       },
     ],
   },

@@ -1,0 +1,227 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U8</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 8</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 8 · Блок 3</div>
+  <h1>Conditionals, Wishes & Relative Clauses</h1>
+  <p class="lede">Три самые весомые грамматические темы экзамена в одном конспекте: все типы условных предложений (0, 1st, 2nd, 3rd и Mixed Conditionals), перефразирование с unless / provided that / in case, конструкция сожаления I wish / If only и определительные придаточные (Defining vs. Non-defining Relative Clauses).</p>
+  <ul class="toc">
+    <li><a href="#conditionals">1. Все типы Conditionals (0, 1, 2, 3, Mixed)</a></li>
+    <li><a href="#unless">2. Rephrasing: Unless, Provided that, In case</a></li>
+    <li><a href="#wish">3. I Wish / If Only (Три формулы сожаления)</a></li>
+    <li><a href="#relatives">4. Relative Clauses: Who, Which, That, Whose, Where</a></li>
+    <li><a href="#defining">5. Defining vs. Non-Defining (Запятые и запрет на That)</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="conditionals">
+  <span class="week">Unidad 8 · §1 · Таблица №1</span>
+  <h2>1. Conditionals: 0, 1st, 2nd, 3rd & Mixed</h2>
+  <p>Условное предложение состоит из двух частей: условия (<b>If-clause</b>) и результата (<b>Main clause</b>). Главное правило: <b>в части с <kbd>If</kbd> никогда не ставится <kbd>will</kbd> или <kbd>would</kbd>!</b></p>
+
+  <div class="tbl"><table>
+    <tr><th>Тип</th><th>Условие: <b>IF + ...</b></th><th>Результат: <b>Main Clause</b></th><th>Смысл и пример</th></tr>
+    <tr><td><b>Zero (0)</b></td><td><b>Present Simple</b></td><td><b>Present Simple</b></td><td>Закон природы / 100% истина всегда:<br><i>If you <b>heat</b> ice, it <b>melts</b>.</i></td></tr>
+    <tr><td><b>First (1st)</b></td><td><b>Present Simple</b></td><td><b>will (can / may / Imperative) + V1</b></td><td>Реальное условие в будущем (50–90%):<br><i>If it <b>rains</b> tomorrow, we <b>will stay</b> at home.</i></td></tr>
+    <tr><td><b>Second (2nd)</b></td><td><b>Past Simple (V2)</b><br>(для <i>be</i> → <b>were</b> для всех лиц: <i>If I were you...</i>)</td><td><b>would (could / might) + V1</b></td><td>Нереальное / воображаемое настоящее или будущее (мечта, совет):<br><i>If I <b>won</b> the lottery, I <b>would buy</b> an island.</i></td></tr>
+    <tr><td><b>Third (3rd)</b></td><td><b>Past Perfect (had + V3)</b></td><td><b>would (could / might) + have + V3</b></td><td>Нереальное <b>прошлое</b> (сожаление о том, чего уже не изменить!):<br><i>If we <b>had left</b> earlier, we <b>wouldn't have missed</b> the flight.</i></td></tr>
+    <tr><td><b>Mixed (3 + 2)</b></td><td><b>Past Perfect (had + V3)</b><br>(условие в прошлом)</td><td><b>would + V1</b><br>(результат сейчас: <i>now / today</i>)</td><td>Прошлая ошибка влияет на настоящее:<br><i>If I <b>had accepted</b> that job (тогда), I <b>would be</b> rich <b>now</b>.</i></td></tr>
+  </table></div>
+
+  <div class="box ex"><span class="lbl">Алгоритм для Rephrasing: Ситуация в прошлом → 3rd Conditional</span>
+    <p>Когда в задании дана реальная ситуация в Past Simple (например: <i>I didn't study hard, so I failed the exam</i>), переделывай её в <b>3rd Conditional</b>, меняя знаки обеих частей на противоположные (+ на −, а − на +):</p>
+    <p><b>If I had studied hard, I wouldn't have failed (или would have passed) the exam.</b></p>
+  </div>
+</section>
+
+<section id="unless">
+  <span class="week">Unidad 8 · §2 · Exam Rephrasing</span>
+  <h2>2. Unless, Provided that / As long as, In case</h2>
+  <ul>
+    <li><b>UNLESS = IF ... NOT («Если не...»):</b> слово <i>unless</i> уже содержит внутри себя отрицание <i>not</i>, поэтому <b>глагол сразу после <kbd>unless</kbd> всегда ставится в УТВЕРДИТЕЛЬНОЙ форме!</b>
+      <br><span class="f"><i>If you <b>don't hurry</b>, you will be late.</i> ↔ <b>Unless you hurry</b>, you will be late.</span> (НЕ: <i>Unless you don't hurry</i>!).
+      <br><span class="f"><i>If she <b>doesn't call</b>...</i> ↔ <b>Unless she calls</b>...</span> (не забудь вернуть окончание <b>-s</b>!).</li>
+    <li><b>PROVIDED (THAT) / PROVIDING (THAT) / AS LONG AS / ON CONDITION THAT («При условии, что / Только если»):</b> работают точно так же, как <i>if</i> в 1-м типе (после них — Present Simple): <i>You can borrow my car <b>as long as you drive</b> carefully.</i></li>
+    <li><b>IN CASE («На всякий случай, вдруг» — превентивная мера заранее!):</b> <i>Take an umbrella <b>in case it rains</b></i> (возьми зонт сейчас заранее, вдруг потом пойдёт дождь).</li>
+  </ul>
+</section>
+
+<section id="wish">
+  <span class="week">Unidad 8 · §3 · Exam Rephrasing</span>
+  <h2>3. I Wish / If Only (Выражение сожаления)</h2>
+  <p>Конструкции <b>I wish</b> («Жаль, что... / Хотел бы я...») и более эмоциональная <b>If only</b> («Если бы только...») работают по тому же принципу сдвига времени назад, что и 2-й/3-й типы условных предложений:</p>
+
+  <div class="tbl"><table>
+    <tr><th>О чём сожалеем</th><th>Формула: <b>I wish / If only + ...</b></th><th>Пример Rephrasing на экзамене</th></tr>
+    <tr><td><b>1. О НАСТОЯЩЕМ</b><br>(хотим, чтобы сейчас было иначе)</td><td><b>+ Past Simple (V2 / were)</b></td><td><i>I don't speak French (now).</i><br>→ <b>I wish I spoke French.</b><br><i>It's a pity I am so busy.</i> → <b>If only I weren't so busy.</b></td></tr>
+    <tr><td><b>2. О ПРОШЛОМ</b><br>(поздно: уже случилось или не случилось)</td><td><b>+ Past Perfect (had + V3)</b></td><td><i>I regret buying that expensive phone (или I bought it and now I regret it).</i><br>→ <b>I wish I hadn't bought that expensive phone.</b></td></tr>
+    <tr><td><b>3. ЖАЛОБА / РАЗДРАЖЕНИЕ</b><br>(просим кого-то перестать делать что-то или чтобы изменилась погода)</td><td><b>+ would + V1</b><br><b>Ловушка: НЕЛЬЗЯ сказать <kbd>I wish I would</kbd>!</b> Подлежащие должны быть разными!</td><td><i>You are always interrupting me! It's annoying.</i><br>→ <b>I wish you wouldn't interrupt me</b> (или <i>would stop interrupting me</i>).</td></tr>
+  </table></div>
+</section>
+
+<section id="relatives">
+  <span class="week">Unidad 8 · §4</span>
+  <h2>4. Relative Clauses: выбор союзного слова</h2>
+  <p>Определительные придаточные предложения (<span class="es">Oraciones de relativo</span>) связывают два предложения об одном и том же человеке или предмете:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Relative Pronoun</th><th>К чему относится</th><th>Как проверить и пример</th></tr>
+    <tr><td><b>WHO</b> (или <b>that</b>)</td><td><b>Люди</b> (<span class="es">Personas</span>)</td><td>Стоит после человека: <i>The woman <b>who / that</b> lives next door is a doctor.</i></td></tr>
+    <tr><td><b>WHICH</b> (или <b>that</b>)</td><td><b>Предметы, животные, идеи</b> (<span class="es">Cosas</span>)</td><td>Стоит после неодушевлённого: <i>The laptop <b>which / that</b> I bought is fast.</i></td></tr>
+    <tr><td><b>WHOSE</b> («чей / чья / чьи»)</td><td><b>Принадлежность</b> (<span class="es">Posesión</span> — заменяет <i>his, her, my, their, its</i>)</td><td>Между двумя существительными (<b>Человек/Предмет + WHOSE + Существительное без артикля</b>):<br><i>That's the man. <b>His</b> car was stolen.</i> → <i>That's the man <b>whose car</b> was stolen.</i></td></tr>
+    <tr><td><b>WHERE</b> («где, в котором»)</td><td><b>Место</b> (<span class="es">Lugar</span> — заменяет <i>there / in which</i>)</td><td>Когда в этом месте что-то происходит: <i>This is the hotel <b>where</b> we stayed.</i> (Ловушка: если после места сразу идёт глагол без подлежащего — ставь <b>which/that</b>: <i>The hotel <b>which</b> was built in 1990</i>).</td></tr>
+    <tr><td><b>WHEN</b> («когда»)</td><td><b>Время</b> (<span class="es">Tiempo</span>)</td><td>После слов <i>day, year, time</i>: <i>I remember the day <b>when</b> we met.</i></td></tr>
+  </table></div>
+</section>
+
+<section id="defining">
+  <span class="week">Unidad 8 · §5 · Главная ловушка с запятыми</span>
+  <h2>5. Defining vs. Non-Defining Relative Clauses</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">1. Defining (Ограничительные — БЕЗ запятых)</span>
+      <p>Несут <b>критически важную информацию</b>, без которой непонятно, о каком именно человеке/предмете речь.</p>
+      <ul>
+        <li>Запятые <b>НЕ ставятся</b>.</li>
+        <li>Можно заменить <i>who / which</i> на <b>that</b>.</li>
+        <li><b>Когда можно ОПУСТИТЬ (omit) местоимение?</b> Только в Defining, если сразу после <i>who/which/that</i> идёт <b>новое подлежащее</b>: <i>The book <b>(which/that) I</b> read was great.</i></li>
+      </ul>
+    </div>
+    <div class="box trap"><span class="lbl">2. Non-Defining (Пояснительные — В ЗАПЯТЫХ!)</span>
+      <p>Дают <b>дополнительную (попутную) информацию</b> об объекте, который и так уже однозначно известен (имена собственные: <i>Madrid, Sarah, my mother, the Eiffel Tower</i>).</p>
+      <ul>
+        <li>Обязательно выделяются <b>запятыми</b> с двух сторон.</li>
+        <li><b>КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать <kbd>THAT</kbd>!</b> После запятой ставь только <b>who</b> или <b>which</b>!</li>
+        <li>Опускать союзное слово <b>нельзя</b>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>unless (= if not)</td><td>a menos que / a no ser que</td><td>если не (+ утвердительный глагол!)</td></tr>
+    <tr><td>provided that / as long as</td><td>siempre que / con tal de que</td><td>при условии, что</td></tr>
+    <tr><td>in case</td><td>por si acaso</td><td>на всякий случай (вдруг)</td></tr>
+    <tr><td>I wish / If only</td><td>Ojalá...</td><td>Жаль, что... / Если бы только...</td></tr>
+    <tr><td>whose (+ noun)</td><td>cuyo / cuya / cuyos</td><td>чей / чья / чьи (+ существительное)</td></tr>
+    <tr><td>non-defining clause</td><td>oración explicativa (entre comas)</td><td>пояснительное придаточное (в запятых, без that!)</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Rephrasing (Conditionals): "We missed the train because we didn't leave home on time." → "If we _________________."</summary><div class="a"><b>If we had left home on time, we wouldn't have missed the train.</b> (Ситуация в прошлом → 3rd Conditional: <i>If + had + V3, would(n't) have + V3</i>).</div></details>
+  <details class="q"><summary>Rephrasing (Unless): "If he doesn't apologize, she won't forgive him." → "Unless _________________."</summary><div class="a"><b>Unless he apologizes, she won't forgive him.</b> (После <i>Unless</i> убираем <i>doesn't</i> и обязательно возвращаем окончание <b>-s</b> глаголу <i>apologizes</i>!).</div></details>
+  <details class="q"><summary>Rephrasing (Wish): 1) "It's a pity I don't know her phone number." 2) "I regret telling him my secret yesterday."</summary><div class="a">1) Сожаление о настоящем → Past Simple: <b>I wish I knew her phone number.</b><br>2) Сожаление о прошлом → Past Perfect: <b>I wish I hadn't told him my secret yesterday.</b></div></details>
+  <details class="q"><summary>Объедини два предложения с помощью Relative Clause: 1) "That is the architect. Her design won the first prize." 2) "Mr Smith retired last month. He was our director for 20 years."</summary><div class="a">1) Принадлежность (<i>Her design</i> → <i>whose design</i>): <b>That is the architect whose design won the first prize.</b><br>2) Имя собственное (Non-defining в запятых, только <i>who</i>, НЕ <i>that</i>!): <b>Mr Smith, who was our director for 20 years, retired last month.</b></div></details>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,254 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Competencia Digital T3</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#059669; --subj-soft:#D1FAE5;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#059669;--subj-soft:#D1FAE5}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#34D399;--subj-soft:#064E3B}}:root[data-theme="dark"]{--subj:#34D399;--subj-soft:#064E3B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Competencia Digital · конспект 3</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Competencia Digital · Tema 3 · Блок 3</div>
+  <h1>Seguridad, privacidad, bienestar y sostenibilidad digital</h1>
+  <p class="lede">Полный конспект Темы 3: классификация киберугроз (Malware и социальная инженерия Phishing/Smishing/Vishing), двухфакторная аутентификация 2FA, шифрование HTTPS и VPN, правило резервного копирования 3-2-1, цифровая эргономика (правило 20-20-20), сети и экологическая устойчивость (Regla de las 9R).</p>
+  <ul class="toc">
+    <li><a href="#amenazas">1. Malware e Ingeniería social</a></li>
+    <li><a href="#proteccion">2. Contraseñas, 2FA, HTTPS y VPN</a></li>
+    <li><a href="#backup">3. Copias de seguridad: Regla 3-2-1</a></li>
+    <li><a href="#ergonomia">4. Ergonomía y Regla 20-20-20</a></li>
+    <li><a href="#redes">5. Redes y conectividad</a></li>
+    <li><a href="#sostenibilidad">6. Sostenibilidad y las 9R</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="amenazas">
+  <span class="week">Tema 3 · §1</span>
+  <h2>1. Amenazas digitales: Malware e Ingeniería Social</h2>
+  <p><span class="es">Malware</span> (<span class="es">software malicioso</span>) — это общее название любого вредоносного ПО. На экзамене важно чётко различать его подвиды по способу действия:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Угроза</th><th>Категория</th><th>Как работает (ключевой маркер для теста)</th></tr>
+    <tr><td><b>Virus</b></td><td>Malware</td><td>Встраивается в исполняемый файл; <b>требует действия пользователя</b> (запуска файла), чтобы активироваться и заражать другие файлы.</td></tr>
+    <tr><td><b>Gusano</b> (Worm)</td><td>Malware</td><td>Размножается и распространяется по сети <b>самостоятельно</b>, без участия человека, перегружая трафик и память.</td></tr>
+    <tr><td><b>Troyano</b> (Trojan)</td><td>Malware</td><td>Маскируется под полезную или бесплатную программу (<span class="es">software legítimo</span>); не размножается сам, но открывает злоумышленнику скрытый доступ (<span class="es">puerta trasera / backdoor</span>).</td></tr>
+    <tr><td><b>Spyware / Keylogger</b></td><td>Malware</td><td>Шпионское ПО: незаметно собирает данные о действиях пользователя и перехватывает нажатия клавиш (<span class="es">keylogger</span>) для кражи паролей.</td></tr>
+    <tr><td><b>Ransomware</b></td><td>Malware</td><td><b>Шифрует файлы</b> жертвы (<span class="es">secuestro de datos</span>) и требует <b>выкуп</b> (<span class="es">rescate</span>, обычно в криптовалюте) за ключ расшифровки.</td></tr>
+    <tr><td><b>Adware</b></td><td>Malware</td><td>Навязчиво показывает рекламные баннеры и всплывающие окна, подменяет стартовую страницу браузера.</td></tr>
+  </table></div>
+
+  <h3>Ingeniería Social: обман человека вместо взлома кода</h3>
+  <p><span class="es">Ingeniería social</span> (социальная инженерия) использует психологические манипуляции (срочность, страх блокировки счёта, обещание приза), чтобы жертва сама отдала свои пароли или данные карты:</p>
+  <ul>
+    <li><b>Phishing:</b> мошенничество через <b>электронную почту (email)</b> и поддельные сайты банков или госорганов.</li>
+    <li><b>Smishing:</b> мошенничество через <b>SMS-сообщения</b> (например, «Ваша посылка задержана на таможне, перейдите по ссылке»).</li>
+    <li><b>Vishing:</b> мошенничество через <b>голосовой телефонный звонок</b> (<span class="es">Voice + Phishing</span>), когда злоумышленник представляется сотрудником банка или техподдержки.</li>
+  </ul>
+</section>
+
+<section id="proteccion">
+  <span class="week">Tema 3 · §2</span>
+  <h2>2. Medidas de protección: Contraseñas, 2FA, HTTPS y VPN</h2>
+  <h3>1. Надёжные пароли (<span class="es">Contraseñas robustas</span>) и 2FA</h3>
+  <ul>
+    <li>Надёжный пароль содержит <b>минимум 12 символов</b>: строчные и заглавные буквы, цифры и спецсимволы, не содержит личных дат/имён и уникален для каждого сервиса (удобно хранить в <span class="es">gestor de contraseñas</span> — Bitwarden, KeePass, 1Password).</li>
+    <li><b>Двухфакторная аутентификация (<span class="es">2FA / Doble factor de autenticación</span>):</b> требует два независимых подтверждения из трёх категорий:
+      <ol>
+        <li><i>То, что ты знаешь</i> (<span class="es">algo que sabes</span>): пароль или PIN-код.</li>
+        <li><i>То, чем ты владеешь</i> (<span class="es">algo que tienes</span>): смартфон с кодом из приложения-аутентификатора, физический ключ безопасности.</li>
+        <li><i>То, чем ты являешься</i> (<span class="es">algo que eres</span>): биометрия — отпечаток пальца, FaceID.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h3>2. Шифрование трафика: HTTPS и VPN</h3>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">HTTPS (SSL/TLS)</span>
+      <p>Защищённое соединение между браузером и сайтом. Данные передаются в зашифрованном виде (<span class="es">cifrado</span>), чтобы их нельзя было перехватить по пути.</p>
+    </div>
+    <div class="box tip"><span class="lbl">VPN (Red Privada Virtual)</span>
+      <p>Создаёт зашифрованный туннель для всего интернет-трафика устройства и скрывает реальный IP-адрес. Необходима при работе в публичных сетях Wi-Fi и при удалённом доступе к сети компании.</p>
+    </div>
+  </div>
+</section>
+
+<section id="backup">
+  <span class="week">Tema 3 · §3</span>
+  <h2>3. Copias de seguridad: la Regla 3-2-1</h2>
+  <p>Единственная 100%-ная защита от потери данных при атаке <b>Ransomware</b>, поломке диска или пожаре — регулярное резервное копирование (<span class="es">copia de seguridad / backup</span>) по золотому стандарту <b>Regla 3-2-1</b>:</p>
+
+  <div class="eqs">
+    <div class="eq"><b>3</b> copias en total<small>оригинал + минимум 2 резервные копии</small></div>
+    <div class="eq"><b>2</b> soportes diferentes<small>на 2 разных типах носителей (напр., ПК + внешний SSD)</small></div>
+    <div class="eq"><b>1</b> copia fuera (offsite)<small>1 копия в другом месте или в облаке (<span class="es">en la nube</span>)</small></div>
+  </div>
+</section>
+
+<section id="ergonomia">
+  <span class="week">Tema 3 · §4</span>
+  <h2>4. Bienestar digital, ergonomía y la regla 20-20-20</h2>
+  <p>Защита физического и психологического здоровья при работе за компьютером включает правильную посадку (<span class="es">ergonomía física</span>) и гигиену зрения:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Элемент рабочего места</th><th>Правило эргономики</th></tr>
+    <tr><td><b>Монитор (<span class="es">Pantalla</span>)</b></td><td>Верхний край экрана — <b>на уровне глаз или чуть ниже</b>; расстояние от глаз — <b>50–70 см</b> (вытянутая рука); без бликов от окна.</td></tr>
+    <tr><td><b>Спина и ноги (<span class="es">Postura</span>)</b></td><td>Спина прямая с опорой на поясницу (<span class="es">apoyo lumbar</span>), углы в локтях и коленях около <b>90°</b>, стопы полностью стоят на полу или на подставке (<span class="es">reposapiés</span>).</td></tr>
+    <tr><td><b>Запястья (<span class="es">Muñecas</span>)</b></td><td>Прямые, лежат на столе без изгиба вверх, чтобы избежать туннельного синдрома (<span class="es">síndrome del túnel carpiano</span>).</td></tr>
+  </table></div>
+
+  <div class="box ex"><span class="lbl">Правило 20-20-20 против зрительного утомления (Fatiga visual)</span>
+    <p>Каждые <b>20 минут</b> (<span class="es">cada 20 minutos</span>) отводи взгляд от экрана на <b>20 секунд</b> (<span class="es">durante 20 segundos</span>) и смотри на предмет на расстоянии <b>20 футов ≈ 6 метров</b> (<span class="es">a 20 pies / 6 metros</span>), чтобы расслабить глазную мышцу и восстановить частоту моргания.</p>
+  </div>
+
+  <p>Для психологического благополучия (<span class="es">bienestar digital</span>) важно соблюдать <b>право на цифровое отключение (<span class="es">derecho a la desconexión digital</span>)</b> вне рабочего времени, отключать лишние уведомления и избегать синдрома зависимости от смартфона (<span class="es">nomofobia</span> — страх остаться без мобильного телефона).</p>
+</section>
+
+<section id="redes">
+  <span class="week">Tema 3 · §5</span>
+  <h2>5. Redes y conectividad</h2>
+  <div class="tbl"><table>
+    <tr><th>Понятие / Технология</th><th>Характеристика</th></tr>
+    <tr><td><b>PAN / LAN / WAN</b></td><td>Масштаб сети: <b>PAN</b> — персональная (Bluetooth, несколько метров); <b>LAN</b> — локальная сеть офиса/дома (Ethernet, Wi-Fi); <b>WAN</b> — глобальная сеть (Интернет).</td></tr>
+    <tr><td><b>Ethernet (кабель RJ-45) vs. Wi-Fi</b></td><td>Кабель <b>Ethernet</b> обеспечивает максимальную скорость, минимальную задержку (<span class="es">baja latencia</span>) и высокую стабильность/безопасность; <b>Wi-Fi</b> даёт мобильность, но подвержен помехам.</td></tr>
+    <tr><td><b>Wi-Fi шифрование</b></td><td>Избегай устаревших протоколов WEP и открытых сетей; используй защищённые стандарты <b>WPA2</b> или <b>WPA3</b>.</td></tr>
+    <tr><td><b>IoT (Internet de las Cosas)</b></td><td>Умные бытовые и промышленные устройства, подключённые к интернету (камеры, датчики, часы); требуют смены заводских паролей.</td></tr>
+  </table></div>
+</section>
+
+<section id="sostenibilidad">
+  <span class="week">Tema 3 · §6</span>
+  <h2>6. Sostenibilidad ambiental, basura electrónica y las 9R</h2>
+  <p>Цифровые технологии оставляют значительный углеродный и водный след (<span class="es">huella de carbono e hídrica</span>) из-за энергопотребления дата-центров и добычи редкоземельных металлов. Выброшенная техника образует <b>электронные отходы (<span class="es">RAEE — Residuos de Aparatos Eléctricos y Electrónicos / e-waste</span>)</b>, которые необходимо сдавать в специальные пункты переработки (<span class="es">puntos limpios</span>).</p>
+  <p>Проблема усугубляется <b>запланированным устареванием (<span class="es">obsolescencia programada</span>)</b> — искусственным ограничением срока службы устройств производителем.</p>
+
+  <h3>Циркулярная экономика: от 3R к правилу 9R (<span class="es">Regla de las 9R</span>)</h3>
+  <div class="tbl"><table>
+    <tr><th>Группа</th><th>R-принцип (ES)</th><th>Перевод и смысл в цифровом мире</th></tr>
+    <tr><td><b>Умное потребление</b></td><td><b>1. Repensar</b> (Rethink)<br><b>2. Rechazar</b> (Refuse)<br><b>3. Reducir</b> (Reduce)</td><td>Переосмыслить потребности; отказаться от ненужных покупок и гаджетов; сократить потребление энергии и ресурсов (удалять цифрового мусор в облаке, снижать яркость).</td></tr>
+    <tr><td><b>Продление жизни устройства</b></td><td><b>4. Reutilizar</b> (Reuse)<br><b>5. Reparar</b> (Repair)<br><b>6. Restaurar / Reacondicionar</b> (Refurbish)<br><b>7. Remanufacturar</b> (Remanufacture)<br><b>8. Rediseñar / Reconvertir</b> (Repurpose)</td><td>Использовать повторно (передать работающий ноутбук); ремонтировать вместо выбрасывания (добавить ОЗУ/SSD); покупать восстановленную технику (<span class="es">reacondicionado</span>); использовать исправные детали в новых сборках; дать старому планшету новую функцию.</td></tr>
+    <tr><td><b>Возврат материалов</b></td><td><b>9. Reciclar</b> (Recycle)</td><td>Сдать нерабочее устройство в <span class="es">punto limpio</span> для безопасного извлечения металлов и пластика (самый последний шаг, когда ремонт уже невозможен).</td></tr>
+  </table></div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>secuestro de datos (ransomware)</td><td>шифровальщик-вымогатель</td><td>ingeniería social</td><td>социальная инженерия</td></tr>
+    <tr><td>suplantación de identidad</td><td>выдача себя за другого (фишинг)</td><td>doble factor (2FA)</td><td>двухфакторная аутентификация</td></tr>
+    <tr><td>copia de seguridad</td><td>резервная копия (бэкап)</td><td>fatiga visual</td><td>зрительное утомление</td></tr>
+    <tr><td>desconexión digital</td><td>право на цифровое отключение</td><td>nomofobia</td><td>страх остаться без смартфона</td></tr>
+    <tr><td>obsolescencia programada</td><td>запланированное устаревание</td><td>RAEE / basura electrónica</td><td>электронные отходы</td></tr>
+    <tr><td>reacondicionado</td><td>восстановленное устройство</td><td>punto limpio</td><td>пункт приёма спецотходов</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Чем отличаются Phishing, Smishing и Vishing?</summary><div class="a">Каналом атаки: <b>Phishing</b> — через email и фальшивые сайты, <b>Smishing</b> — через SMS-сообщения, <b>Vishing</b> — через голосовые телефонные звонки.</div></details>
+  <details class="q"><summary>Какой вид вредоносного ПО шифрует все файлы на компьютере и требует выкуп за их расшифровку?</summary><div class="a"><b>Ransomware</b> (<span class="es">secuestro de datos</span>). Лучшая защита от него — актуальная резервная копия по правилу 3-2-1.</div></details>
+  <details class="q"><summary>Расшифруй правило резервного копирования 3-2-1.</summary><div class="a">Иметь <b>3</b> копии данных (1 оригинал + 2 копии) на <b>2</b> разных типах носителей, причём <b>1</b> копия должна храниться удалённо (вне офиса/дома или в облаке).</div></details>
+  <details class="q"><summary>Как работает правило 20-20-20 для защиты зрения?</summary><div class="a">Каждые <b>20 минут</b> работы за экраном делать паузу на <b>20 секунд</b>, фокусируя взгляд на объекте на расстоянии <b>20 футов (около 6 метров)</b>.</div></details>
+  <details class="q"><summary>Что такое RAEE и почему на вершине пирамиды 9R стоят Repensar/Reducir/Reutilizar/Reparar, а Reciclar — в самом конце?</summary><div class="a"><b>RAEE</b> — отходы электрического и электронного оборудования. Переработка (<span class="es">Reciclar</span>) стоит на последнем месте, потому что гораздо экологичнее не создавать отходы и продлевать жизнь уже выпущенных устройств через отказ от лишнего, ремонт и восстановление (<span class="es">reacondicionado</span>).</div></details>
+</section>
+</div>
+</body></html>

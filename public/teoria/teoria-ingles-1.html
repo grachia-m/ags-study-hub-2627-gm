@@ -1,0 +1,272 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U1</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 1 · Недели 1–3</div>
+  <h1>Present Tenses, Pronouns, Adjectives & Exam Reading</h1>
+  <p class="lede">Базовый фундамент курса и экзамена: личные и притяжательные местоимения, сравнение Present Simple и Present Continuous, ловушка глаголов состояния (Stative verbs), порядок наречий частотности, построение вопросов, сложные прилагательные (Compound adjectives) и пошаговая стратегия для Части 1 экзамена (Reading Comprehension).</p>
+  <ul class="toc">
+    <li><a href="#pronouns">1. Pronouns & Possessives</a></li>
+    <li><a href="#present">2. Present Simple vs Continuous</a></li>
+    <li><a href="#stative">3. Stative Verbs Trap</a></li>
+    <li><a href="#adverbs">4. Frequency Adverbs & Questions</a></li>
+    <li><a href="#compound">5. Compound Adjectives</a></li>
+    <li><a href="#reading">6. Exam Part 1: Reading Strategy</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="pronouns">
+  <span class="week">Unidad 1 · §1</span>
+  <h2>1. Personal Pronouns & Possessives (Местоимения)</h2>
+  <p>На экзамене часто путают притяжательные прилагательные (<span class="es">Possessive Adjectives</span> — стоят <b>перед существительным</b>) и притяжательные местоимения (<span class="es">Possessive Pronouns</span> — стоят <b>самостоятельно без существительного</b>).</p>
+
+  <div class="tbl"><table>
+    <tr><th>Subject Pronoun<br>(Кто? — перед глаголом)</th><th>Object Pronoun<br>(Кого/Кому? — после глагола/предлога)</th><th>Possessive Adjective<br>(+ Noun: чей предмет?)</th><th>Possessive Pronoun<br>(Без Noun: чьё?)</th></tr>
+    <tr><td><b>I</b> (я)</td><td><b>me</b> (меня, мне)</td><td><b>my</b> book</td><td>It is <b>mine</b></td></tr>
+    <tr><td><b>you</b> (ты, вы)</td><td><b>you</b> (тебя, вам)</td><td><b>your</b> book</td><td>It is <b>yours</b></td></tr>
+    <tr><td><b>he</b> (он)</td><td><b>him</b> (его, ему)</td><td><b>his</b> book</td><td>It is <b>his</b></td></tr>
+    <tr><td><b>she</b> (она)</td><td><b>her</b> (её, ей)</td><td><b>her</b> book</td><td>It is <b>hers</b></td></tr>
+    <tr><td><b>it</b> (оно/предмет)</td><td><b>it</b> (его, её)</td><td><b>its</b> colour</td><td>—</td></tr>
+    <tr><td><b>we</b> (мы)</td><td><b>us</b> (нас, нам)</td><td><b>our</b> book</td><td>It is <b>ours</b></td></tr>
+    <tr><td><b>they</b> (они)</td><td><b>them</b> (их, им)</td><td><b>their</b> book</td><td>It is <b>theirs</b></td></tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Две частые ошибки</span>
+    <ul>
+      <li><b>its vs. it's:</b> <span class="f">its</span> (без апострофа) = притяжательное «его/её» для неодушевлённых (<i>The company changed <b>its</b> policy</i>). <span class="f">it's</span> (с апострофом) = сокращение от <i>it is</i> или <i>it has</i>!</li>
+      <li><b>a friend of mine:</b> нельзя сказать <i>a my friend</i> — правильно <i>a friend of <b>mine</b></i> (один из моих друзей).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="present">
+  <span class="week">Unidad 1 · §2</span>
+  <h2>2. Present Simple vs. Present Continuous</h2>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Present Simple (Обычно / Факты)</span>
+      <p><b>Формула:</b> <span class="f">S + V1 (he/she/it + V-s/es)</span><br>Отрицание/вопрос: <span class="f">do / does + V1 (без -s!)</span></p>
+      <ul>
+        <li>Привычки и рутина (<span class="es">hábitos y rutinas</span>): <i>I work every day.</i></li>
+        <li>Общеизвестные факты и законы природы: <i>Water boils at 100°C.</i></li>
+        <li>Расписания транспорта и кино (<span class="es">horarios oficiales</span>): <i>The train leaves at 6 pm.</i></li>
+      </ul>
+    </div>
+    <div class="box tip"><span class="lbl">Present Continuous (Сейчас / Временно)</span>
+      <p><b>Формула:</b> <span class="f">am / is / are + V-ing</span></p>
+      <ul>
+        <li>Действие прямо в момент речи: <i>She is talking on the phone right now.</i></li>
+        <li>Временная ситуация в текущем периоде: <i>This month we are working from home.</i></li>
+        <li>Личные договорённости на ближайшее будущее (<span class="es">planes fijados</span>): <i>I am meeting the client tomorrow at 10.</i></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tbl"><table>
+    <tr><th>Маркеры Present Simple (Signal words)</th><th>Маркеры Present Continuous (Signal words)</th></tr>
+    <tr><td><b>always, usually, often, sometimes, rarely, seldom, hardly ever, never</b>, <b>every day/week</b>, <b>on Mondays</b>, <b>once/twice a week</b></td><td><b>now, right now, at the moment, currently, today, this week/month/year, Look!, Listen!</b></td></tr>
+  </table></div>
+</section>
+
+<section id="stative">
+  <span class="week">Unidad 1 · §3 · Главная ловушка</span>
+  <h2>3. Stative Verbs (Глаголы состояния)</h2>
+  <p><b>Stative verbs</b> описывают не физическое действие, а <b>состояние, мысли, чувства, владение или восприятие</b>. Главное правило экзамена: <b>даже если в предложении стоит <kbd>now</kbd> или <kbd>at the moment</kbd>, Stative verbs НЕ употребляются в Continuous (с -ing) — их нужно ставить в Present Simple!</b></p>
+
+  <div class="tbl"><table>
+    <tr><th>Группа</th><th>Глаголы (НЕ используются в -ing)</th></tr>
+    <tr><td><b>Мышление и мнение</b></td><td><b>know</b> (знать), <b>believe</b> (верить), <b>understand</b> (понимать), <b>remember</b> (помнить), <b>forget</b>, <b>mean</b>, <b>doubt</b>, <b>prefer</b></td></tr>
+    <tr><td><b>Эмоции и желания</b></td><td><b>like, love, hate, dislike, want</b> (хотеть), <b>need</b> (нуждаться), <b>wish</b></td></tr>
+    <tr><td><b>Владение и бытие</b></td><td><b>belong to</b> (принадлежать), <b>own</b> (владеть), <b>possess</b>, <b>consist of</b>, <b>contain</b>, <b>cost</b>, <b>seem</b> (казаться)</td></tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Глаголы с двойным значением (Stative vs. Dynamic)</span>
+    <ul>
+      <li><b>think:</b> <i>I <b>think</b> you are right</i> (считаю, полагаю — состояние) vs. <i>I <b>am thinking</b> about moving to Madrid</i> (обдумываю прямо сейчас — процесс).</li>
+      <li><b>have:</b> <i>She <b>has</b> a new car</i> (владеет — состояние) vs. <i>She <b>is having</b> lunch / a shower / a good time</i> (устойчивые выражения действия — процесс).</li>
+      <li><b>see:</b> <i>I <b>see</b> what you mean</i> (вижу/понимаю) vs. <i>I <b>am seeing</b> the doctor tomorrow</i> (встречаюсь по записи).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="adverbs">
+  <span class="week">Unidad 1 · §4</span>
+  <h2>4. Frequency Adverbs (Порядок слов) и построение вопросов</h2>
+  <p>Наречия частотности (<span class="es">always, usually, often, sometimes, hardly ever, never</span>) подчиняются жёсткому правилу места в предложении:</p>
+  <div class="eqs">
+    <div class="eq"><b>ПЕРЕД</b> смысловым глаголом<small>She <b>always arrives</b> on time.<br>They don't <b>often go</b> out.</small></div>
+    <div class="eq"><b>ПОСЛЕ</b> глагола <i>to be</i> (am/is/are)<small>He <b>is always</b> late.<br>We <b>are never</b> tired.</small></div>
+  </div>
+  <p>Выражения из нескольких слов (<span class="es">every day, once a week, twice a month</span>) ставятся в самом конце (или в самом начале) предложения.</p>
+
+  <h3>Формула вопроса в английском (QUASM)</h3>
+  <div class="eq"><b>QU</b>estion word + <b>A</b>uxiliary + <b>S</b>ubject + <b>M</b>ain verb (V1 / V-ing)?<small><i>Where <b>does</b> your brother <b>work</b>?</i> / <i>What <b>are</b> you <b>doing</b> now?</i></small></div>
+</section>
+
+<section id="compound">
+  <span class="week">Unidad 1 · §5</span>
+  <h2>5. Compound Adjectives (Сложные прилагательные)</h2>
+  <p>Сложное прилагательное состоит из двух (и более) слов, соединённых дефисом (<span class="es">guion</span>), которые работают как единое определение перед существительным.</p>
+  <div class="box trap"><span class="lbl">Золотое правило: НИКАКОГО -S во множественном числе!</span>
+    <p>В английском прилагательные не имеют множественного числа. Поэтому если выражение с числом стоит <b>перед существительным через дефис</b>, существительное внутри него ставится <b>строго в единственном числе (без -s)</b>:</p>
+    <ul>
+      <li><i>The hotel has five stars</i> → It is a <b>five-star</b> hotel (НЕ <i>five-stars</i>).</li>
+      <li><i>The girl is ten years old</i> → She is a <b>ten-year-old</b> girl (НЕ <i>ten-years-old</i>).</li>
+      <li><i>A walk that takes twenty minutes</i> → A <b>twenty-minute</b> walk.</li>
+    </ul>
+  </div>
+  <p>Другие частые модели экзамена: <b>well-known</b> (известный), <b>badly-written</b> (плохо написанный), <b>full-time / part-time</b> (на полный/неполный день), <b>open-minded</b> (широких взглядов), <b>left-handed</b> (левша), <b>brand-new</b> (совершенно новый), <b>english-speaking</b> (англоговорящий).</p>
+</section>
+
+<section id="reading">
+  <span class="week">Unidad 1 · §6 · Стратегия экзамена</span>
+  <h2>6. Exam Part 1: Reading Comprehension (True/False + Synonyms)</h2>
+  <p>Первая часть письменного экзамена (и Actividades de Envío) всегда основана на тексте (<span class="es">Reading Comprehension</span>) и включает два классических задания, где ученики теряют баллы не из-за незнания английского, а из-за неправильного оформления:</p>
+
+  <h3>Задание А: True or False? Justify your answer quoting from the text</h3>
+  <ol class="steps">
+    <li>Прочитай утверждение и найди соответствующий абзац в тексте. Помни: в утверждении слова всегда заменены синонимами (<span class="es">paráfrasis</span>)!</li>
+    <li>Чтобы ответ был <b>TRUE</b>, должны совпадать <b>все</b> детали (время, количество, модальность). Если в тексте написано <i>«some people»</i>, а в утверждении — <i>«all people»</i> или <i>«nobody»</i>, это <b>FALSE</b>!</li>
+    <li><b>Оформление оправдания (<span class="es">Evidence / Justification</span>):</b> обязательно напиши слово <b>TRUE</b> или <b>FALSE</b> заглавными буквами, а затем приведи <b>дословную цитату из текста в кавычках</b> (можно указать номер строки: <i>Line 4: "..."</i>). <b>Не пересказывай своими словами</b>, если в условии написано <i>«quoting from the text / copy the exact words»</i>!</li>
+  </ol>
+
+  <h3>Задание Б: Find words in the text that mean... (Поиск синонимов)</h3>
+  <div class="box ex"><span class="lbl">Правило совпадения части речи и грамматической формы</span>
+    <p>Искомое слово в тексте всегда имеет <b>ту же самую часть речи и ту же грамматическую форму</b>, что и подсказка в задании:</p>
+    <ul>
+      <li>Если подсказка начинается с <b>to ...</b> (например, <i>to happen</i>) → ищи в тексте <b>глагол</b> (<i>occur / take place</i>).</li>
+      <li>Если подсказка — глагол с окончанием <b>-ing</b> или в прошедшем времени (<i>achieved</i>) → ищи в тексте глагол в <b>той же форме</b>.</li>
+      <li>Если подсказка — существительное во <b>множественном числе</b> (<i>benefits</i>) → выписывай из текста существительное во <b>множественном числе</b> (<i>advantages</i>).</li>
+      <li>Если подсказка заканчивается на <b>-ly</b> (<i>completely</i>) → ищи в тексте <b>наречие</b> (<i>entirely / totally</i>).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>possessive pronoun</td><td>pronombre posesivo</td><td>притяжательное местоимение (mine, yours)</td></tr>
+    <tr><td>stative verbs</td><td>verbos de estado</td><td>глаголы состояния (без -ing)</td></tr>
+    <tr><td>hardly ever / seldom</td><td>casi nunca / rara vez</td><td>почти никогда / редко</td></tr>
+    <tr><td>compound adjective</td><td>adjetivo compuesto</td><td>сложное прилагательное через дефис</td></tr>
+    <tr><td>quote from the text</td><td>citar textualmente</td><td>процитировать дословно из текста</td></tr>
+    <tr><td>synonym / antonym</td><td>sinónimo / antónimo</td><td>синоним / антоним</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Выбери правильную форму: "This laptop isn't (my / mine); (my / mine) is on the desk."</summary><div class="a"><b>mine ... mine</b> (оба стоят самостоятельно без существительного после них: <i>This laptop isn't mine; mine is on the desk</i>).</div></details>
+  <details class="q"><summary>Раскрой скобки: "Right now I (not understand) what the manager (talk) about."</summary><div class="a"><b>don't understand ... is talking</b>. Глагол <i>understand</i> — это Stative verb (состояние), поэтому даже со словом <i>Right now</i> он ставится в Present Simple! А <i>talk</i> — физический процесс, поэтому Present Continuous.</div></details>
+  <details class="q"><summary>Исправь ошибку в порядке слов: "Our boss arrives always early and is late never."</summary><div class="a"><b>Our boss always arrives early and is never late.</b> Наречие частотности ставится <b>перед</b> смысловым глаголом (<i>always arrives</i>), но <b>после</b> глагола <i>to be</i> (<i>is never</i>).</div></details>
+  <details class="q"><summary>Преобразуй в сложное прилагательное с дефисом: "A contract that lasts for two years" → "A _______ contract".</summary><div class="a"><b>A two-year contract</b> (через дефис и строго без окончания <i>-s</i> у слова <i>year</i>!).</div></details>
+  <details class="q"><summary>В задании Reading просят найти в тексте синоним к слову "obstacles" (мн. ч.). В тексте есть слово "difficulty" в форме "difficulties". В какой форме его нужно выписать?</summary><div class="a">В форме <b>difficulties</b> (множественное число), точно так же, как оно стоит в тексте и в подсказке.</div></details>
+</section>
+</div>
+</body></html>

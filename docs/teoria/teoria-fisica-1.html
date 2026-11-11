@@ -106,9 +106,9 @@ html{scroll-behavior:smooth}
 <div class="top"><a href="../">← Трекер</a><span>Física · конспект 1</span></div>
 
 <header class="hero">
-  <div class="eyebrow">Física · Недели 0–4</div>
-  <h1>Инструменты физики и движение по прямой</h1>
-  <p class="lede">Этот конспект читается <b>до</b> апунтов UD1. Он закрывает математическую базу, без которой физика не идёт, и подробно разбирает MRU, MRUA и вертикальное движение. Термины даны по-испански, потому что экзамен на испанском.</p>
+  <div class="eyebrow">Física · UD1 · Недели 0–6</div>
+  <h1>Инструменты физики и кинематика (UD1)</h1>
+  <p class="lede">Этот конспект читается <b>до</b> апунтов UD1 и закрывает всю кинематику курса: математическую базу, MRU, MRUA, вертикальное падение, параболический бросок и движение по окружности (MCU). Термины даны по-испански, потому что экзамен на испанском.</p>
   <ul class="toc">
     <li><a href="#herramientas">1. Единицы и перевод</a></li>
     <li><a href="#cientifica">2. Notación científica</a></li>
@@ -119,10 +119,12 @@ html{scroll-behavior:smooth}
     <li><a href="#mru">7. MRU</a></li>
     <li><a href="#mrua">8. MRUA</a></li>
     <li><a href="#vertical">9. Caída libre</a></li>
-    <li><a href="#metodo">10. Метод решения</a></li>
-    <li><a href="#erratas">11. Опечатки в апунтах</a></li>
-    <li><a href="#glosario">12. Словарик</a></li>
-    <li><a href="#test">13. Проверь себя</a></li>
+    <li><a href="#parabolico">10. Tiro parabólico</a></li>
+    <li><a href="#mcu">11. MCU</a></li>
+    <li><a href="#metodo">12. Метод решения</a></li>
+    <li><a href="#erratas">13. Опечатки в апунтах</a></li>
+    <li><a href="#glosario">14. Словарик</a></li>
+    <li><a href="#test">15. Проверь себя</a></li>
   </ul>
 </header>
 
@@ -407,22 +409,102 @@ html{scroll-behavior:smooth}
       <li>Скорость удара: <span class="f"><i>v</i> = 15 − 9,8·3,19 = −16,25 m/s</span>. Минус означает «вниз», модуль 16,25 m/s.</li>
     </ol>
   </div>
-  <p>Дальше в неделе 5 (тиро горизонтальный и параболический) применяется та же идея, только по двум осям сразу: по x — MRU, по y — это же падение. Конспект к этой теме — следующий блок, попроси его в чате.</p>
+  <p>Дальше в неделе 5–6 (тиро горизонтальный, параболический и движение по окружности) применяется та же идея разложения по осям и радиусу — разбираем их прямо ниже.</p>
+</section>
+
+<section id="parabolico">
+  <span class="week">Неделя 5 · UD1 §4</span>
+  <h2>10. Tiro horizontal y Tiro parabólico (составное движение)</h2>
+  <p>Бросок под углом или горизонтально с высоты — это <b>два независимых движения одновременно</b> (<span class="es">principio de superposición / composición de movimientos</span>): воздух не мешает по горизонтали, поэтому вдоль оси <b>X</b> тело летит равномерно (<b>MRU</b>, <span class="f"><i>a</i><sub>x</sub> = 0</span>), а вдоль оси <b>Y</b> его тянет вниз сила тяжести (<b>MRUA</b>, <span class="f"><i>a</i><sub>y</sub> = −<i>g</i> = −9,8 m/s²</span>). Общее у двух осей одно — <b>время полёта <i>t</i></b>.</p>
+  <div class="eqs">
+    <div class="eq"><b>Ось X (MRU)</b><br><i>v</i><sub>x</sub> = <i>v</i><sub>0</sub>·cos α = const<br><i>x</i> = <i>v</i><sub>0</sub>·cos α · <i>t</i><small>горизонтальная скорость не меняется!</small></div>
+    <div class="eq"><b>Ось Y (MRUA)</b><br><i>v</i><sub>y</sub> = <i>v</i><sub>0</sub>·sen α − 9,8<i>t</i><br><i>y</i> = <i>y</i><sub>0</sub> + <i>v</i><sub>0</sub>·sen α · <i>t</i> − 4,9<i>t</i>²<small>для tiro horizontal α = 0° → v₀x = v₀, v₀y = 0</small></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 520 205" role="img" aria-label="Параболическая траектория: компоненты скорости vx и vy в разных точках">
+      <defs>
+        <marker id="ap1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="acf" d="M0 0 L10 5 L0 10 Z"/></marker>
+        <marker id="ap2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ac2f" d="M0 0 L10 5 L0 10 Z"/></marker>
+      </defs>
+      <path class="ax" d="M30 175 H490 M30 175 V20"/>
+      <path class="ac" stroke-width="2.5" stroke-dasharray="6 4" d="M30 175 Q245 -25 460 175"/>
+      <circle cx="30" cy="175" r="5" class="acf"/>
+      <path class="ac2" stroke-width="2" d="M30 175 H100" marker-end="url(#ap2)"/>
+      <path class="ac2" stroke-width="2" d="M30 175 V105" marker-end="url(#ap2)"/>
+      <path class="ac" stroke-width="2.5" d="M30 175 L98 107" marker-end="url(#ap1)"/>
+      <text x="68" y="168" font-size="13" font-style="italic">α</text>
+      <text x="58" y="128" font-size="13" font-weight="700">v₀</text>
+      <circle cx="245" cy="75" r="5" class="acf"/>
+      <path class="ac2" stroke-width="2.5" d="M245 75 H315" marker-end="url(#ap2)"/>
+      <path class="ax" stroke-dasharray="3 3" d="M245 75 V175"/>
+      <text x="245" y="62" font-size="13" font-weight="700" text-anchor="middle">Вершина: vᵧ = 0, но vₓ ≠ 0!</text>
+      <text x="253" y="130" font-size="12.5" class="mut">y_máx</text>
+      <circle cx="460" cy="175" r="5" class="acf"/>
+      <text x="245" y="196" font-size="13" text-anchor="middle">alcance horizontal x_máx (y = 0)</text>
+    </svg>
+    <figcaption>В верхней точке зануляется только вертикальная скорость vᵧ = 0, а горизонтальная vₓ = v₀·cos α остаётся неизменной до самой земли.</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <tr><th>Что ищем</th><th>Условие и шаги</th></tr>
+    <tr><td><b>Altura máxima (<span class="f"><i>y</i><sub>máx</sub></span>)</b></td><td>Положить <span class="f"><i>v</i><sub>y</sub> = 0 → <i>t</i><sub>subida</sub> = <i>v</i><sub>0y</sub> / 9,8</span> и подставить это время в <span class="f"><i>y</i>(<i>t</i>)</span>.</td></tr>
+    <tr><td><b>Tiempo de vuelo (<span class="f"><i>t</i><sub>vuelo</sub></span>)</b></td><td>При ударе о землю <span class="f"><i>y</i> = 0</span>. Решаем уравнение <span class="f"><i>y</i>(<i>t</i>) = 0</span> (если бросок с земли <span class="f"><i>y</i><sub>0</sub> = 0</span>, то <span class="f"><i>t</i><sub>vuelo</sub> = 2·<i>t</i><sub>subida</sub></span>).</td></tr>
+    <tr><td><b>Alcance horizontal (<span class="f"><i>x</i><sub>máx</sub></span>)</b></td><td>Подставить найденное время полёта в уравнение оси X: <span class="f"><i>x</i><sub>máx</sub> = <i>v</i><sub>0x</sub> · <i>t</i><sub>vuelo</sub></span>.</td></tr>
+    <tr><td><b>Velocidad de impacto</b></td><td>В момент падения: <span class="f"><i>v</i> = √(<i>v</i><sub>x</sub>² + <i>v</i><sub>y</sub>²)</span>. Не забывай, что у удара о землю две компоненты!</td></tr>
+  </table></div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · Tiro parabólico с уступа</span>
+    <p>С обрыва высотой <span class="f"><i>y</i><sub>0</sub> = 30 m</span> бросают камень со скоростью <span class="f"><i>v</i><sub>0</sub> = 20 m/s</span> под углом <span class="f">α = 30°</span> вверх к горизонту. Найти максимальную высоту, время полёта и горизонтальную дальность (<span class="es">alcance</span>).</p>
+    <ol class="steps">
+      <li>Разложим начальную скорость: <span class="f"><i>v</i><sub>0x</sub> = 20·cos 30° = 17,32 m/s</span>; <span class="f"><i>v</i><sub>0y</sub> = 20·sen 30° = 10 m/s</span>.</li>
+      <li>Уравнения движения: <span class="f"><i>x</i>(<i>t</i>) = 17,32<i>t</i></span> и <span class="f"><i>y</i>(<i>t</i>) = 30 + 10<i>t</i> − 4,9<i>t</i>²</span>; скорость <span class="f"><i>v</i><sub>y</sub>(<i>t</i>) = 10 − 9,8<i>t</i></span>.</li>
+      <li><b>Altura máxima</b> (<span class="f"><i>v</i><sub>y</sub> = 0</span>): <span class="f">10 − 9,8<i>t</i> = 0 → <i>t</i> = 1,02 s</span>. Высота: <span class="f"><i>y</i><sub>máx</sub> = 30 + 10·1,02 − 4,9·1,02² = 35,10 m</span>.</li>
+      <li><b>Земля (<span class="f"><i>y</i> = 0</span>) и alcance</b>: <span class="f">4,9<i>t</i>² − 10<i>t</i> − 30 = 0 → <i>t</i> = (10 + √(100 + 588)) / 9,8 = 3,70 s</span>. Дальность: <span class="f"><i>x</i><sub>máx</sub> = 17,32 · 3,70 = 64,08 m</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="mcu">
+  <span class="week">Неделя 6 · UD1 §5</span>
+  <h2>11. Movimiento Circular Uniforme (MCU)</h2>
+  <p>Тело движется по окружности радиуса <span class="f"><i>R</i></span> с постоянной по модулю скоростью. Угол поворота измеряют в радианах (<span class="f">1 оборот = 360° = 2π rad</span>).</p>
+  <div class="eqs">
+    <div class="eq"><i>T</i> = <sup>1</sup>/<sub><i>f</i></sub> &nbsp;&nbsp; <i>f</i> = <sup>1</sup>/<sub><i>T</i></sub><small>Periodo T (s) — время 1 оборота; Frecuencia f (Hz = s⁻¹) — оборотов в секунду</small></div>
+    <div class="eq">ω = <sup>Δφ</sup>/<sub>Δ<i>t</i></sub> = <sup>2π</sup>/<sub><i>T</i></sub> = 2π<i>f</i><small>Velocidad angular ω (rad/s); угол φ = ω·t</small></div>
+    <div class="eq"><i>v</i> = ω · <i>R</i><small>Velocidad lineal v (m/s) — по касательной к окружности</small></div>
+    <div class="eq"><i>a</i><sub>c</sub> = <sup><i>v</i>²</sup>/<sub><i>R</i></sub> = ω² · <i>R</i><small>Aceleración centrípeta / normal (m/s²) — к центру!</small></div>
+  </div>
+  <div class="box tip"><span class="lbl">Перевод rpm → rad/s (самое частое действие в MCU)</span>
+    <p><span class="es">r.p.m. (revoluciones por minuto)</span> — обороты в минуту. В 1 обороте <span class="f">2π</span> радиан, а в 1 минуте 60 секунд:</p>
+    <div class="eq">ω = <i>N</i><sub>rpm</sub> · <sup>2π</sup>/<sub>60</sub> &nbsp;<sup>rad</sup>/<sub>s</sub></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: в MCU ускорение НЕ равно нулю!</span>
+    <p>Хотя модуль скорости <span class="f"><i>v</i></span> постоянен (касательное ускорение <span class="f"><i>a</i><sub>t</sub> = 0</span>), вектор скорости непрерывно <b>меняет направление</b>. За поворот скорости отвечает нормальное (центростремительное) ускорение <span class="f"><i>a</i><sub>c</sub> = <i>v</i>²/<i>R</i></span>, направленное строго к центру окружности.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · колесо (MCU)</span>
+    <p>Колесо радиусом <span class="f"><i>R</i> = 40 cm</span> вращается с частотой <span class="f">300 rpm</span>. Найти угловую скорость <span class="f">ω</span>, период <span class="f"><i>T</i></span>, линейную скорость края колеса <span class="f"><i>v</i></span> и центростремительное ускорение <span class="f"><i>a</i><sub>c</sub></span>.</p>
+    <ol class="steps">
+      <li>Переводим в СИ: <span class="f"><i>R</i> = 0,40 m</span>; <span class="f">ω = 300 · 2π / 60 = 10π ≈ 31,42 rad/s</span>.</li>
+      <li>Частота и период: <span class="f"><i>f</i> = 300 / 60 = 5 Hz</span> → <span class="f"><i>T</i> = 1 / 5 = 0,20 s</span>.</li>
+      <li>Линейная скорость: <span class="f"><i>v</i> = ω · <i>R</i> = 31,42 · 0,40 = 12,57 m/s</span>.</li>
+      <li>Центростремительное ускорение: <span class="f"><i>a</i><sub>c</sub> = <i>v</i>² / <i>R</i> = 12,57² / 0,40 = 394,8 m/s²</span>.</li>
+    </ol>
+  </div>
 </section>
 
 <section id="metodo">
-  <h2>10. Метод решения любой задачи по кинематике</h2>
+  <h2>12. Метод решения любой задачи по кинематике</h2>
   <ol class="steps">
     <li><b>Рисунок</b>: тело, траектория, оси и направление «плюса».</li>
     <li><b>Datos</b>: выписать <i>x</i><sub>0</sub>, <i>v</i><sub>0</sub>, <i>a</i> со знаками и в единицах СИ. Слова вроде «parte del reposo» → нули.</li>
-    <li><b>Tipo de movimiento</b>: MRU (<i>a</i> = 0) или MRUA (<i>a</i> = const). Выписать формулы и подставить данные.</li>
-    <li><b>Условие</b>: что происходит в искомый момент (<i>y</i> = 0, <i>v</i> = 0, <i>x</i><sub>A</sub> = <i>x</i><sub>B</sub>). Обычно сначала находится время, потом всё остальное.</li>
+    <li><b>Tipo de movimiento</b>: MRU (<i>a</i> = 0), MRUA (<i>a</i> = const), парабола (X: MRU, Y: MRUA) или MCU. Выписать формулы и подставить данные.</li>
+    <li><b>Условие</b>: что происходит в искомый момент (<i>y</i> = 0, <i>v</i><sub>y</sub> = 0, <i>x</i><sub>A</sub> = <i>x</i><sub>B</sub>). Обычно сначала находится время, потом всё остальное.</li>
     <li><b>Проверка</b>: единицы, знак, здравый смысл (машина не едет 900 m/s).</li>
   </ol>
 </section>
 
 <section id="erratas">
-  <h2>11. Опечатки в апунтах курса</h2>
+  <h2>13. Опечатки в апунтах курса</h2>
   <div class="box errata"><span class="lbl">UD1 Cinemática</span>
     <ul>
       <li>§4: «se descomponen … en sus componentes horizontales (y) y verticales (x)» — наоборот: горизонтальная ось <b>x</b>, вертикальная <b>y</b>.</li>
@@ -437,11 +519,11 @@ html{scroll-behavior:smooth}
       <li>§3: «sentido positivo del eje Y» — волна идёт вдоль оси <b>X</b>.</li>
     </ul>
   </div>
-  <div class="box trap"><span class="lbl">UD2 Dinámica</span><p>В папке по UD2 лежит только formulario (2 страницы), полной теории нет. Перед неделей 7 я напишу отдельный подробный конспект по динамике.</p></div>
+  <div class="box trap"><span class="lbl">UD2 Dinámica</span><p>В папке по UD2 лежит только formulario (2 страницы), полной теории нет. Перед неделей 7 открой отдельный подробный конспект 2 по статике и динамике.</p></div>
 </section>
 
 <section id="glosario">
-  <h2>12. Словарик ES → RU</h2>
+  <h2>14. Словарик ES → RU</h2>
   <div class="tbl"><table>
     <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
     <tr><td>desplazamiento</td><td>перемещение</td><td>distancia recorrida</td><td>пройденный путь</td></tr>
@@ -449,21 +531,23 @@ html{scroll-behavior:smooth}
     <tr><td>velocidad media</td><td>средняя скорость</td><td>aceleración</td><td>ускорение</td></tr>
     <tr><td>parte del reposo</td><td>начинает из покоя</td><td>frenar / se detiene</td><td>тормозить / останавливается</td></tr>
     <tr><td>caída libre</td><td>свободное падение</td><td>lanzamiento vertical</td><td>бросок вертикально</td></tr>
-    <tr><td>altura máxima</td><td>максимальная высота</td><td>tiempo de vuelo</td><td>время полёта</td></tr>
-    <tr><td>alcance</td><td>дальность</td><td>impacto</td><td>удар, падение на землю</td></tr>
-    <tr><td>despejar</td><td>выразить из формулы</td><td>sustituir</td><td>подставить</td></tr>
-    <tr><td>módulo</td><td>модуль (величина)</td><td>sentido</td><td>направление (куда)</td></tr>
-    <tr><td>cateto / hipotenusa</td><td>катет / гипотенуза</td><td>seno, coseno, tangente</td><td>синус, косинус, тангенс</td></tr>
+    <tr><td>tiro horizontal / parabólico</td><td>горизонтальный / параболический бросок</td><td>altura máxima</td><td>максимальная высота</td></tr>
+    <tr><td>tiempo de vuelo</td><td>время полёта</td><td>alcance horizontal</td><td>горизонтальная дальность</td></tr>
+    <tr><td>periodo (T) / frecuencia (f)</td><td>период / частота</td><td>velocidad angular (ω)</td><td>угловая скорость (рад/с)</td></tr>
+    <tr><td>aceleración centrípeta / normal</td><td>центростремительное ускорение</td><td>despejar / sustituir</td><td>выразить / подставить</td></tr>
+    <tr><td>módulo / sentido</td><td>модуль / направление</td><td>cateto / hipotenusa</td><td>катет / гипотенуза</td></tr>
   </table></div>
 </section>
 
 <section id="test">
-  <h2>13. Проверь себя</h2>
+  <h2>15. Проверь себя</h2>
   <details class="q"><summary>Переведи 54 km/h в m/s и 12 m/s в km/h.</summary><div class="a">54/3,6 = 15 m/s; 12·3,6 = 43,2 km/h.</div></details>
   <details class="q"><summary>Скорость 25 m/s под углом 37° к горизонту (cos 37° ≈ 0,8; sen 37° ≈ 0,6). Компоненты?</summary><div class="a"><i>v</i><sub>x</sub> = 25·0,8 = 20 m/s; <i>v</i><sub>y</sub> = 25·0,6 = 15 m/s.</div></details>
   <details class="q"><summary>Тело прошло 400 m на север, потом 300 m на восток. Путь и модуль перемещения?</summary><div class="a">Путь 700 m. Перемещение — гипотенуза: √(400² + 300²) = 500 m.</div></details>
   <details class="q"><summary>Мотоцикл «parte del reposo» и за 8 s разгоняется до 24 m/s. Ускорение и путь?</summary><div class="a"><i>a</i> = 24/8 = 3 m/s²; <i>x</i> = ½·3·8² = 96 m.</div></details>
   <details class="q"><summary>Камень «se deja caer» с 80 m. Время падения и скорость удара?</summary><div class="a">0 = 80 − 4,9<i>t</i>² → <i>t</i> = √(80/4,9) = 4,04 s; <i>v</i> = −9,8·4,04 = −39,6 m/s (вниз).</div></details>
+  <details class="q"><summary>Со скалы высотой 45 m горизонтально бросают мяч со скоростью 10 m/s. На каком расстоянии от подножия он упадёт?</summary><div class="a">По оси Y: 0 = 45 − 4,9t² → t = √(45/4,9) = 3,03 s. По оси X (MRU): x = 10 · 3,03 = 30,3 m.</div></details>
+  <details class="q"><summary>Диск радиусом 0,5 m вращается со скоростью 120 rpm. Чему равны ω, v и a_c?</summary><div class="a">ω = 120·2π/60 = 4π ≈ 12,57 rad/s; v = ω·R = 2π ≈ 6,28 m/s; a_c = v²/R = 78,96 m/s².</div></details>
   <p class="foot">Задачи из Envío 1 здесь специально не решены: это твоя самостоятельная работа. Решишь — пришли решение в чат, я проверю.</p>
 </section>
 </div>

@@ -1,0 +1,241 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inglés U4</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#4F46E5; --subj-soft:#E0E7FF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#4F46E5;--subj-soft:#E0E7FF}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#818CF8;--subj-soft:#1E1B4B}}:root[data-theme="dark"]{--subj:#818CF8;--subj-soft:#1E1B4B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Inglés · конспект 4</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Inglés · Unidad 4 · Блок 2</div>
+  <h1>Quantifiers, Articles & Clauses of Contrast</h1>
+  <p class="lede">Исчисляемые и неисчисляемые существительные (и главные слова-ловушки экзамена), артикли a/an, the и нулевой артикль (Zero article), квантификаторы some/any/no, much/many, a few/few vs. a little/little, перефразирование уступительных придаточных (Although ↔ Despite / In spite of) и отрицательные приставки.</p>
+  <ul class="toc">
+    <li><a href="#nouns">1. Countable vs Uncountable Traps</a></li>
+    <li><a href="#articles">2. Articles: a/an, the, Ø</a></li>
+    <li><a href="#quantifiers">3. Quantifiers (some/any, much/many, few/little)</a></li>
+    <li><a href="#contrast">4. Clauses of Contrast (Although ↔ Despite)</a></li>
+    <li><a href="#prefixes">5. Negative Prefixes</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="nouns">
+  <span class="week">Unidad 4 · §1 · Ловушка №1</span>
+  <h2>1. Countable vs. Uncountable Nouns (Слова-ловушки)</h2>
+  <p><b>Countable nouns</b> (исчисляемые) можно посчитать поштучно (<i>one chair, two chairs</i>). <b>Uncountable nouns</b> (неисчисляемые) — это жидкости, вещества, абстрактные понятия и собирательные категории: у них <b>НЕТ множественного числа (нельзя добавить -s)</b>, с ними <b>НЕЛЬЗЯ ставить артикль <kbd>a / an</kbd></b>, и глагол после них всегда стоит в <b>единственном числе (<kbd>is / was / has</kbd>)</b>!</p>
+
+  <div class="box trap"><span class="lbl">Слова, которые в русском/испанском исчисляемые, а в английском — ВСЕГДА UNCOUNTABLE!</span>
+    <div class="tbl"><table>
+      <tr><th>Uncountable Noun (Всегда ед. ч.!)</th><th>Перевод</th><th>НЕПРАВИЛЬНО (✗)</th><th>ПРАВИЛЬНО (✓) — как посчитать 1 штуку</th></tr>
+      <tr><td><b>advice</b></td><td>совет / советы (<span class="es">consejos</span>)</td><td><i>an advice / advices</i></td><td><b>some advice</b> / <b>a piece of advice</b></td></tr>
+      <tr><td><b>information</b></td><td>информация</td><td><i>an information / informations</i></td><td><b>some information</b> / <b>a piece of information</b></td></tr>
+      <tr><td><b>news</b> (оканчивается на -s, но ед. ч.!)</td><td>новость / новости (<span class="es">noticias</span>)</td><td><i>The news are good</i></td><td><b>The news IS good</b> / <b>a piece of news</b></td></tr>
+      <tr><td><b>luggage / baggage</b></td><td>багаж (<span class="es">equipaje</span>)</td><td><i>three luggages</i></td><td><b>some luggage</b> / <b>three pieces of luggage</b> (или <i>three suitcases</i>)</td></tr>
+      <tr><td><b>furniture</b></td><td>мебель (<span class="es">muebles</span>)</td><td><i>many furnitures</i></td><td><b>much furniture</b> / <b>a piece of furniture</b></td></tr>
+      <tr><td><b>money</b></td><td>деньги (<span class="es">dinero</span>)</td><td><i>The money are...</i></td><td><b>The money IS on the table</b> (но: <i>coins / banknotes</i> — исчисл.)</td></tr>
+      <tr><td><b>work / homework</b></td><td>работа / домашка</td><td><i>a work / homeworks</i></td><td><b>some work</b> / <b>a job</b> (исчисл. синоним!)</td></tr>
+      <tr><td><b>traffic / weather / knowledge / research / equipment</b></td><td>трафик / погода / знания / исследование / оборудование</td><td><i>a good weather / equipments</i></td><td><b>good weather</b> / <b>some equipment</b></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section id="articles">
+  <span class="week">Unidad 4 · §2</span>
+  <h2>2. Articles: A / An, The & Zero Article (Ø)</h2>
+  <div class="tbl"><table>
+    <tr><th>Артикль</th><th>Когда используется</th><th>Примеры</th></tr>
+    <tr><td><b>A / An</b> (неопределённый)</td><td>Только с <b>исчисляемыми в ед. числе</b>: при первом упоминании («один из многих») и с <b>профессиями</b>. <i>An</i> ставится перед гласным <b>звуком</b> (<i>an hour, an umbrella</i>, но <i><b>a</b> university, <b>a</b> European country</i> — звук [ju:]).</td><td><i>She is <b>an</b> accountant at <b>a</b> multinational bank.</i></td></tr>
+    <tr><td><b>The</b> (определённый)</td><td>Конкретный предмет; повторное упоминание; уникальные объекты (<i>the sun, the internet, the environment</i>); превосходная степень (<i>the best</i>); реки/моря/океаны/горные цепи (<i>the Thames, the Alps</i>); страны во мн. ч. или с Republic/Kingdom/States (<i>the UK, the USA, the Netherlands</i>); музыкальные инструменты (<i>play the piano</i>).</td><td><i>Can you close <b>the</b> door, please?</i></td></tr>
+    <tr><td><b>Ø (Zero Article — без артикля)</b></td><td><b>Обобщения (<span class="es">generalizaciones</span>)</b> с неисчисляемыми или мн. числом! А также: виды спорта (<i>play football</i>), приёмы пищи (<i>have breakfast</i>), языки и учебные предметы, отдельные страны/города/улицы, выражения <i>go to work / go to bed / go home / by car</i>.</td><td><i><b>Ø Life</b> is short. <b>Ø Computers</b> are essential today.</i> (В общем, а не конкретные!)</td></tr>
+  </table></div>
+</section>
+
+<section id="quantifiers">
+  <span class="week">Unidad 4 · §3</span>
+  <h2>3. Quantifiers: Some/Any/No, Much/Many, Few/Little</h2>
+  <h3>1. Some vs. Any vs. No</h3>
+  <ul>
+    <li><b>Some</b> — в утверждениях (+), а также в <b>вежливых просьбах и предложениях</b> (<i>Would you like <b>some</b> coffee? Can I have <b>some</b> water?</i>).</li>
+    <li><b>Any</b> — в отрицаниях (−) и обычных вопросах (?) (<i>I don't have <b>any</b> time. Do you have <b>any</b> questions?</i>). В утверждении означает «любой» (<i>Take <b>any</b> book you like</i>).</li>
+    <li><b>No / None</b> — ставится с <b>утвердительным глаголом</b>, так как само слово уже содержит отрицание (двойного отрицания в английском нет!): <i>I <b>have no</b> time = I <b>don't have any</b> time.</i></li>
+  </ul>
+
+  <h3>2. Сводная таблица квантификаторов</h3>
+  <div class="tbl"><table>
+    <tr><th>Значение</th><th>С ИСЧИСЛЯЕМЫМИ во мн. ч. (Countable Plural: <i>books, people</i>)</th><th>С НЕИСЧИСЛЯЕМЫМИ в ед. ч. (Uncountable: <i>time, money, advice</i>)</th></tr>
+    <tr><td><b>Много</b> (особенно в − и ?)</td><td><b>many</b> (<i>How many clients?</i>)</td><td><b>much</b> (<i>How much money?</i>)</td></tr>
+    <tr><td><b>Много</b> (универсально в +)</td><td colspan="2"><b>a lot of / lots of / plenty of</b> (подходит и туда, и туда!)</td></tr>
+    <tr><td><b>Слишком много</b> (избыток)</td><td><b>too many</b> (<i>too many cars</i>)</td><td><b>too much</b> (<i>too much noise</i>)</td></tr>
+    <tr><td><b>Несколько / Немного (Позитивно: достаточно, есть!)</b></td><td><b>a few</b> (несколько штук — хватит)<br><i>I have <b>a few</b> friends here.</i></td><td><b>a little</b> (немного — хватит)<br><i>We still have <b>a little</b> time.</i></td></tr>
+    <tr><td><b>Мало / Почти нет (Негативно: недостаточно!)</b></td><td><b>few / very few</b> (почти никого)<br><i><b>Few</b> people understood the law.</i></td><td><b>little / very little</b> (почти ничего)<br><i>There is <b>little</b> hope left.</i></td></tr>
+  </table></div>
+</section>
+
+<section id="contrast">
+  <span class="week">Unidad 4 · §4 · Exam Rephrasing №1</span>
+  <h2>4. Clauses of Contrast: Although / Even though ↔ Despite / In spite of</h2>
+  <p>Перефразирование уступительных предложений («хотя / несмотря на») — гарантированное задание на экзамене. Всё решает то, <b>что идёт сразу после союза</b>:</p>
+
+  <div class="pair">
+    <div class="box ex"><span class="lbl">1. ALTHOUGH / EVEN THOUGH / THOUGH</span>
+      <p>После них <b>ВСЕГДА идёт полноценная основа: Подлежащее + Сказуемое (<span class="f">Subject + Verb</span>)</b>!</p>
+      <p><span class="f"><b>Although / Even though</b> + S + V</span></p>
+      <p><i><b>Although it was raining</b>, we went out.</i><br>
+      <i><b>Although she was tired</b>, she finished the report.</i></p>
+    </div>
+    <div class="box trap"><span class="lbl">2. DESPITE / IN SPITE OF</span>
+      <p>После них <b>НЕЛЬЗЯ ставить S + V напрямую</b>! После них идёт только:</p>
+      <ol>
+        <li><b>Существительное (<span class="f">Noun</span>):</b> <i><b>Despite the rain</b>, we went out.</i></li>
+        <li><b>Герундий (<span class="f">V-ing</span>):</b> <i><b>In spite of being</b> tired, she finished it.</i></li>
+        <li>Костыль <b>the fact that + S + V</b>: <i><b>Despite the fact that</b> it was raining...</i></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="box tip"><span class="lbl">Шпаргалка: 3 ошибки, которые делают 80% студентов</span>
+    <ul>
+      <li>Никогда не пиши <kbd>Despite of</kbd>! Предлог <kbd>of</kbd> есть только у <kbd>In spite <b>of</b></kbd>, а <kbd>Despite</kbd> употребляется <b>БЕЗ of</b>!</li>
+      <li>Как превратить <i>Although + S + be + Adj</i> в <i>Despite</i>? Замени глагол на <b>being</b> или прилагательное на существительное: <i>Although he is rich</i> → <i><b>Despite being</b> rich</i> (или <i><b>Despite his wealth</b></i>).</li>
+      <li><b>However / Nevertheless</b> («Однако / Тем не менее») стоят в начале нового предложения и обязательно отделяются <b>запятой</b>: <i>It was raining. <b>However,</b> we went out.</i></li>
+    </ul>
+  </div>
+</section>
+
+<section id="prefixes">
+  <span class="week">Unidad 4 · §5</span>
+  <h2>5. Negative Prefixes (Отрицательные приставки)</h2>
+  <div class="tbl"><table>
+    <tr><th>Приставка</th><th>Правило-подсказка</th><th>Примеры для экзамена</th></tr>
+    <tr><td><b>un-</b></td><td>Самая частая универсальная приставка</td><td><b>un</b>happy, <b>un</b>fair, <b>un</b>comfortable, <b>un</b>employed, <b>un</b>usual</td></tr>
+    <tr><td><b>in-</b></td><td>Часто в словах латинского происхождения</td><td><b>in</b>correct, <b>in</b>visible, <b>in</b>dependent, <b>in</b>accurate, <b>in</b>efficient</td></tr>
+    <tr><td><b>im-</b></td><td>Ставится перед буквами <b>M</b> и <b>P</b></td><td><b>im</b>possible, <b>im</b>polite, <b>im</b>patient, <b>im</b>mature, <b>im</b>moral</td></tr>
+    <tr><td><b>il-</b></td><td>Ставится перед буквой <b>L</b></td><td><b>il</b>legal, <b>il</b>logical, <b>il</b>literate (неграмотный)</td></tr>
+    <tr><td><b>ir-</b></td><td>Ставится перед буквой <b>R</b></td><td><b>ir</b>regular, <b>ir</b>responsible, <b>ir</b>relevant, <b>ir</b>replaceable</td></tr>
+    <tr><td><b>dis-</b></td><td>Часто с глаголами, существительными и прил.</td><td><b>dis</b>agree, <b>dis</b>appear, <b>dis</b>honest, <b>dis</b>advantage, <b>dis</b>satisfied</td></tr>
+  </table></div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик EN → ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>English</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>a piece of advice</td><td>un consejo</td><td>один совет (advice — неисчисл.!)</td></tr>
+    <tr><td>luggage / furniture</td><td>equipaje / muebles</td><td>багаж / мебель (неисчисл.!)</td></tr>
+    <tr><td>a few / a little</td><td>unos pocos / un poco (suficiente)</td><td>несколько / немного (достаточно)</td></tr>
+    <tr><td>although / even though</td><td>aunque (+ sujeto y verbo)</td><td>хотя (+ подлежащее и глагол)</td></tr>
+    <tr><td>despite / in spite of</td><td>a pesar de (+ sustantivo / -ing)</td><td>несмотря на (+ сущ. / герундий)</td></tr>
+    <tr><td>however / nevertheless</td><td>sin embargo / no obstante</td><td>однако / тем не менее</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Исправь 3 ошибки в предложении: "My boss gave me an important advice and many informations about the news, which are very good."</summary><div class="a"><b>My boss gave me some important advice (или a piece of important advice) and a lot of / much information about the news, which IS very good.</b> Слова <i>advice, information, news</i> — неисчисляемые (без <i>an</i>, без <i>-s</i>, глагол <i>is</i> в ед. ч.).</div></details>
+  <details class="q"><summary>Выбери правильный вариант: "We have (little / a little / few) time left, so hurry up! Almost nobody is ready — only (a few / little) employees have finished."</summary><div class="a"><b>little ... a few</b>. С неисчисляемым <i>time</i> в негативном смысле («почти не осталось времени, поторопись!») нужно <b>little</b> (без артикля). С исчисляемым во мн. ч. <i>employees</i> («несколько сотрудников») нужно <b>a few</b>.</div></details>
+  <details class="q"><summary>Rephrasing: "Although the traffic was heavy, we arrived on time." → 1) "Despite _________________." 2) "In spite of the fact _________________."</summary><div class="a">1) <b>Despite the heavy traffic, we arrived on time</b> (или <i>Despite the traffic being heavy...</i>).<br>2) <b>In spite of the fact that the traffic was heavy, we arrived on time.</b></div></details>
+  <details class="q"><summary>Образуй отрицательные прилагательные с помощью приставок: 1) legal, 2) polite, 3) responsible, 4) honest.</summary><div class="a">1) <b>illegal</b> (перед <i>l</i> → <i>il-</i>), 2) <b>impolite</b> (перед <i>p</i> → <i>im-</i>), 3) <b>irresponsible</b> (перед <i>r</i> → <i>ir-</i>), 4) <b>dishonest</b> (<i>dis-</i>).</div></details>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,265 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Competencia Digital T2</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#059669; --subj-soft:#D1FAE5;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#059669;--subj-soft:#D1FAE5}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#34D399;--subj-soft:#064E3B}}:root[data-theme="dark"]{--subj:#34D399;--subj-soft:#064E3B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Competencia Digital · конспект 2</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Competencia Digital · Tema 2 · Блок 2</div>
+  <h1>Creación de contenidos digitales y comunicación</h1>
+  <p class="lede">Все ключевые понятия Темы 2 для тестов и практики: синхронная и асинхронная коммуникация, правила сетевого этикета (Netiqueta), цифровая идентичность и активный/пассивный цифровой след, облачная совместная работа, форматы файлов (растр vs вектор, аудио, видео, документы) и этичное цитирование.</p>
+  <ul class="toc">
+    <li><a href="#comunicacion">1. Síncrona vs Asíncrona</a></li>
+    <li><a href="#netiqueta">2. Netiqueta y correo</a></li>
+    <li><a href="#identidad">3. Identidad y Huella digital</a></li>
+    <li><a href="#colaborativo">4. Trabajo colaborativo</a></li>
+    <li><a href="#formatos">5. Formatos de archivos</a></li>
+    <li><a href="#edicion">6. Edición y citación ética</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="comunicacion">
+  <span class="week">Tema 2 · §1</span>
+  <h2>1. Comunicación digital: Síncrona vs. Asíncrona</h2>
+  <p>Цифровая коммуникация делится на два типа в зависимости от того, совпадают ли участники во времени (<span class="es">coincidencia temporal</span>):</p>
+
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Comunicación Síncrona</span>
+      <p>Происходит <b>в реальном времени</b> (<span class="es">en tiempo real</span>): отправитель и получатель находятся онлайн одновременно и получают мгновенный отклик.</p>
+      <ul>
+        <li><b>Примеры:</b> видеозвонки (<span class="es">videoconferencias</span>: Zoom, Teams, Meet), телефонный звонок, живой чат техподдержки.</li>
+        <li><b>Плюсы:</b> быстрое решение срочных вопросов, живая дискуссия.</li>
+      </ul>
+    </div>
+    <div class="box tip"><span class="lbl">Comunicación Asíncrona</span>
+      <p>Происходит <b>с задержкой во времени</b> (<span class="es">en tiempo diferido</span>): участникам не нужно быть на связи одновременно, каждый отвечает, когда ему удобно.</p>
+      <ul>
+        <li><b>Примеры:</b> электронная почта (<span class="es">correo electrónico</span>), учебные форумы (<span class="es">foros del aula virtual</span>), комментарии к документам, записанные видеолекции.</li>
+        <li><b>Плюсы:</b> время на обдумывание ответа, документальная фиксация, гибкий график.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box trap"><span class="lbl">Ловушка экзамена: мессенджеры</span>
+    <p>Мессенджеры вроде WhatsApp или Telegram технически позволяют оба режима, но в тестах классическим примером <b>асинхронной</b> коммуникации всегда являются <b>электронная почта (email) и форумы</b>, а классическим примером <b>синхронной</b> — <b>видеоконференция (videollamada)</b>.</p>
+  </div>
+</section>
+
+<section id="netiqueta">
+  <span class="week">Tema 2 · §2</span>
+  <h2>2. Reglas de Netiqueta y uso profesional del correo</h2>
+  <p><span class="es">Netiqueta</span> (от <i>net</i> + <i>etiqueta</i>) — свод правил хорошего тона, уважения и грамотного общения в цифровой среде.</p>
+
+  <h3>Золотые правила Netiqueta</h3>
+  <ul>
+    <li><b>НЕ ПИШИ КАПСОМ (<span class="es">No escribir en MAYÚSCULAS</span>):</b> в сети текст заглавными буквами воспринимается как <b>крик</b> (<span class="es">equivale a gritar</span>) и агрессия.</li>
+    <li><b>Понятная тема письма (<span class="es">Asunto claro y descriptivo</span>):</b> никогда не оставляй поле <kbd>Asunto</kbd> пустым.</li>
+    <li><b>Уважай чужое время и приватность:</b> проверяй орфографию, будь лаконичен, не пересылай цепочки спама и спрашивай разрешение перед публикацией чужих фото.</li>
+  </ul>
+
+  <h3>Поля электронной почты: Para, CC y CCO</h3>
+  <div class="tbl"><table>
+    <tr><th>Поле (ES / EN)</th><th>Расшифровка</th><th>Кто видит адреса и когда использовать</th></tr>
+    <tr><td><b>Para</b> (<kbd>To</kbd>)</td><td><span class="es">Destinatario principal</span></td><td>Прямой адресат, от которого ждут ответа или действия.</td></tr>
+    <tr><td><b>CC</b> (<kbd>CC</kbd>)</td><td><span class="es">Con Copia</span> (Копия)</td><td>Люди, которых нужно держать в курсе. <b>Все получатели видят адреса друг друга.</b></td></tr>
+    <tr><td><b>CCO</b> (<kbd>BCC</kbd>)</td><td><span class="es">Con Copia Oculta</span> (Скрытая копия)</td><td>Адреса в этом поле <b>скрыты от остальных получателей</b>. Обязательно используется при массовой рассылке разным людям для защиты персональных данных (<span class="es">RGPD / privacidad</span>).</td></tr>
+  </table></div>
+</section>
+
+<section id="identidad">
+  <span class="week">Tema 2 · §3</span>
+  <h2>3. Identidad digital y Huella digital (Activa vs. Pasiva)</h2>
+  <p><span class="es">Identidad digital</span> — это образ человека или компании в интернете (профили, публикации, комментарии, профессиональная репутация в LinkedIn).</p>
+  <p><span class="es">Huella digital (rastro digital)</span> — это совокупность всех следов и данных, которые остаются в сети после нашей активности. Она делится на два вида:</p>
+
+  <div class="pair">
+    <div class="box ex"><span class="lbl">Huella digital ACTIVA</span>
+      <p>Данные, которые пользователь <b>публикует или отправляет осознанно и добровольно</b> (<span class="es">de forma consciente y voluntaria</span>).</p>
+      <p><b>Примеры:</b> посты и фото в соцсетях, комментарии на форумах, заполненные анкеты, отправленные резюме, отзывы на Google Maps.</p>
+    </div>
+    <div class="box trap"><span class="lbl">Huella digital PASIVA</span>
+      <p>Данные, которые собираются <b>автоматически и незаметно</b> без прямого намерения пользователя (<span class="es">sin acción consciente directa</span>).</p>
+      <p><b>Примеры:</b> файлы <span class="es">cookies</span> браузера, IP-адрес, история посещений и кликов, фоновая геолокация смартфона, время, проведённое на странице.</p>
+    </div>
+  </div>
+</section>
+
+<section id="colaborativo">
+  <span class="week">Tema 2 · §4</span>
+  <h2>4. Herramientas de trabajo colaborativo en la nube</h2>
+  <p>Облачные офисные пакеты (<b>Google Workspace, Microsoft 365</b>), доски (<b>Trello, Notion, Miro</b>) и корпоративные платформы (<b>Slack, Microsoft Teams</b>) позволяют команде работать над одним проектом одновременно (<span class="es">coedición en tiempo real</span>).</p>
+
+  <h3>Три уровня прав доступа (Permisos de compartición)</h3>
+  <ol class="steps">
+    <li><span class="es">Lector / Solo lectura (Viewer)</span>: может только просматривать и скачивать документ, но не менять его.</li>
+    <li><span class="es">Comentador (Commenter)</span>: может оставлять комментарии и предложения (<span class="es">sugerencias</span>), но не может напрямую перезаписать исходный текст.</li>
+    <li><span class="es">Editor</span>: имеет полный доступ к редактированию текста, удалению и добавлению разделов.</li>
+  </ol>
+  <p>Главное преимущество облачной совместной работы — <b>история версий (<span class="es">historial de versiones</span>)</b>: всегда видно, кто и когда внёс правку, и можно в один клик откатить документ к любому предыдущему состоянию.</p>
+</section>
+
+<section id="formatos">
+  <span class="week">Tema 2 · §5</span>
+  <h2>5. Formatos de archivos digitales</h2>
+  <p>Выбор правильного расширения файла (<span class="es">extensión de archivo</span>) определяет качество, вес и возможность дальнейшего редактирования.</p>
+
+  <h3>Изображения: Mapa de bits (Растр) vs. Vectorial (Вектор)</h3>
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Mapa de bits (Raster)</span>
+      <p>Состоит из сетки пикселей (<span class="es">píxeles</span>). При сильном увеличении теряет чёткость и «пикселизируется» (<span class="es">se pixela</span>). Используется для фотографий.</p>
+      <p>Форматы: <kbd>.jpg</kbd>, <kbd>.png</kbd>, <kbd>.gif</kbd>, <kbd>.webp</kbd>.</p>
+    </div>
+    <div class="box tip"><span class="lbl">Gráfico Vectorial</span>
+      <p>Строится по математическим формулам (линии, кривые). Масштабируется до любого размера <b>без потери качества</b> (<span class="es">sin pérdida de calidad</span>). Идеально для логотипов и иконок.</p>
+      <p>Форматы: <kbd>.svg</kbd>, <kbd>.ai</kbd>, <kbd>.eps</kbd>.</p>
+    </div>
+  </div>
+
+  <div class="tbl"><table>
+    <tr><th>Категория</th><th>Формат</th><th>Ключевые особенности (что спрашивают на экзамене)</th></tr>
+    <tr><td><b>Imagen</b></td><td><kbd>.jpg / .jpeg</kbd></td><td>Сжатие с потерями (<span class="es">con pérdida</span>), малый вес, <b>не поддерживает прозрачный фон</b>.</td></tr>
+    <tr><td><b>Imagen</b></td><td><kbd>.png</kbd></td><td>Сжатие без потерь (<span class="es">sin pérdida</span>), <b>поддерживает прозрачный фон</b> (<span class="es">canal alfa / transparencia</span>).</td></tr>
+    <tr><td><b>Imagen</b></td><td><kbd>.svg</kbd></td><td>Векторный формат для веба, не теряет чёткость при масштабировании.</td></tr>
+    <tr><td><b>Audio</b></td><td><kbd>.mp3</kbd> / <kbd>.aac</kbd></td><td>Сжатый звук с потерями (малый размер для стриминга и плееров).</td></tr>
+    <tr><td><b>Audio</b></td><td><kbd>.wav</kbd> / <kbd>.flac</kbd></td><td>Аудио высокого качества без потерь (<kbd>.wav</kbd> — несжатый, тяжёлый; <kbd>.flac</kbd> — сжатый без потерь).</td></tr>
+    <tr><td><b>Vídeo</b></td><td><kbd>.mp4</kbd></td><td>Универсальный стандарт видео для интернета и всех устройств (отличный баланс веса и качества).</td></tr>
+    <tr><td><b>Documento</b></td><td><kbd>.docx</kbd> / <kbd>.odt</kbd></td><td>Редактируемые текстовые документы (Microsoft Word и открытый стандарт LibreOffice Writer).</td></tr>
+    <tr><td><b>Documento</b></td><td><kbd>.pdf</kbd></td><td>Фиксированный макет (<span class="es">diseño fijo</span>): выглядит одинаково на любом устройстве и ОС, идеален для сдачи работ и печати.</td></tr>
+    <tr><td><b>Datos</b></td><td><kbd>.xlsx</kbd> / <kbd>.csv</kbd></td><td>Электронная таблица Excel (<kbd>.xlsx</kbd>) и текстовая таблица значений, разделённых запятыми/точкой с запятой (<kbd>.csv</kbd>).</td></tr>
+  </table></div>
+</section>
+
+<section id="edicion">
+  <span class="week">Tema 2 · §6</span>
+  <h2>6. Edición de contenidos, accesibilidad y citación ética</h2>
+  <ul>
+    <li><b>Доступность (<span class="es">Accesibilidad digital</span>):</b> при создании документов и презентаций используй достаточный цветовой контраст, читаемые шрифты без засечек (<span class="es">sans-serif</span>), логическую иерархию заголовков и <b>альтернативный текст (<span class="es">texto alternativo / atributo alt</span>)</b> для изображений, чтобы программы чтения с экрана (<span class="es">lectores de pantalla</span>) могли описать картинку незрячим пользователям.</li>
+    <li><b>Академическая честность и цитирование (<span class="es">Citación y prevención del plagio</span>):</b> выдача чужого текста или идеи за свои без указания автора называется <b>плагиатом (<span class="es">plagio</span>)</b>. При использовании чужих данных используй кавычки или пересказ (<span class="es">paráfrasis</span>) и оформляй библиографию по стандарту <b>APA</b>: <i>Фамилия, И. (Год). Название работы. Издательство / URL</i>.</li>
+  </ul>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>comunicación síncrona</td><td>синхронное общение (в реальном времени)</td><td>comunicación asíncrona</td><td>асинхронное общение (с задержкой)</td></tr>
+    <tr><td>netiqueta</td><td>сетевой этикет</td><td>copia oculta (CCO / BCC)</td><td>скрытая копия в письме</td></tr>
+    <tr><td>huella digital activa</td><td>активный цифровой след</td><td>huella digital pasiva</td><td>пассивный цифровой след</td></tr>
+    <tr><td>historial de versiones</td><td>история версий документа</td><td>mapa de bits / vectorial</td><td>растровая / векторная графика</td></tr>
+    <tr><td>compresión con/sin pérdida</td><td>сжатие с потерями / без потерь</td><td>fondo transparente</td><td>прозрачный фон</td></tr>
+    <tr><td>texto alternativo (alt)</td><td>альтернативный текст картинки</td><td>plagio / citación</td><td>плагиат / цитирование</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Преподаватель отправляет письмо сразу 40 студентам курса и не хочет, чтобы они видели личные email-адреса друг друга. В какое поле нужно вписать адреса?</summary><div class="a">В поле <b>CCO (Con Copia Oculta)</b>. Поля Para и CC раскрывают список всех адресов каждому получателю, что нарушает конфиденциальность.</div></details>
+  <details class="q"><summary>К какому типу цифрового следа (activa или pasiva) относятся файлы cookies и история IP-адресов?</summary><div class="a">К <b>Huella digital pasiva</b> (пассивный след), так как эти данные собираются автоматически при просмотре сайтов без активной публикации со стороны пользователя.</div></details>
+  <details class="q"><summary>Тебе нужно вставить логотип компании с прозрачным фоном в презентацию, а также напечатать его на огромном баннере 5×3 метра без потери чёткости. Какие форматы выбрать?</summary><div class="a">Для прозрачного фона в презентации отлично подходит растровый <b>.png</b> или векторный <b>.svg</b>. Для печати на огромном баннере без пикселизации необходим <b>векторный формат (.svg, .ai, .eps)</b>.</div></details>
+  <details class="q"><summary>В чём главное отличие синхронной коммуникации от асинхронной?</summary><div class="a">В <b>совпадении по времени</b>: при синхронной (<span class="es">síncrona</span>, например видеозвонок) собеседники общаются одновременно в реальном времени, а при асинхронной (<span class="es">asíncrona</span>, например email или форум) — с задержкой по времени.</div></details>
+</section>
+</div>
+</body></html>

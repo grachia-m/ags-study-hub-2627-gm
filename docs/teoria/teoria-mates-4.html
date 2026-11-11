@@ -1,0 +1,272 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Matemáticas U4</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#2447D6; --subj-soft:#E7ECFF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#C2410C;--subj-soft:#FFEDE3}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#FF9B6A;--subj-soft:#3A2012}}:root[data-theme="dark"]{--subj:#FF9B6A;--subj-soft:#3A2012}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Matemáticas · конспект 4</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Matemáticas · U4 · Недели 14–18</div>
+  <h1>Áreas, Volúmenes y Geometría Aplicada</h1>
+  <p class="lede">Площади и периметры всех плоских фигур, расчёт апофемы правильного многоугольника, поверхности и объёмы пространственных тел (призмы, цилиндры, пирамиды, конусы, сфера), теорема Эйлера и прикладные задачи с плотностью и литрами.</p>
+  <ul class="toc">
+    <li><a href="#planas">1. Figuras planas: периметры и площади</a></li>
+    <li><a href="#circulo">2. Круг, сектор и кольцо</a></li>
+    <li><a href="#euler">3. Многогранники и теорема Эйлера</a></li>
+    <li><a href="#cuerpos">4. Объёмы и площади тел</a></li>
+    <li><a href="#aplicados">5. Плотность, масса и литры</a></li>
+    <li><a href="#glosario">6. Словарик</a></li>
+    <li><a href="#test">7. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="planas">
+  <span class="week">Неделя 14–15 · U4 §1</span>
+  <h2>1. Perímetros y áreas de figuras planas</h2>
+  <p><span class="es">Perímetro (P)</span> — это сумма длин всех внешних сторон фигуры (измеряется в <span class="f">m, cm</span>). <span class="es">Área (A)</span> — площадь внутренней поверхности (<span class="f">m², cm²</span>).</p>
+  <div class="tbl"><table>
+    <tr><th>Figura</th><th>Área (площадь)</th><th>Примечание / где прячется Пифагор</th></tr>
+    <tr><td><span class="es">Rectángulo / Cuadrado</span></td><td><span class="f"><i>A</i> = <i>b</i> · <i>h</i></span> &nbsp;/&nbsp; <span class="f"><i>A</i> = <i>l</i>²</span></td><td>Диагональ: <span class="f"><i>d</i>² = <i>b</i>² + <i>h</i>²</span></td></tr>
+    <tr><td><span class="es">Paralelogramo (romboide)</span></td><td><span class="f"><i>A</i> = <i>b</i> · <i>h</i></span></td><td><span class="f"><i>h</i></span> — перпендикулярная высота, а не боковая сторона!</td></tr>
+    <tr><td><span class="es">Triángulo</span></td><td><span class="f"><i>A</i> = <sup><i>b</i> · <i>h</i></sup>/<sub>2</sub></span></td><td>В равнобедренном: <span class="f"><i>h</i> = √(<i>l</i>² − (<i>b</i>/2)²)</span></td></tr>
+    <tr><td><span class="es">Rombo</span></td><td><span class="f"><i>A</i> = <sup><i>D</i> · <i>d</i></sup>/<sub>2</sub></span></td><td>Сторона ромба из половин диагоналей: <span class="f"><i>l</i> = √((<i>D</i>/2)² + (<i>d</i>/2)²)</span></td></tr>
+    <tr><td><span class="es">Trapecio</span></td><td><span class="f"><i>A</i> = <sup>(<i>B</i> + <i>b</i>) · <i>h</i></sup>/<sub>2</sub></span></td><td>Катет сбоку у равнобокой трапеции: <span class="f"><i>x</i> = (<i>B</i> − <i>b</i>)/2</span></td></tr>
+    <tr><td><span class="es">Polígono regular</span></td><td><span class="f"><i>A</i> = <sup><i>P</i> · <i>ap</i></sup>/<sub>2</sub></span></td><td><span class="f"><i>P</i> = <i>n</i> · <i>l</i></span> — периметр, <span class="f"><i>ap</i></span> — апофема</td></tr>
+  </table></div>
+
+  <h3>Апофема правильного многоугольника (apotema)</h3>
+  <p><span class="es">Apotema (ap)</span> — перпендикуляр от центра правильного многоугольника к середине стороны. Она образует прямоугольный треугольник с половиной стороны <span class="f"><i>l</i>/2</span> и радиусом описанной окружности <span class="f"><i>R</i></span>: <span class="f"><i>ap</i> = √(<i>R</i>² − (<i>l</i>/2)²)</span>.</p>
+  <div class="box tip"><span class="lbl">Особое свойство правильного шестиугольника (hexágono regular)</span>
+    <p>Только у правильного шестиугольника радиус равен стороне: <span class="f"><i>R</i> = <i>l</i></span> (он состоит из 6 равносторонних треугольников). Поэтому его апофема находится по одной только стороне: <span class="f"><i>ap</i> = √(<i>l</i>² − (<i>l</i>/2)²)</span>.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · площадь правильного шестиугольника</span>
+    <p>Найти площадь правильного шестиугольника со стороной <span class="f"><i>l</i> = 10 cm</span>.</p>
+    <ol class="steps">
+      <li>Периметр: <span class="f"><i>P</i> = 6 · 10 = 60 cm</span>.</li>
+      <li>Апофема по Пифагору (<span class="f"><i>R</i> = 10 cm, <i>l</i>/2 = 5 cm</span>): <span class="f"><i>ap</i> = √(10² − 5²) = √75 ≈ 8,66 cm</span>.</li>
+      <li>Площадь: <span class="f"><i>A</i> = (60 · 8,66) / 2 = 259,8 cm²</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="circulo">
+  <span class="week">Неделя 15 · U4 §1.5</span>
+  <h2>2. Circunferencia, círculo, sector и corona circular</h2>
+  <p>Не путай: <span class="es">circunferencia</span> — это линия (ободок, длина <span class="f"><i>L</i></span>), а <span class="es">círculo</span> — закрашенный круг внутри (площадь <span class="f"><i>A</i></span>). Всегда помни, что радиус — это половина диаметра (<span class="f"><i>r</i> = <i>D</i>/2</span>).</p>
+  <div class="eqs">
+    <div class="eq"><i>L</i> = 2π<i>r</i> &nbsp;&nbsp; <i>A</i> = π<i>r</i>²<small>круг и окружность</small></div>
+    <div class="eq"><i>A</i><sub>sector</sub> = π<i>r</i>² · <sup>α</sup>/<sub>360°</sub><small>сектор с углом α; дуга <i>L</i><sub>arco</sub> = 2π<i>r</i>·α/360°</small></div>
+    <div class="eq"><i>A</i><sub>corona</sub> = π(<i>R</i>² − <i>r</i>²)<small>кольцо (большой круг минус малый)</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: диаметр вместо радиуса и R² − r² ≠ (R − r)²</span>
+    <p>В задачах почти всегда дают диаметр («труба диаметром 20 cm»). Сразу дели пополам: <span class="f"><i>r</i> = 10 cm</span>! А в формуле кольца сначала возводи радиусы в квадрат и только потом вычитай: <span class="f">10² − 6² = 100 − 36 = 64</span>, а не <span class="f">(10 − 6)² = 16</span>.</p>
+  </div>
+</section>
+
+<section id="euler">
+  <span class="week">Неделя 16 · U4 §2.1</span>
+  <h2>3. Poliedros и Teorema de Euler</h2>
+  <p>У любого выпуклого многогранника (<span class="es">poliedro convexo</span>) число граней <span class="es">caras (C)</span>, вершин <span class="es">vértices (V)</span> и рёбер <span class="es">aristas (A)</span> связано формулой Эйлера:</p>
+  <div class="eq"><i>C</i> + <i>V</i> = <i>A</i> + 2<small>Грани + Вершины = Рёбра + 2</small></div>
+  <p>Пять правильных многогранников (<span class="es">poliedros regulares / sólidos platónicos</span>): <span class="es">tetraedro</span> (4 треугольника), <span class="es">cubo / hexaedro</span> (6 квадратов), <span class="es">octaedro</span> (8 треугольников), <span class="es">dodecaedro</span> (12 пятиугольников), <span class="es">icosaedro</span> (20 треугольников). Например, у куба <span class="f"><i>C</i> = 6, <i>V</i> = 8, <i>A</i> = 12</span> → <span class="f">6 + 8 = 12 + 2 = 14 ✓</span>.</p>
+</section>
+
+<section id="cuerpos">
+  <span class="week">Неделя 16–17 · U4 §2–3</span>
+  <h2>4. Áreas y volúmenes de cuerpos geométricos</h2>
+  <p>Все пространственные тела делятся на три простые группы по формуле объёма:</p>
+  <ol class="steps">
+    <li><b>«Ровные столбики» (Prisma и Cilindro)</b> — два одинаковых основания: <span class="f"><i>V</i> = <i>A</i><sub>base</sub> · <i>h</i></span>, полная поверхность <span class="f"><i>A</i><sub>total</sub> = <i>A</i><sub>lateral</sub> + 2·<i>A</i><sub>base</sub></span>.</li>
+    <li><b>«Остроконечные» (Pirámide и Cono)</b> — одно основание и вершина (объём ровно в 3 раза меньше!): <span class="f"><i>V</i> = <sup>1</sup>/<sub>3</sub> · <i>A</i><sub>base</sub> · <i>h</i></span>, полная поверхность <span class="f"><i>A</i><sub>total</sub> = <i>A</i><sub>lateral</sub> + <i>A</i><sub>base</sub></span>.</li>
+    <li><b>Шар и сфера (Esfera)</b>: <span class="f"><i>A</i> = 4π<i>r</i>²</span> и <span class="f"><i>V</i> = <sup>4</sup>/<sub>3</sub>π<i>r</i>³</span>.</li>
+  </ol>
+
+  <figure>
+    <svg viewBox="0 0 540 190" role="img" aria-label="Конус с образующей g и пирамида с апофемой боковой грани Ap">
+      <g transform="translate(20 10)">
+        <text x="115" y="14" font-size="13" font-weight="700" text-anchor="middle">Cono: generatriz g</text>
+        <ellipse cx="115" cy="145" rx="75" ry="18" class="surf"/>
+        <path class="soft" d="M115 30 L115 145 L190 145 Z"/>
+        <path class="ln" stroke-width="2" d="M40 145 L115 30 L190 145"/>
+        <path class="ac" stroke-width="2" d="M115 30 V145 H190"/>
+        <text x="106" y="95" font-size="13" text-anchor="end">h</text>
+        <text x="152" y="160" font-size="13" text-anchor="middle">r</text>
+        <text x="162" y="84" font-size="13" font-weight="700">g = √(h² + r²)</text>
+      </g>
+      <g transform="translate(285 10)">
+        <text x="115" y="14" font-size="13" font-weight="700" text-anchor="middle">Pirámide: apotema Ap</text>
+        <path class="surf" d="M35 152 L155 152 L195 128 L75 128 Z"/>
+        <path class="soft" d="M115 30 L115 140 L175 140 Z"/>
+        <path class="ln" stroke-width="1.8" d="M35 152 L115 30 L155 152 M115 30 L195 128"/>
+        <path class="ac" stroke-width="2" d="M115 30 V140 H175 L115 30"/>
+        <text x="106" y="95" font-size="13" text-anchor="end">h</text>
+        <text x="145" y="154" font-size="12" text-anchor="middle">ap</text>
+        <text x="158" y="84" font-size="13" font-weight="700">Ap = √(h² + ap²)</text>
+      </g>
+    </svg>
+    <figcaption>Для площади боковой поверхности конуса и пирамиды нужна наклонная образующая g (или апофема пирамиды Ap), а для объёма — вертикальная высота h.</figcaption>
+  </figure>
+
+  <div class="tbl"><table>
+    <tr><th>Cuerpo</th><th>Área lateral y total</th><th>Volumen</th></tr>
+    <tr><td><b>Prisma</b></td><td><span class="f"><i>A</i><sub>L</sub> = <i>P</i><sub>base</sub> · <i>h</i></span> &nbsp;|&nbsp; <span class="f"><i>A</i><sub>T</sub> = <i>A</i><sub>L</sub> + 2<i>A</i><sub>base</sub></span></td><td><span class="f"><i>V</i> = <i>A</i><sub>base</sub> · <i>h</i></span></td></tr>
+    <tr><td><b>Cilindro</b></td><td><span class="f"><i>A</i><sub>L</sub> = 2π<i>rh</i></span> &nbsp;|&nbsp; <span class="f"><i>A</i><sub>T</sub> = 2π<i>rh</i> + 2π<i>r</i>²</span></td><td><span class="f"><i>V</i> = π<i>r</i>²<i>h</i></span></td></tr>
+    <tr><td><b>Pirámide</b></td><td><span class="f"><i>A</i><sub>L</sub> = <sup><i>P</i><sub>base</sub> · <i>Ap</i></sup>/<sub>2</sub></span> &nbsp;|&nbsp; <span class="f"><i>A</i><sub>T</sub> = <i>A</i><sub>L</sub> + <i>A</i><sub>base</sub></span></td><td><span class="f"><i>V</i> = <sup>1</sup>/<sub>3</sub> <i>A</i><sub>base</sub> · <i>h</i></span></td></tr>
+    <tr><td><b>Cono</b></td><td><span class="f"><i>A</i><sub>L</sub> = π<i>rg</i></span> &nbsp;|&nbsp; <span class="f"><i>A</i><sub>T</sub> = π<i>rg</i> + π<i>r</i>²</span></td><td><span class="f"><i>V</i> = <sup>1</sup>/<sub>3</sub> π<i>r</i>²<i>h</i></span></td></tr>
+    <tr><td><b>Esfera</b></td><td><span class="f"><i>A</i> = 4π<i>r</i>²</span></td><td><span class="f"><i>V</i> = <sup>4</sup>/<sub>3</sub> π<i>r</i>³</span></td></tr>
+  </table></div>
+
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · конус</span>
+    <p>Найти полную площадь поверхности и объём конуса с радиусом основания <span class="f"><i>r</i> = 6 cm</span> и высотой <span class="f"><i>h</i> = 8 cm</span>.</p>
+    <ol class="steps">
+      <li>Находим образующую (<span class="es">generatriz</span>): <span class="f"><i>g</i> = √(8² + 6²) = √(64 + 36) = 10 cm</span>.</li>
+      <li>Полная площадь: <span class="f"><i>A</i><sub>T</sub> = π·6·10 + π·6² = 60π + 36π = 96π ≈ 301,59 cm²</span>.</li>
+      <li>Объём: <span class="f"><i>V</i> = <sup>1</sup>/<sub>3</sub>·π·6²·8 = 96π ≈ 301,59 cm³</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="aplicados">
+  <span class="week">Неделя 18 · U4 §4</span>
+  <h2>5. Прикладные задачи: плотность, вместимость и покраска</h2>
+  <p>В реальных задачах геометрия соединяется с физическими величинами:</p>
+  <div class="eqs">
+    <div class="eq"><i>m</i> = <i>d</i> · <i>V</i><small>масса = плотность × объём (следи за единицами: g/cm³ ↔ cm³; kg/m³ ↔ m³)</small></div>
+    <div class="eq">1 m³ = 1000 L &nbsp;|&nbsp; 1 dm³ = 1 L<small>перевод объёма резервуара в литры</small></div>
+  </div>
+  <div class="box trap"><span class="lbl">Ловушка: бассейн или стакан без крышки!</span>
+    <p>Когда считают площадь плитки для облицовки бассейна или покраску открытого бака, у него <b>только одно дно</b> (нет верхней крышки!): <span class="f"><i>A</i> = <i>A</i><sub>lateral</sub> + 1·<i>A</i><sub>base</sub></span>. А при покраске стен комнаты вычитают площадь дверей и окон, и не красят пол.</p>
+  </div>
+  <div class="box ex"><span class="lbl">Ejemplo resuelto · цилиндрический резервуар с маслом</span>
+    <p>Цилиндрический бак диаметром 2 m и высотой 3 m полностью заполнен оливковым маслом плотностью <span class="f"><i>d</i> = 0,92 kg/L</span>. Сколько литров масла в баке и какова его масса?</p>
+    <ol class="steps">
+      <li>Радиус: <span class="f"><i>r</i> = 2 / 2 = 1 m</span>. Объём цилиндра: <span class="f"><i>V</i> = π · 1² · 3 ≈ 9,425 m³</span>.</li>
+      <li>Вместимость в литрах: <span class="f">9,425 m³ · 1000 = 9425 L</span>.</li>
+      <li>Масса масла: <span class="f"><i>m</i> = 0,92 kg/L · 9425 L = 8671 kg</span>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>6. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>perímetro / área</td><td>периметр / площадь</td><td>apotema (ap / Ap)</td><td>апофема (основания / пирамиды)</td></tr>
+    <tr><td>circunferencia / círculo</td><td>окружность / круг</td><td>sector / corona circular</td><td>круговой сектор / кольцо</td></tr>
+    <tr><td>poliedro</td><td>многогранник</td><td>caras, vértices, aristas</td><td>грани, вершины, рёбра</td></tr>
+    <tr><td>prisma / cilindro</td><td>призма / цилиндр</td><td>pirámide / cono / esfera</td><td>пирамида / конус / сфера</td></tr>
+    <tr><td>generatriz (g)</td><td>образующая конуса</td><td>área lateral / total</td><td>боковая / полная площадь</td></tr>
+    <tr><td>densidad (d = m/V)</td><td>плотность</td><td>alicatar / pavimentar</td><td>облицевать плиткой / вымостить</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>7. Проверь себя</h2>
+  <details class="q"><summary>Диагонали ромба равны 16 cm и 12 cm. Найди его площадь и периметр.</summary><div class="a">Площадь A = (16·12)/2 = 96 cm². Половины диагоналей 8 и 6 cm → сторона по Пифагору l = √(8² + 6²) = 10 cm → периметр P = 4·10 = 40 cm.</div></details>
+  <details class="q"><summary>Найди площадь кругового кольца с внешним диаметром 10 cm и внутренним радиусом 3 cm.</summary><div class="a">Внешний радиус R = 10/2 = 5 cm, r = 3 cm. A = π(5² − 3²) = 16π ≈ 50,27 cm².</div></details>
+  <details class="q"><summary>У выпуклого многогранника 8 граней и 6 вершин. Сколько у него рёбер по теореме Эйлера?</summary><div class="a">C + V = A + 2 → 8 + 6 = A + 2 → A = 12 рёбер (это октаэдр).</div></details>
+  <details class="q"><summary>Пирамида с квадратным основанием (сторона 6 cm) имеет высоту 4 cm. Найди её объём и полную площадь.</summary><div class="a">A_base = 36 cm². Объём V = ⅓·36·4 = 48 cm³. Апофема основания ap = 3 cm → апофема пирамиды Ap = √(4² + 3²) = 5 cm. A_lat = (24·5)/2 = 60 cm² → A_total = 60 + 36 = 96 cm².</div></details>
+  <details class="q"><summary>Металлический шар радиусом 3 cm сделан из железа плотностью 7,8 g/cm³. Какова его масса?</summary><div class="a">V = (4/3)π·3³ = 36π ≈ 113,1 cm³. Масса m = 7,8 · 113,1 ≈ 882,2 g.</div></details>
+</section>
+</div>
+</body></html>

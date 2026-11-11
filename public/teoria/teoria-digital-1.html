@@ -1,0 +1,283 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Competencia Digital T1</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#059669; --subj-soft:#D1FAE5;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(26px,5vw,36px)/1.15 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 6px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 22px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:22px 0 8px}
+p,li{max-width:68ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:3px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+b.t{font-weight:700}
+.f{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f i,.eq i{font-style:italic}
+.eq{font-family:var(--f-math);font-size:21px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.eqs .eq{margin:0}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;padding-left:0}
+.steps>li{counter-increment:s;position:relative;padding-left:34px;margin-block:8px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--subj-soft);color:var(--subj);font:600 12px/24px var(--f-mono);text-align:center}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .mut{fill:var(--muted)}
+svg .ln{stroke:var(--ink);fill:none}
+svg .ax{stroke:var(--muted);fill:none}
+svg .ac{stroke:var(--subj);fill:none}
+svg .acf{fill:var(--subj)}
+svg .ac2{stroke:var(--accent);fill:none}
+svg .ac2f{fill:var(--accent)}
+svg .wa{stroke:var(--warn);fill:none}
+svg .waf{fill:var(--warn)}
+svg .soft{fill:var(--subj-soft)}
+svg .surf{fill:var(--surface);stroke:var(--line)}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.pair{grid-template-columns:1fr}.eq{font-size:18px}}
+kbd{font:12.5px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--surface)}
+.foot{color:var(--muted);font-size:13.5px;padding-top:18px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+
+:root{--subj:#059669;--subj-soft:#D1FAE5}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--subj:#34D399;--subj-soft:#064E3B}}:root[data-theme="dark"]{--subj:#34D399;--subj-soft:#064E3B}</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Competencia Digital · конспект 1</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Competencia Digital · Tema 1 · Блок 1</div>
+  <h1>Búsqueda, selección y gestión de información</h1>
+  <p class="lede">Полный разбор Темы 1: расширенный поиск с булевыми операторами и командами, генеративный ИИ и проектирование промптов, критическая оценка источников по методу SIFT, облачное и локальное хранение, 6 лицензий Creative Commons и правила оформления Actividad de Envío 1 в Word.</p>
+  <ul class="toc">
+    <li><a href="#busqueda">1. Búsqueda avanzada</a></li>
+    <li><a href="#ia">2. IA generativa y Prompts</a></li>
+    <li><a href="#sift">3. Evaluación SIFT</a></li>
+    <li><a href="#almacenamiento">4. Local vs Nube</a></li>
+    <li><a href="#cc">5. Creative Commons</a></li>
+    <li><a href="#word">6. Actividad de Envío 1 (Word)</a></li>
+    <li><a href="#glosario">7. Словарик</a></li>
+    <li><a href="#test">8. Проверь себя</a></li>
+  </ul>
+</header>
+
+<section id="busqueda">
+  <span class="week">Tema 1 · §1</span>
+  <h2>1. Búsqueda avanzada: operadores booleanos y comandos</h2>
+  <p>Чтобы не тонуть в миллионах нерелевантных страниц (<span class="es">infoxicación</span> — информационная перегрузка), поисковые системы (<span class="es">motores de búsqueda</span>) поддерживают <b>логические операторы</b> (<span class="es">operadores booleanos</span>) и специальные команды фильтрации.</p>
+
+  <div class="tbl"><table>
+    <tr><th>Оператор / Команда</th><th>Название (ES)</th><th>Что делает и как влияет на выдачу</th><th>Пример запроса</th></tr>
+    <tr><td><kbd>AND</kbd> (по умолчанию пробел)</td><td><span class="es">Intersección lógica</span></td><td><b>Сужает</b> поиск (<span class="es">restringe / reduce resultados</span>): находит страницы, где есть <b>оба</b> слова одновременно.</td><td><kbd>ciberseguridad AND empresas</kbd></td></tr>
+    <tr><td><kbd>OR</kbd></td><td><span class="es">Unión lógica</span></td><td><b>Расширяет</b> поиск (<span class="es">amplía resultados</span>): находит страницы, где есть <b>хотя бы одно</b> из слов (удобно для синонимов).</td><td><kbd>teletrabajo OR "trabajo remoto"</kbd></td></tr>
+    <tr><td><kbd>NOT</kbd> или <kbd>-</kbd> (минус слитно)</td><td><span class="es">Exclusión lógica</span></td><td><b>Исключает</b> (<span class="es">excluye</span>) страницы, содержащие указанное слово после минуса.</td><td><kbd>python -serpiente</kbd></td></tr>
+    <tr><td><kbd>" "</kbd> (кавычки)</td><td><span class="es">Frase exacta / Comillas</span></td><td>Ищет <b>точную фразу</b> (<span class="es">coincidencia exacta</span>) со словами в том же порядке и без изменений.</td><td><kbd>"grado superior administración"</kbd></td></tr>
+    <tr><td><kbd>site:</kbd></td><td><span class="es">Restricción de dominio</span></td><td>Ищет только внутри конкретного сайта или доменной зоны (<kbd>.es</kbd>, <kbd>.gob.es</kbd>, <kbd>.edu</kbd>).</td><td><kbd>becas site:educacionfpydeportes.gob.es</kbd></td></tr>
+    <tr><td><kbd>filetype:</kbd> или <kbd>ext:</kbd></td><td><span class="es">Tipo de archivo</span></td><td>Фильтрует результаты по формату документа (<kbd>pdf</kbd>, <kbd>docx</kbd>, <kbd>xlsx</kbd>, <kbd>pptx</kbd>).</td><td><kbd>apuntes contabilidad filetype:pdf</kbd></td></tr>
+    <tr><td><kbd>intitle:</kbd></td><td><span class="es">Palabra en el título</span></td><td>Требует, чтобы слово находилось именно в заголовке (<span class="es">título HTML</span>) страницы.</td><td><kbd>intitle:normativa prevención</kbd></td></tr>
+    <tr><td><kbd>*</kbd> (звёздочка)</td><td><span class="es">Comodín</span></td><td>Заменяет любое неизвестное слово в устойчивом выражении.</td><td><kbd>"más vale * en mano"</kbd></td></tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Ловушка экзамена</span>
+    <p>На тестах часто спрашивают: какой оператор даёт <b>больше</b> результатов — <kbd>AND</kbd> или <kbd>OR</kbd>? Хотя в обычной речи «И» кажется прибавлением, в булевой логике <kbd>AND</kbd> требует совпадения всех условий сразу и поэтому <b>сужает</b> выборку, а <kbd>OR</kbd> подходит при любом из условий и <b>расширяет</b> её. Вторая ловушка: после знака минус <kbd>-</kbd> <b>нельзя ставить пробел</b> (<kbd>cursos -pago</kbd>, а не <kbd>cursos - pago</kbd>).</p>
+  </div>
+</section>
+
+<section id="ia">
+  <span class="week">Tema 1 · §2</span>
+  <h2>2. Inteligencia Artificial Generativa y diseño de Prompts</h2>
+  <p>Генеративный ИИ (<span class="es">IA generativa</span>: ChatGPT, Gemini, Claude, Copilot) создаёт новый текст, код или изображения на основе вероятностных языковых моделей (<span class="es">LLM — Grandes Modelos de Lenguaje</span>). Он <b>не является поисковиком</b>: он предсказывает следующее наиболее вероятное слово (<span class="es">token</span>).</p>
+
+  <h3>Структура эффективного промпта (Diseño de Prompts)</h3>
+  <ol class="steps">
+    <li><span class="es">Rol / Actuación</span> (Роль): кем должен выступить ИИ (<i>«Actúa como un profesor de FP de Administración…»</i>).</li>
+    <li><span class="es">Contexto</span> (Контекст): для кого и в какой ситуации нужна информация (<i>«Estoy preparando un informe para pymes españolas…»</i>).</li>
+    <li><span class="es">Tarea específica</span> (Конкретная задача): глагол действия — резюмировать, сравнить, составить таблицу (<i>«Resume en 5 puntos clave…»</i>).</li>
+    <li><span class="es">Formato y restricciones</span> (Формат и ограничения): объём, стиль, вид вывода (<i>«En formato tabla, tono formal, máximo 200 palabras»</i>).</li>
+  </ol>
+
+  <div class="box trap"><span class="lbl">Главный риск ИИ: Alucinaciones</span>
+    <p><span class="es">Alucinación (галлюцинация ИИ)</span> — ситуация, когда языковая модель уверенно выдаёт вымышленные факты, несуществующие законы, даты или фальшивые библиографические ссылки за правду. Поэтому любой ответ ИИ требует обязательной проверки через первичные источники (<span class="es">contraste de fuentes</span>).</p>
+  </div>
+</section>
+
+<section id="sift">
+  <span class="week">Tema 1 · §3</span>
+  <h2>3. Evaluación crítica de fuentes: el método SIFT</h2>
+  <p>Чтобы отличить достоверную информацию (<span class="es">información fiable y veraz</span>) от дезинформации (<span class="es">desinformación / bulos / fake news</span>), используется метод <b>SIFT</b>, разработанный экспертом по цифровой грамотности Майком Колфилдом:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Буква</th><th>Этап (EN / ES)</th><th>Что нужно сделать на практике</th></tr>
+    <tr><td><b>S</b></td><td><b>Stop</b> (<span class="es">Detente</span>)</td><td>Остановись перед тем, как верить или репостить новость, особенно если заголовок вызывает сильную эмоцию (<span class="es">clickbait</span>).</td></tr>
+    <tr><td><b>I</b></td><td><b>Investigate the source</b> (<span class="es">Investiga la fuente</span>)</td><td>Проверь, кто автор или организация, какова их репутация, экспертность и возможная предвзятость (<span class="es">sesgo</span>).</td></tr>
+    <tr><td><b>F</b></td><td><b>Find better coverage</b> (<span class="es">Busca mejor cobertura</span>)</td><td>Открой новую вкладку (<span class="es">lectura lateral</span> — горизонтальное чтение) и проверь, пишут ли об этом независимые авторитетные СМИ или официальные органы.</td></tr>
+    <tr><td><b>T</b></td><td><b>Trace claims to the original context</b> (<span class="es">Rastrea hasta el origen</span>)</td><td>Найди первоисточник цитаты, статистики или фотографии (не вырвана ли она из контекста или старого события).</td></tr>
+  </table></div>
+
+  <p>Дополнительные критерии надёжности сайта: актуальность даты обновления (<span class="es">actualización</span>), наличие ссылок на источники, объективность тона и защищённый протокол <kbd>https://</kbd> (однако помни: <kbd>HTTPS</kbd> шифрует соединение, но сам по себе <b>не гарантирует</b> правдивость текста на сайте).</p>
+</section>
+
+<section id="almacenamiento">
+  <span class="week">Tema 1 · §4</span>
+  <h2>4. Gestión y almacenamiento: Local vs. Nube</h2>
+  <p>Хранение и организация цифровых файлов делится на локальное (<span class="es">almacenamiento local</span>) и облачное (<span class="es">almacenamiento en la nube / cloud storage</span>), а также гибридную синхронизацию.</p>
+
+  <div class="pair">
+    <div class="box tip"><span class="lbl">Almacenamiento Local</span>
+      <p>Файлы лежат физически на твоём устройстве: <span class="es">disco duro interno (SSD/HDD)</span>, <span class="es">memoria USB (pendrive)</span>, <span class="es">disco externo</span> или локальный сетевой диск (<span class="es">NAS</span>).</p>
+      <ul>
+        <li><b>Плюсы:</b> не нужен интернет, максимальная скорость чтения/записи, полный физический контроль.</li>
+        <li><b>Минусы:</b> риск потери при поломке/краже, нет доступа с других устройств.</li>
+      </ul>
+    </div>
+    <div class="box tip"><span class="lbl">Almacenamiento en la Nube</span>
+      <p>Файлы хранятся на удалённых серверах провайдера: <b>Google Drive, OneDrive, Dropbox, iCloud</b>.</p>
+      <ul>
+        <li><b>Плюсы:</b> доступ из любой точки (<span class="es">ubicuidad</span>), автосинхронизация (<span class="es">sincronización automática</span>), совместная работа (<span class="es">trabajo colaborativo</span>) и история версий.</li>
+        <li><b>Минусы:</b> зависимость от интернета, лимит бесплатного места, вопросы конфиденциальности.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Правила именования и иерархии папок</h3>
+  <ul>
+    <li>Используй логическую структуру папок (<span class="es">estructura jerárquica de carpetas</span>) по предметам и темам.</li>
+    <li>Для сортировки по дате начинай имя файла в формате <b>ГГГГ-ММ-ДД</b> (<kbd>2026-10-15_Informe_Ventas_v1.docx</kbd>), избегай спецсимволов (<kbd>/ \ : * ? " &lt; &gt; |</kbd>) и названий вроде <kbd>final_definitivo2.docx</kbd>.</li>
+  </ul>
+</section>
+
+<section id="cc">
+  <span class="week">Tema 1 · §5</span>
+  <h2>5. Propiedad intelectual y las 6 licencias Creative Commons</h2>
+  <p>Любое произведение с момента создания защищено авторским правом (<span class="es">derechos de autor / propiedad intelectual</span>). На двух полюсах находятся:</p>
+  <ul>
+    <li><b>Copyright (© — <span class="es">Todos los derechos reservados</span>):</b> нельзя копировать, менять или распространять без явного разрешения правообладателя.</li>
+    <li><b>Dominio Público (<span class="es">CC0 — Sin derechos reservados</span>):</b> автор отказался от имущественных прав или истёк срок охраны; работу можно использовать свободно.</li>
+  </ul>
+  <p>Между ними расположены лицензии <b>Creative Commons (CC)</b> (<span class="es">Algunos derechos reservados</span>), которые собираются из <b>4 базовых модулей</b>:</p>
+
+  <div class="tbl"><table>
+    <tr><th>Модуль</th><th>Название (ES / EN)</th><th>Значение</th></tr>
+    <tr><td><b>BY</b></td><td><span class="es">Reconocimiento / Attribution</span></td><td><b>Обязательно во всех 6 лицензиях CC:</b> необходимо указать автора (<span class="es">citar al autor</span>) и источник.</td></tr>
+    <tr><td><b>SA</b></td><td><span class="es">Compartir Igual / ShareAlike</span></td><td>Если ты переработал материал, производную работу (<span class="es">obra derivada</span>) нужно распространять под <b>той же самой лицензией</b>.</td></tr>
+    <tr><td><b>NC</b></td><td><span class="es">No Comercial / NonCommercial</span></td><td>Запрещено использовать произведение для получения коммерческой выгоды (<span class="es">sin fines lucrativos</span>).</td></tr>
+    <tr><td><b>ND</b></td><td><span class="es">Sin Obra Derivada / NoDerivatives</span></td><td>Запрещено изменять, обрезать, переводить или переделывать оригинал (<span class="es">sin modificaciones</span>).</td></tr>
+  </table></div>
+
+  <h3>Все 6 комбинаций Creative Commons (от самой свободной к самой строгой)</h3>
+  <div class="tbl"><table>
+    <tr><th>Код лицензии</th><th>Коммерческое использование?</th><th>Можно ли изменять (Obra derivada)?</th><th>Особое условие</th></tr>
+    <tr><td><b>1. CC BY</b></td><td>Да</td><td>Да</td><td>Только указать автора (самая открытая).</td></tr>
+    <tr><td><b>2. CC BY-SA</b></td><td>Да</td><td>Да</td><td>Производная работа должна иметь ту же лицензию CC BY-SA (используется в Wikipedia).</td></tr>
+    <tr><td><b>3. CC BY-ND</b></td><td>Да</td><td><b>Нет</b></td><td>Можно распространять даже коммерчески, но строго без изменений.</td></tr>
+    <tr><td><b>4. CC BY-NC</b></td><td><b>Нет</b></td><td>Да</td><td>Можно менять и распространять только в некоммерческих целях.</td></tr>
+    <tr><td><b>5. CC BY-NC-SA</b></td><td><b>Нет</b></td><td>Да</td><td>Только некоммерчески + производная работа под той же лицензией.</td></tr>
+    <tr><td><b>6. CC BY-NC-ND</b></td><td><b>Нет</b></td><td><b>Нет</b></td><td>Самая строгая (<span class="es">la más restrictiva</span>): только скачивать и делиться без изменений и без выгоды, с указанием автора.</td></tr>
+  </table></div>
+
+  <div class="box trap"><span class="lbl">Почему их ровно 6?</span>
+    <p>Модули <b>SA</b> (<span class="es">Compartir Igual</span> — распространять изменённую версию под той же лицензией) и <b>ND</b> (<span class="es">Sin Obra Derivada</span> — запрет изменений) <b>несовместимы друг с другом</b>! Поэтому лицензии <kbd>CC BY-SA-ND</kbd> не существует.</p>
+  </div>
+</section>
+
+<section id="word">
+  <span class="week">Tema 1 · §6 · Práctica obligatoria</span>
+  <h2>6. Чек-лист Actividad de Envío 1: правила форматирования в Word</h2>
+  <p>В первом практическом задании по Competencia Digital проверяется не только текст, но и техническое устройство файла <kbd>.docx</kbd>. Если сделать оглавление или заголовки вручную (просто увеличив шрифт), преподаватель снизит балл.</p>
+
+  <ol class="steps">
+    <li><b>Стили заголовков (<span class="es">Estilos Título 1 y Título 2</span>):</b> выделяй заголовки разделов и применяй к ним встроенные стили на вкладке <kbd>Inicio</kbd> → <kbd>Estilos</kbd> → <kbd>Título 1</kbd> (для главных разделов) и <kbd>Título 2</kbd> (для подразделов). Не крась и не увеличивай обычный текст <kbd>Normal</kbd> вручную!</li>
+    <li><b>Автоматическое оглавление (<span class="es">Tabla de contenido automática</span>):</b> поставь курсор в начале документа и выбери <kbd>Referencias</kbd> → <kbd>Tabla de contenido</kbd> → <kbd>Tabla automática</kbd>. Она сама соберёт все твои <kbd>Título 1</kbd> и <kbd>Título 2</kbd> с номерами страниц. После правок нажимай <kbd>Actualizar tabla</kbd>.</li>
+    <li><b>Изображение с лицензией Creative Commons и подписью (<span class="es">Imagen CC con pie de foto</span>):</b> найди картинку через фильтр лицензий (например, в Google Imágenes → <kbd>Herramientas</kbd> → <kbd>Derechos de uso</kbd> → <kbd>Licencias Creative Commons</kbd> или на Wikimedia Commons), вставь её и добавь подпись через <kbd>Referencias</kbd> → <kbd>Insertar título</kbd> с правильной атрибуцией: <i>Название, Автор, Источник (ссылка) и тип лицензии (например, CC BY-SA 4.0)</i>.</li>
+    <li><b>Колонтитулы (<span class="es">Encabezado y pie de página</span>):</b> через <kbd>Insertar</kbd> → <kbd>Encabezado / Pie de página</kbd> укажи название работы/предмета сверху и автоматическую нумерацию страниц (<span class="es">Número de página</span>) снизу.</li>
+  </ol>
+
+  <div class="box errata"><span class="lbl">Внимание! Ловушка анти-ИИ: «Profesión Astronauta»</span>
+    <p>В инструкциях к Actividad de Envío 1 преподаватели прячут скрытую проверку на слепое копирование промпта в ChatGPT (например, требование в середине текста неожиданно упомянуть профессию <b>«astronauta»</b> или наоборот — скрытую инструкцию, которую нейросеть выполняет буквально, выдавая использование ИИ). <b>Обязательно перечитай задание глазами от начала до конца</b>: выполняй реальную тему своего профиля (Administración y Finanzas), проверяй каждую фразу и никогда не сдавай сырой сгенерированный текст без вычитки!</p>
+  </div>
+</section>
+
+<section id="glosario">
+  <h2>7. Словарик ES → RU</h2>
+  <div class="tbl"><table>
+    <tr><th>Español</th><th>Русский</th><th>Español</th><th>Русский</th></tr>
+    <tr><td>motor de búsqueda</td><td>поисковая система</td><td>infoxicación</td><td>информационная перегрузка</td></tr>
+    <tr><td>operadores booleanos</td><td>булевы (логические) операторы</td><td>comillas (" ")</td><td>кавычки (точная фраза)</td></tr>
+    <tr><td>alucinación de la IA</td><td>галлюцинация ИИ (выдумка)</td><td>lectura lateral</td><td>горизонтальное чтение (проверка)</td></tr>
+    <tr><td>almacenamiento en la nube</td><td>облачное хранилище</td><td>sincronización</td><td>синхронизация</td></tr>
+    <tr><td>propiedad intelectual</td><td>интеллектуальная собственность</td><td>dominio público</td><td>общественное достояние</td></tr>
+    <tr><td>obra derivada</td><td>производное произведение</td><td>fines lucrativos / comerciales</td><td>коммерческие цели</td></tr>
+    <tr><td>tabla de contenido</td><td>автоматическое оглавление</td><td>encabezado y pie de página</td><td>верхний и нижний колонтитулы</td></tr>
+  </table></div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя</h2>
+  <details class="q"><summary>Какой поисковый запрос найдёт только PDF-документы со словом «presupuesto» на официальном сайте правительства Испании?</summary><div class="a"><kbd>presupuesto filetype:pdf site:gob.es</kbd> (команда <kbd>filetype:pdf</kbd> ограничивает формат файла, а <kbd>site:gob.es</kbd> — домен).</div></details>
+  <details class="q"><summary>Какой булев оператор расширяет поиск и даёт больше результатов: AND или OR?</summary><div class="a"><b>OR</b> расширяет поиск (достаточно любого из слов), тогда как <b>AND</b> сужает его (требует одновременного наличия всех слов).</div></details>
+  <details class="q"><summary>Что означают буквы S-I-F-T в методе критической оценки информации?</summary><div class="a"><b>S</b>top (Остановись), <b>I</b>nvestigate the source (Исследуй источник), <b>F</b>ind better coverage (Найди лучшее освещение в других источниках), <b>T</b>race claims to the original context (Отследи утверждение до первоисточника).</div></details>
+  <details class="q"><summary>Что разрешает и что запрещает лицензия CC BY-NC-ND?</summary><div class="a">Это самая строгая лицензия Creative Commons: обязательно указать автора (<b>BY</b>), запрещено коммерческое использование (<b>NC</b>) и запрещено вносить любые изменения / создавать производные работы (<b>ND</b>).</div></details>
+  <details class="q"><summary>Почему в Word нельзя делать заголовки просто крупным жирным шрифтом, если нужна Tabla de contenido automática?</summary><div class="a">Потому что автоматическое оглавление в Word собирает структуру документа исключительно по встроенным стилям уровней (<kbd>Título 1</kbd>, <kbd>Título 2</kbd>, <kbd>Título 3</kbd>). Обычный текст с увеличенным шрифтом в оглавление не попадёт.</div></details>
+</section>
+</div>
+</body></html>
