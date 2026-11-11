@@ -19,15 +19,10 @@ import {
 } from './data/scheduleData.js';
 import { buildGoogleCalendarUrl, downloadIcsFile } from './utils/calendarExport.js';
 import {
-  SUPABASE_SETUP_SQL,
   loadCloudConfig,
-  saveCloudConfig,
-  consumeUrlCloudParams,
   isCloudConfigured,
-  buildMagicSyncUrl,
   pushStateToCloud,
   pullStateFromCloud,
-  createNewCloudGist,
 } from './utils/cloudSync.js';
 
 const STORAGE_KEY = 'ags_study_hub_state_v3';
@@ -65,13 +60,11 @@ function loadState() {
         dayNotes: parsed.dayNotes || {},
         grades: parsed.grades || {},
         unlockedSolutions: parsed.unlockedSolutions || {},
+        updatedAt: parsed.updatedAt || null,
         readerModalUrl: null,
         readerModalTitle: '',
         solutionConfirmModal: null, // { subjectId, unitNum, title, fileUrl, fileName }
         activeSolutionPage: null, // { subjectId, unitNum, highlightUrl }
-        cloudSyncModalOpen: false,
-        cloudSyncStatus: 'idle', // 'idle' | 'syncing' | 'ok' | 'error'
-        cloudSyncMessage: '',
       };
     }
   } catch (e) {
@@ -102,13 +95,11 @@ function loadState() {
     dayNotes: {},
     grades: {},
     unlockedSolutions: {},
+    updatedAt: null,
     readerModalUrl: null,
     readerModalTitle: '',
     solutionConfirmModal: null,
     activeSolutionPage: null,
-    cloudSyncModalOpen: false,
-    cloudSyncStatus: 'idle',
-    cloudSyncMessage: '',
   };
 }
 
@@ -117,33 +108,28 @@ let cloudPushTimer = null;
 
 function saveState(skipCloudPush = false) {
   try {
+    if (!skipCloudPush) {
+      state.updatedAt = new Date().toISOString();
+    }
     const toSave = {
       ...state,
       readerModalUrl: null,
       readerModalTitle: '',
       solutionConfirmModal: null,
-      cloudSyncModalOpen: false,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
 
     if (!skipCloudPush) {
       const cfg = loadCloudConfig();
-      if (isCloudConfigured(cfg) && cfg.autoSync) {
+      if (isCloudConfigured(cfg)) {
         if (cloudPushTimer) clearTimeout(cloudPushTimer);
         cloudPushTimer = setTimeout(async () => {
           try {
-            state.cloudSyncStatus = 'syncing';
             await pushStateToCloud(state, cfg);
-            state.cloudSyncStatus = 'ok';
-            state.cloudSyncMessage = `Синхронизировано в ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
-            const badgeEl = document.getElementById('cloud-sync-btn-label');
-            if (badgeEl) badgeEl.textContent = '🟢 Облако: Синхр.';
           } catch (err) {
-            console.error('Auto cloud push failed:', err);
-            state.cloudSyncStatus = 'error';
-            state.cloudSyncMessage = err.message || 'Ошибка синхронизации';
+            console.warn('Auto Supabase sync push:', err.message || err);
           }
-        }, 450);
+        }, 300);
       }
     }
   } catch (e) {
@@ -153,32 +139,27 @@ function saveState(skipCloudPush = false) {
 
 async function syncFromCloudOnStartup() {
   if (typeof window === 'undefined' || !window.location) return;
-  const { connectedFromUrl, config } = consumeUrlCloudParams();
+  const config = loadCloudConfig();
   if (!isCloudConfigured(config)) return;
 
   try {
-    state.cloudSyncStatus = 'syncing';
     const res = await pullStateFromCloud(config);
     if (!res.empty && res.state) {
-      Object.assign(state, res.state);
-      saveState(true);
-      state.cloudSyncStatus = 'ok';
-      state.cloudSyncMessage = connectedFromUrl
-        ? '✅ Устройство успешно привязано к облачной БД и синхронизировано!'
-        : `Данные загружены из БД (${res.updatedAt ? new Date(res.updatedAt).toLocaleString('ru-RU') : 'актуально'})`;
-      renderApp();
-    } else if (connectedFromUrl) {
-      // Если база ещё пустая, сразу отправляем текущее состояние в неё
+      const remoteTime = res.updatedAt ? new Date(res.updatedAt).getTime() : 0;
+      const localTime = state.updatedAt ? new Date(state.updatedAt).getTime() : 0;
+      if (!localTime || remoteTime >= localTime) {
+        Object.assign(state, res.state, { updatedAt: res.updatedAt || new Date().toISOString() });
+        saveState(true);
+        renderApp();
+      } else {
+        await pushStateToCloud(state, config);
+      }
+    } else if (res.empty) {
+      // Если в таблице Supabase ещё нет записи, автоматически сохраняем туда текущее состояние
       await pushStateToCloud(state, config);
-      state.cloudSyncStatus = 'ok';
-      state.cloudSyncMessage = '✅ Устройство привязано, начальные данные сохранены в облачную БД!';
-      renderApp();
     }
   } catch (err) {
-    console.error('Initial cloud pull failed:', err);
-    state.cloudSyncStatus = 'error';
-    state.cloudSyncMessage = err.message || 'Ошибка подключения к БД';
-    renderApp();
+    console.warn('Initial Supabase sync pull:', err.message || err);
   }
 }
 
@@ -289,9 +270,6 @@ function renderTopbar() {
     { id: 'grades', label: '6. Калькулятор оценок' },
   ];
 
-  const cfg = loadCloudConfig();
-  const cloudActive = isCloudConfigured(cfg);
-
   return `
     <header class="topbar">
       <div class="topbar-inner">
@@ -314,21 +292,6 @@ function renderTopbar() {
             .join('')}
         </nav>
         <div class="nav-actions">
-          <button
-            type="button"
-            class="btn btn-sm ${cloudActive ? '' : 'btn-primary'}"
-            id="btn-open-cloud-modal"
-            style="${cloudActive ? 'border-color:var(--ok); color:var(--ok);' : ''}"
-            title="Облачная синхронизация между телефоном, ноутбуком и разными браузерами"
-          >
-            <span id="cloud-sync-btn-label">${
-              cloudActive
-                ? state.cloudSyncStatus === 'error'
-                  ? '⚠️ Облако: Ошибка'
-                  : '🟢 Облако: Синхр.'
-                : '☁️ Синхр. (БД / Телефон)'
-            }</span>
-          </button>
           <a href="${COURSE_META.platformUrl}" target="_blank" rel="noopener" class="btn btn-sm">Aeducar ↗</a>
           <a href="${COURSE_META.driveFolderUrl}" target="_blank" rel="noopener" class="btn btn-sm">Google Drive ↗</a>
           <button type="button" class="btn btn-sm" id="btn-toggle-theme" title="Переключить тему">
@@ -1938,224 +1901,6 @@ function renderSolutionConfirmModal() {
   `;
 }
 
-function renderCloudSyncModal() {
-  if (!state.cloudSyncModalOpen) return '';
-  const cloudConfig = loadCloudConfig();
-  const isCfg = isCloudConfigured(cloudConfig);
-  const magicUrl = isCfg ? buildMagicSyncUrl(cloudConfig) : '';
-  const provider = cloudConfig.provider || 'supabase';
-
-  return `
-    <div class="modal-backdrop" id="cloud-sync-backdrop">
-      <div class="confirm-modal-window" style="max-width:660px;" role="dialog" aria-modal="true" aria-labelledby="cloud-modal-title">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="subj-pill subj-digital">☁️ Облачная БД</span>
-            <span class="badge-mono">${isCfg ? '🟢 Подключено' : '⚙️ Настройка'}</span>
-          </div>
-          <button type="button" class="btn btn-sm" id="btn-close-cloud-modal">✕ Закрыть</button>
-        </div>
-
-        <h3 id="cloud-modal-title" style="font:700 18.5px/1.3 var(--f-display); margin:0 0 8px;">
-          Синхронизация прогресса между браузерами и телефоном
-        </h3>
-        <p style="margin:0 0 14px; font-size:13.8px; color:var(--ink-secondary);">
-          Подключите облачную базу данных (<b>Supabase</b>, <b>GitHub Gist</b> или <b>Firebase</b>). Все ваши отмеченные параграфы, переносы дат, заметки, выбранные предметы и оценки будут автоматически сохраняться в облако и подгружаться при открытии на телефоне или в другом браузере.
-        </p>
-
-        <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
-          <button
-            type="button"
-            class="btn btn-sm ${provider === 'supabase' ? 'btn-primary' : ''}"
-            data-action="select-cloud-provider"
-            data-provider="supabase"
-          >
-            ⚡ Supabase (Рекомендуется)
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm ${provider === 'gist' ? 'btn-primary' : ''}"
-            data-action="select-cloud-provider"
-            data-provider="gist"
-          >
-            🐙 GitHub Gist Cloud DB
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm ${provider === 'firebase' ? 'btn-primary' : ''}"
-            data-action="select-cloud-provider"
-            data-provider="firebase"
-          >
-            🔥 Firebase Realtime DB
-          </button>
-        </div>
-
-        ${
-          provider === 'supabase'
-            ? `
-          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-            <label style="font-size:13px; font-weight:600;">
-              1. Supabase Project URL (из Project Settings → Data API / API):
-              <input
-                type="url"
-                id="input-supabase-url"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="https://ваш-id-проекта.supabase.co"
-                value="${cloudConfig.supabaseUrl || ''}"
-              />
-            </label>
-            <label style="font-size:13px; font-weight:600;">
-              2. Supabase Anon Public Key (публичный ключ <code>anon</code> / <code>public</code>):
-              <input
-                type="password"
-                id="input-supabase-key"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... или sb_publishable_..."
-                value="${cloudConfig.supabaseAnonKey || ''}"
-              />
-            </label>
-            <label style="font-size:13px; font-weight:600;">
-              3. Ключ профиля (Sync Key — одинаковый на ноутбуке и телефоне):
-              <input
-                type="text"
-                id="input-sync-key"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="grachia-ags-2627"
-                value="${cloudConfig.syncKey || 'grachia-ags-2627'}"
-              />
-            </label>
-            <div class="alert-box" style="margin:0; font-size:12.5px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                <strong>💡 Быстрая настройка таблицы в вашем проекте Supabase (1 раз за 20 сек):</strong>
-                <button type="button" class="btn btn-sm" id="btn-copy-supabase-sql">📋 Скопировать SQL (5 строк)</button>
-              </div>
-              1. В панели вашего проекта Supabase слева нажмите <b>SQL Editor → New query</b>.<br/>
-              2. Вставьте этот SQL-код и нажмите <b>Run</b>:<br/>
-              <pre style="margin:6px 0 6px; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:6px; font-family:var(--f-mono); font-size:11.5px; overflow-x:auto;">${SUPABASE_SETUP_SQL}</pre>
-              3. Скопируйте <b>Project URL</b> и <b>anon public key</b> из раздела <b>Project Settings → Data API (или API)</b> в поля выше и нажмите «Сохранить и синхронизировать»!
-            </div>
-          </div>
-        `
-            : provider === 'firebase'
-            ? `
-          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-            <label style="font-size:13px; font-weight:600;">
-              URL вашей базы Firebase Realtime Database:
-              <input
-                type="url"
-                id="input-firebase-url"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="https://ваш-проект-default-rtdb.europe-west1.firebasedatabase.app"
-                value="${cloudConfig.firebaseUrl || ''}"
-              />
-            </label>
-            <label style="font-size:13px; font-weight:600;">
-              Ключ профиля (Sync Key — одинаковый на ноутбуке и телефоне):
-              <input
-                type="text"
-                id="input-sync-key"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="grachia-ags-2627"
-                value="${cloudConfig.syncKey || 'grachia-ags-2627'}"
-              />
-            </label>
-            <div class="alert-box" style="margin:0; font-size:12.5px;">
-              <strong>💡 Как создать бесплатную БД Firebase:</strong><br/>
-              1. Откройте <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">console.firebase.google.com</a> → <b>Create a project</b>.<br/>
-              2. В меню слева выберите <b>Build → Realtime Database → Create Database</b> (выберите режим <i>Start in test mode</i>).<br/>
-              3. Скопируйте URL вида <code>https://...firebasedatabase.app</code> и вставьте в поле выше!
-            </div>
-          </div>
-        `
-            : `
-          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-            <label style="font-size:13px; font-weight:600;">
-              GitHub Personal Access Token (с правом <code>gist</code>):
-              <input
-                type="password"
-                id="input-github-token"
-                class="notes-area"
-                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                placeholder="ghp_... или github_pat_..."
-                value="${cloudConfig.githubToken || ''}"
-              />
-            </label>
-            <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
-              <label style="font-size:13px; font-weight:600; flex:1;">
-                Gist ID (оставьте пустым и нажмите «Создать Gist», если создаёте впервые):
-                <input
-                  type="text"
-                  id="input-gist-id"
-                  class="notes-area"
-                  style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
-                  placeholder="например: a1b2c3d4e5f6..."
-                  value="${cloudConfig.gistId || ''}"
-                />
-              </label>
-              <button type="button" class="btn btn-sm" id="btn-create-new-gist" style="height:38px;">
-                ✨ Создать новую БД Gist
-              </button>
-            </div>
-          </div>
-        `
-        }
-
-        ${
-          state.cloudSyncMessage
-            ? `<div class="alert-box ${state.cloudSyncStatus === 'error' ? 'danger' : 'warn'}" style="margin:0 0 14px; font-size:13px;">
-                <b>Статус:</b> ${state.cloudSyncMessage}
-              </div>`
-            : ''
-        }
-
-        ${
-          magicUrl
-            ? `
-          <div style="padding:10px 12px; border:1px dashed var(--accent); border-radius:var(--radius-sm); background:var(--accent-soft); margin-bottom:14px; font-size:12.8px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-              <strong>📲 Быстрый вход на телефоне или в другом браузере (Magic-ссылка):</strong>
-              <button type="button" class="btn btn-sm btn-primary" id="btn-copy-magic-link">📋 Скопировать ссылку для телефона</button>
-            </div>
-            <div style="color:var(--muted); word-break:break-all; font-family:var(--f-mono); font-size:11.5px;">${magicUrl}</div>
-          </div>
-        `
-            : ''
-        }
-
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px solid var(--line);">
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-primary" id="btn-save-and-sync-cloud">
-              💾 Сохранить и синхронизировать
-            </button>
-            ${
-              isCfg
-                ? `
-              <button type="button" class="btn btn-sm" id="btn-force-pull-cloud" title="Загрузить свежие данные из облака в этот браузер">
-                ⬇️ Загрузить из БД
-              </button>
-              <button type="button" class="btn btn-sm" id="btn-force-push-cloud" title="Отправить данные этого браузера в облако">
-                ⬆️ Выгрузить в БД
-              </button>
-            `
-                : ''
-            }
-          </div>
-          ${
-            isCfg
-              ? `<button type="button" class="btn btn-sm" id="btn-disconnect-cloud" style="color:var(--err);">Отключить облако</button>`
-              : ''
-          }
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 function renderApp() {
   applyTheme();
   const root = document.getElementById('app');
@@ -2178,7 +1923,6 @@ function renderApp() {
     </main>
     ${renderReaderModal()}
     ${renderSolutionConfirmModal()}
-    ${renderCloudSyncModal()}
   `;
 
   attachEvents();
@@ -2191,226 +1935,6 @@ function attachEvents() {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       saveState();
       renderApp();
-    });
-  }
-
-  // Открытие и управление модальным окном Облачной БД (Supabase / GitHub Gist / Firebase)
-  const btnOpenCloud = document.getElementById('btn-open-cloud-sync');
-  if (btnOpenCloud) {
-    btnOpenCloud.addEventListener('click', () => {
-      state.cloudSyncModalOpen = true;
-      renderApp();
-    });
-  }
-
-  const btnCloseCloud = document.getElementById('btn-close-cloud-modal');
-  if (btnCloseCloud) {
-    btnCloseCloud.addEventListener('click', () => {
-      state.cloudSyncModalOpen = false;
-      renderApp();
-    });
-  }
-
-  const cloudBackdrop = document.getElementById('cloud-sync-backdrop');
-  if (cloudBackdrop) {
-    cloudBackdrop.addEventListener('click', (e) => {
-      if (e.target === cloudBackdrop) {
-        state.cloudSyncModalOpen = false;
-        renderApp();
-      }
-    });
-  }
-
-  const readCloudInputsIntoConfig = () => {
-    const cfg = loadCloudConfig();
-    const sbUrlInput = document.getElementById('input-supabase-url');
-    const sbKeyInput = document.getElementById('input-supabase-key');
-    const fbInput = document.getElementById('input-firebase-url');
-    const keyInput = document.getElementById('input-sync-key');
-    const ghTokenInput = document.getElementById('input-github-token');
-    const gistIdInput = document.getElementById('input-gist-id');
-    if (sbUrlInput) cfg.supabaseUrl = sbUrlInput.value.trim();
-    if (sbKeyInput) cfg.supabaseAnonKey = sbKeyInput.value.trim();
-    if (fbInput) cfg.firebaseUrl = fbInput.value.trim();
-    if (keyInput) cfg.syncKey = keyInput.value.trim() || 'grachia-ags-2627';
-    if (ghTokenInput) cfg.githubToken = ghTokenInput.value.trim();
-    if (gistIdInput) cfg.gistId = gistIdInput.value.trim();
-    cfg.autoSync = true;
-    saveCloudConfig(cfg);
-    return cfg;
-  };
-
-  document.querySelectorAll('[data-action="select-cloud-provider"]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const cfg = readCloudInputsIntoConfig();
-      cfg.provider = el.getAttribute('data-provider') || 'supabase';
-      saveCloudConfig(cfg);
-      renderApp();
-    });
-  });
-
-  const btnCopySupabaseSql = document.getElementById('btn-copy-supabase-sql');
-  if (btnCopySupabaseSql) {
-    btnCopySupabaseSql.addEventListener('click', async () => {
-      readCloudInputsIntoConfig();
-      try {
-        await navigator.clipboard.writeText(SUPABASE_SETUP_SQL);
-        state.cloudSyncStatus = 'ok';
-        state.cloudSyncMessage = '📋 SQL-код скопирован! Вставьте его в Supabase → SQL Editor → Run.';
-        renderApp();
-      } catch (e) {
-        prompt('Скопируйте SQL-код для Supabase SQL Editor:', SUPABASE_SETUP_SQL);
-      }
-    });
-  }
-
-  const btnCreateGist = document.getElementById('btn-create-new-gist');
-  if (btnCreateGist) {
-    btnCreateGist.addEventListener('click', async () => {
-      const cfg = readCloudInputsIntoConfig();
-      if (!cfg.githubToken) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage = 'Введите GitHub Personal Access Token (с правом gist).';
-        renderApp();
-        return;
-      }
-      try {
-        state.cloudSyncStatus = 'syncing';
-        state.cloudSyncMessage = 'Создание приватного Gist в вашем GitHub...';
-        renderApp();
-        const newGistId = await createNewCloudGist(cfg.githubToken, state);
-        cfg.gistId = newGistId;
-        cfg.provider = 'gist';
-        cfg.autoSync = true;
-        saveCloudConfig(cfg);
-        state.cloudSyncStatus = 'ok';
-        state.cloudSyncMessage = `✅ Приватный Gist успешно создан (${newGistId}) и синхронизирован!`;
-        renderApp();
-      } catch (err) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage = err.message || 'Ошибка создания Gist';
-        renderApp();
-      }
-    });
-  }
-
-  const btnSaveSyncCloud = document.getElementById('btn-save-and-sync-cloud');
-  if (btnSaveSyncCloud) {
-    btnSaveSyncCloud.addEventListener('click', async () => {
-      const cfg = readCloudInputsIntoConfig();
-      if (!isCloudConfigured(cfg)) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage =
-          'Заполните обязательные поля выбранного провайдера (для Supabase: Project URL и Anon Key).';
-        renderApp();
-        return;
-      }
-      try {
-        state.cloudSyncStatus = 'syncing';
-        state.cloudSyncMessage = 'Проверка облачной БД и синхронизация...';
-        renderApp();
-        const res = await pullStateFromCloud(cfg);
-        if (!res.empty && res.state) {
-          Object.assign(state, res.state);
-          state.cloudSyncModalOpen = true;
-          saveState(true);
-          state.cloudSyncStatus = 'ok';
-          state.cloudSyncMessage = `✅ Подключено! Загружены данные из облака (${res.updatedAt ? new Date(res.updatedAt).toLocaleString('ru-RU') : 'актуально'}).`;
-        } else {
-          await pushStateToCloud(state, cfg);
-          state.cloudSyncStatus = 'ok';
-          state.cloudSyncMessage = `✅ Подключено! Ваш текущий прогресс сохранён в облачную БД (${new Date().toLocaleTimeString('ru-RU')}).`;
-        }
-        renderApp();
-      } catch (err) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage = err.message || 'Ошибка подключения к облачной БД';
-        renderApp();
-      }
-    });
-  }
-
-  const btnForcePull = document.getElementById('btn-force-pull-cloud');
-  if (btnForcePull) {
-    btnForcePull.addEventListener('click', async () => {
-      const cfg = readCloudInputsIntoConfig();
-      try {
-        state.cloudSyncStatus = 'syncing';
-        state.cloudSyncMessage = 'Загрузка прогресса из облачной БД...';
-        renderApp();
-        const res = await pullStateFromCloud(cfg);
-        if (!res.empty && res.state) {
-          Object.assign(state, res.state);
-          state.cloudSyncModalOpen = true;
-          saveState(true);
-          state.cloudSyncStatus = 'ok';
-          state.cloudSyncMessage = `✅ Данные успешно загружены из облака (${new Date(res.updatedAt || Date.now()).toLocaleString('ru-RU')})!`;
-        } else {
-          state.cloudSyncStatus = 'idle';
-          state.cloudSyncMessage = 'В облачной БД пока нет сохранённых данных — нажмите «Выгрузить в БД».';
-        }
-        renderApp();
-      } catch (err) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage = err.message || 'Ошибка чтения из облака';
-        renderApp();
-      }
-    });
-  }
-
-  const btnForcePush = document.getElementById('btn-force-push-cloud');
-  if (btnForcePush) {
-    btnForcePush.addEventListener('click', async () => {
-      const cfg = readCloudInputsIntoConfig();
-      try {
-        state.cloudSyncStatus = 'syncing';
-        state.cloudSyncMessage = 'Выгрузка прогресса в облачную БД...';
-        renderApp();
-        await pushStateToCloud(state, cfg);
-        state.cloudSyncStatus = 'ok';
-        state.cloudSyncMessage = `✅ Прогресс этого браузера успешно отправлен в облако (${new Date().toLocaleTimeString('ru-RU')})!`;
-        renderApp();
-      } catch (err) {
-        state.cloudSyncStatus = 'error';
-        state.cloudSyncMessage = err.message || 'Ошибка записи в облако';
-        renderApp();
-      }
-    });
-  }
-
-  const btnDisconnectCloud = document.getElementById('btn-disconnect-cloud');
-  if (btnDisconnectCloud) {
-    btnDisconnectCloud.addEventListener('click', () => {
-      saveCloudConfig({
-        provider: 'supabase',
-        supabaseUrl: '',
-        supabaseAnonKey: '',
-        firebaseUrl: '',
-        syncKey: 'grachia-ags-2627',
-        githubToken: '',
-        gistId: '',
-        autoSync: false,
-      });
-      state.cloudSyncStatus = 'idle';
-      state.cloudSyncMessage = 'Облачная синхронизация отключена.';
-      renderApp();
-    });
-  }
-
-  const btnCopyMagicLink = document.getElementById('btn-copy-magic-link');
-  if (btnCopyMagicLink) {
-    btnCopyMagicLink.addEventListener('click', async () => {
-      const cfg = readCloudInputsIntoConfig();
-      const url = buildMagicSyncUrl(cfg);
-      try {
-        await navigator.clipboard.writeText(url);
-        state.cloudSyncStatus = 'ok';
-        state.cloudSyncMessage =
-          '📲 Ссылка скопирована в буфер обмена! Отправьте её себе в Telegram/WhatsApp и откройте на телефоне.';
-        renderApp();
-      } catch (e) {
-        prompt('Скопируйте ссылку для входа на телефоне:', url);
-      }
     });
   }
 
@@ -2966,4 +2490,13 @@ if (typeof document !== 'undefined') {
     }
   });
 }
+
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('focus', () => {
+    if (isCloudConfigured(loadCloudConfig())) {
+      syncFromCloudOnStartup();
+    }
+  });
+}
+
 
