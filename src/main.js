@@ -19,6 +19,7 @@ import {
 } from './data/scheduleData.js';
 import { buildGoogleCalendarUrl, downloadIcsFile } from './utils/calendarExport.js';
 import {
+  SUPABASE_SETUP_SQL,
   loadCloudConfig,
   saveCloudConfig,
   consumeUrlCloudParams,
@@ -1939,12 +1940,14 @@ function renderSolutionConfirmModal() {
 
 function renderCloudSyncModal() {
   if (!state.cloudSyncModalOpen) return '';
+  const cloudConfig = loadCloudConfig();
   const isCfg = isCloudConfigured(cloudConfig);
   const magicUrl = isCfg ? buildMagicSyncUrl(cloudConfig) : '';
+  const provider = cloudConfig.provider || 'supabase';
 
   return `
     <div class="modal-backdrop" id="cloud-sync-backdrop">
-      <div class="confirm-modal-window" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="cloud-modal-title">
+      <div class="confirm-modal-window" style="max-width:660px;" role="dialog" aria-modal="true" aria-labelledby="cloud-modal-title">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="subj-pill subj-digital">☁️ Облачная БД</span>
@@ -1957,30 +1960,86 @@ function renderCloudSyncModal() {
           Синхронизация прогресса между браузерами и телефоном
         </h3>
         <p style="margin:0 0 14px; font-size:13.8px; color:var(--ink-secondary);">
-          Подключите облачную базу данных (<b>Firebase Realtime Database</b> или <b>GitHub Gist</b>). Все ваши отмеченные параграфы, переносы дат, заметки, выбранные предметы и оценки будут автоматически сохраняться в облако и подгружаться при открытии на телефоне или в другом браузере.
+          Подключите облачную базу данных (<b>Supabase</b>, <b>GitHub Gist</b> или <b>Firebase</b>). Все ваши отмеченные параграфы, переносы дат, заметки, выбранные предметы и оценки будут автоматически сохраняться в облако и подгружаться при открытии на телефоне или в другом браузере.
         </p>
 
         <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
           <button
             type="button"
-            class="btn btn-sm ${cloudConfig.provider !== 'gist' ? 'btn-primary' : ''}"
+            class="btn btn-sm ${provider === 'supabase' ? 'btn-primary' : ''}"
             data-action="select-cloud-provider"
-            data-provider="firebase"
+            data-provider="supabase"
           >
-            🔥 Firebase Realtime DB (Рекомендуется)
+            ⚡ Supabase (Рекомендуется)
           </button>
           <button
             type="button"
-            class="btn btn-sm ${cloudConfig.provider === 'gist' ? 'btn-primary' : ''}"
+            class="btn btn-sm ${provider === 'gist' ? 'btn-primary' : ''}"
             data-action="select-cloud-provider"
             data-provider="gist"
           >
             🐙 GitHub Gist Cloud DB
           </button>
+          <button
+            type="button"
+            class="btn btn-sm ${provider === 'firebase' ? 'btn-primary' : ''}"
+            data-action="select-cloud-provider"
+            data-provider="firebase"
+          >
+            🔥 Firebase Realtime DB
+          </button>
         </div>
 
         ${
-          cloudConfig.provider !== 'gist'
+          provider === 'supabase'
+            ? `
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+            <label style="font-size:13px; font-weight:600;">
+              1. Supabase Project URL (из Project Settings → Data API / API):
+              <input
+                type="url"
+                id="input-supabase-url"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="https://ваш-id-проекта.supabase.co"
+                value="${cloudConfig.supabaseUrl || ''}"
+              />
+            </label>
+            <label style="font-size:13px; font-weight:600;">
+              2. Supabase Anon Public Key (публичный ключ <code>anon</code> / <code>public</code>):
+              <input
+                type="password"
+                id="input-supabase-key"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... или sb_publishable_..."
+                value="${cloudConfig.supabaseAnonKey || ''}"
+              />
+            </label>
+            <label style="font-size:13px; font-weight:600;">
+              3. Ключ профиля (Sync Key — одинаковый на ноутбуке и телефоне):
+              <input
+                type="text"
+                id="input-sync-key"
+                class="notes-area"
+                style="min-height:38px; height:38px; margin-top:4px; padding:6px 10px; font-family:var(--f-mono); font-size:13px;"
+                placeholder="grachia-ags-2627"
+                value="${cloudConfig.syncKey || 'grachia-ags-2627'}"
+              />
+            </label>
+            <div class="alert-box" style="margin:0; font-size:12.5px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                <strong>💡 Быстрая настройка таблицы в вашем проекте Supabase (1 раз за 20 сек):</strong>
+                <button type="button" class="btn btn-sm" id="btn-copy-supabase-sql">📋 Скопировать SQL (5 строк)</button>
+              </div>
+              1. В панели вашего проекта Supabase слева нажмите <b>SQL Editor → New query</b>.<br/>
+              2. Вставьте этот SQL-код и нажмите <b>Run</b>:<br/>
+              <pre style="margin:6px 0 6px; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:6px; font-family:var(--f-mono); font-size:11.5px; overflow-x:auto;">${SUPABASE_SETUP_SQL}</pre>
+              3. Скопируйте <b>Project URL</b> и <b>anon public key</b> из раздела <b>Project Settings → Data API (или API)</b> в поля выше и нажмите «Сохранить и синхронизировать»!
+            </div>
+          </div>
+        `
+            : provider === 'firebase'
             ? `
           <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
             <label style="font-size:13px; font-weight:600;">
@@ -2006,7 +2065,7 @@ function renderCloudSyncModal() {
               />
             </label>
             <div class="alert-box" style="margin:0; font-size:12.5px;">
-              <strong>💡 Как создать бесплатную БД Firebase за 1 минуту:</strong><br/>
+              <strong>💡 Как создать бесплатную БД Firebase:</strong><br/>
               1. Откройте <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">console.firebase.google.com</a> → <b>Create a project</b>.<br/>
               2. В меню слева выберите <b>Build → Realtime Database → Create Database</b> (выберите режим <i>Start in test mode</i>).<br/>
               3. Скопируйте URL вида <code>https://...firebasedatabase.app</code> и вставьте в поле выше!
@@ -2047,9 +2106,9 @@ function renderCloudSyncModal() {
         }
 
         ${
-          cloudSyncStatus.message
-            ? `<div class="alert-box ${cloudSyncStatus.state === 'error' ? 'danger' : 'warn'}" style="margin:0 0 14px; font-size:13px;">
-                <b>Статус:</b> ${cloudSyncStatus.message}
+          state.cloudSyncMessage
+            ? `<div class="alert-box ${state.cloudSyncStatus === 'error' ? 'danger' : 'warn'}" style="margin:0 0 14px; font-size:13px;">
+                <b>Статус:</b> ${state.cloudSyncMessage}
               </div>`
             : ''
         }
@@ -2135,7 +2194,7 @@ function attachEvents() {
     });
   }
 
-  // Открытие и управление модальным окном Облачной БД (Firebase / GitHub Gist)
+  // Открытие и управление модальным окном Облачной БД (Supabase / GitHub Gist / Firebase)
   const btnOpenCloud = document.getElementById('btn-open-cloud-sync');
   if (btnOpenCloud) {
     btnOpenCloud.addEventListener('click', () => {
@@ -2162,50 +2221,74 @@ function attachEvents() {
     });
   }
 
-  document.querySelectorAll('[data-action="select-cloud-provider"]').forEach((el) => {
-    el.addEventListener('click', () => {
-      cloudConfig.provider = el.getAttribute('data-provider') || 'firebase';
-      saveCloudConfig(cloudConfig);
-      renderApp();
-    });
-  });
-
   const readCloudInputsIntoConfig = () => {
+    const cfg = loadCloudConfig();
+    const sbUrlInput = document.getElementById('input-supabase-url');
+    const sbKeyInput = document.getElementById('input-supabase-key');
     const fbInput = document.getElementById('input-firebase-url');
     const keyInput = document.getElementById('input-sync-key');
     const ghTokenInput = document.getElementById('input-github-token');
     const gistIdInput = document.getElementById('input-gist-id');
-    if (fbInput) cloudConfig.firebaseUrl = fbInput.value.trim();
-    if (keyInput) cloudConfig.syncKey = keyInput.value.trim() || 'grachia-ags-2627';
-    if (ghTokenInput) cloudConfig.githubToken = ghTokenInput.value.trim();
-    if (gistIdInput) cloudConfig.gistId = gistIdInput.value.trim();
-    cloudConfig.enabled = isCloudConfigured(cloudConfig);
-    saveCloudConfig(cloudConfig);
+    if (sbUrlInput) cfg.supabaseUrl = sbUrlInput.value.trim();
+    if (sbKeyInput) cfg.supabaseAnonKey = sbKeyInput.value.trim();
+    if (fbInput) cfg.firebaseUrl = fbInput.value.trim();
+    if (keyInput) cfg.syncKey = keyInput.value.trim() || 'grachia-ags-2627';
+    if (ghTokenInput) cfg.githubToken = ghTokenInput.value.trim();
+    if (gistIdInput) cfg.gistId = gistIdInput.value.trim();
+    cfg.autoSync = true;
+    saveCloudConfig(cfg);
+    return cfg;
   };
+
+  document.querySelectorAll('[data-action="select-cloud-provider"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const cfg = readCloudInputsIntoConfig();
+      cfg.provider = el.getAttribute('data-provider') || 'supabase';
+      saveCloudConfig(cfg);
+      renderApp();
+    });
+  });
+
+  const btnCopySupabaseSql = document.getElementById('btn-copy-supabase-sql');
+  if (btnCopySupabaseSql) {
+    btnCopySupabaseSql.addEventListener('click', async () => {
+      readCloudInputsIntoConfig();
+      try {
+        await navigator.clipboard.writeText(SUPABASE_SETUP_SQL);
+        state.cloudSyncStatus = 'ok';
+        state.cloudSyncMessage = '📋 SQL-код скопирован! Вставьте его в Supabase → SQL Editor → Run.';
+        renderApp();
+      } catch (e) {
+        prompt('Скопируйте SQL-код для Supabase SQL Editor:', SUPABASE_SETUP_SQL);
+      }
+    });
+  }
 
   const btnCreateGist = document.getElementById('btn-create-new-gist');
   if (btnCreateGist) {
     btnCreateGist.addEventListener('click', async () => {
-      readCloudInputsIntoConfig();
-      if (!cloudConfig.githubToken) {
-        cloudSyncStatus = { state: 'error', message: 'Введите GitHub Personal Access Token (с правом gist).' };
+      const cfg = readCloudInputsIntoConfig();
+      if (!cfg.githubToken) {
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage = 'Введите GitHub Personal Access Token (с правом gist).';
         renderApp();
         return;
       }
       try {
-        cloudSyncStatus = { state: 'syncing', message: 'Создание приватного Gist в вашем GitHub...' };
+        state.cloudSyncStatus = 'syncing';
+        state.cloudSyncMessage = 'Создание приватного Gist в вашем GitHub...';
         renderApp();
-        const newGistId = await createNewCloudGist(cloudConfig.githubToken, state);
-        cloudConfig.gistId = newGistId;
-        cloudConfig.enabled = true;
-        saveCloudConfig(cloudConfig);
-        cloudSyncStatus = {
-          state: 'ok',
-          message: `Приватный Gist успешно создан (${newGistId}) и синхронизирован!`,
-        };
+        const newGistId = await createNewCloudGist(cfg.githubToken, state);
+        cfg.gistId = newGistId;
+        cfg.provider = 'gist';
+        cfg.autoSync = true;
+        saveCloudConfig(cfg);
+        state.cloudSyncStatus = 'ok';
+        state.cloudSyncMessage = `✅ Приватный Gist успешно создан (${newGistId}) и синхронизирован!`;
         renderApp();
       } catch (err) {
-        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка создания Gist' };
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage = err.message || 'Ошибка создания Gist';
         renderApp();
       }
     });
@@ -2214,41 +2297,34 @@ function attachEvents() {
   const btnSaveSyncCloud = document.getElementById('btn-save-and-sync-cloud');
   if (btnSaveSyncCloud) {
     btnSaveSyncCloud.addEventListener('click', async () => {
-      readCloudInputsIntoConfig();
-      if (!isCloudConfigured(cloudConfig)) {
-        cloudSyncStatus = {
-          state: 'error',
-          message: 'Укажите URL базы Firebase (или GitHub Token + Gist ID) для включения синхронизации.',
-        };
+      const cfg = readCloudInputsIntoConfig();
+      if (!isCloudConfigured(cfg)) {
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage =
+          'Заполните обязательные поля выбранного провайдера (для Supabase: Project URL и Anon Key).';
         renderApp();
         return;
       }
       try {
-        cloudSyncStatus = { state: 'syncing', message: 'Проверка облачной БД и синхронизация...' };
+        state.cloudSyncStatus = 'syncing';
+        state.cloudSyncMessage = 'Проверка облачной БД и синхронизация...';
         renderApp();
-        const remote = await pullStateFromCloud(cloudConfig);
-        const localTime = Number(state.updatedAt || 0);
-        const remoteTime = Number(remote?.updatedAt || 0);
-        if (remote && remoteTime > localTime) {
-          Object.assign(state, structuredClone( DEFAULT_STATE ), remote);
+        const res = await pullStateFromCloud(cfg);
+        if (!res.empty && res.state) {
+          Object.assign(state, res.state);
           state.cloudSyncModalOpen = true;
-          saveState({ skipCloud: true });
-          cloudSyncStatus = {
-            state: 'ok',
-            message: `Загружена более свежая версия из облака (${new Date(remoteTime).toLocaleString('ru-RU')})!`,
-          };
+          saveState(true);
+          state.cloudSyncStatus = 'ok';
+          state.cloudSyncMessage = `✅ Подключено! Загружены данные из облака (${res.updatedAt ? new Date(res.updatedAt).toLocaleString('ru-RU') : 'актуально'}).`;
         } else {
-          state.updatedAt = Date.now();
-          saveState({ skipCloud: true });
-          await pushStateToCloud(state, cloudConfig);
-          cloudSyncStatus = {
-            state: 'ok',
-            message: `Прогресс успешно сохранён в облачную БД (${new Date().toLocaleTimeString('ru-RU')})!`,
-          };
+          await pushStateToCloud(state, cfg);
+          state.cloudSyncStatus = 'ok';
+          state.cloudSyncMessage = `✅ Подключено! Ваш текущий прогресс сохранён в облачную БД (${new Date().toLocaleTimeString('ru-RU')}).`;
         }
         renderApp();
       } catch (err) {
-        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка подключения к облачной БД' };
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage = err.message || 'Ошибка подключения к облачной БД';
         renderApp();
       }
     });
@@ -2257,25 +2333,26 @@ function attachEvents() {
   const btnForcePull = document.getElementById('btn-force-pull-cloud');
   if (btnForcePull) {
     btnForcePull.addEventListener('click', async () => {
-      readCloudInputsIntoConfig();
+      const cfg = readCloudInputsIntoConfig();
       try {
-        cloudSyncStatus = { state: 'syncing', message: 'Загрузка прогресса из облачной БД...' };
+        state.cloudSyncStatus = 'syncing';
+        state.cloudSyncMessage = 'Загрузка прогресса из облачной БД...';
         renderApp();
-        const remote = await pullStateFromCloud(cloudConfig);
-        if (remote && typeof remote === 'object') {
-          Object.assign(state, structuredClone(DEFAULT_STATE), remote);
+        const res = await pullStateFromCloud(cfg);
+        if (!res.empty && res.state) {
+          Object.assign(state, res.state);
           state.cloudSyncModalOpen = true;
-          saveState({ skipCloud: true });
-          cloudSyncStatus = {
-            state: 'ok',
-            message: `Данные успешно загружены из облака (${new Date(remote.updatedAt || Date.now()).toLocaleString('ru-RU')})!`,
-          };
+          saveState(true);
+          state.cloudSyncStatus = 'ok';
+          state.cloudSyncMessage = `✅ Данные успешно загружены из облака (${new Date(res.updatedAt || Date.now()).toLocaleString('ru-RU')})!`;
         } else {
-          cloudSyncStatus = { state: 'warn', message: 'В облачной БД пока нет сохранённых данных.' };
+          state.cloudSyncStatus = 'idle';
+          state.cloudSyncMessage = 'В облачной БД пока нет сохранённых данных — нажмите «Выгрузить в БД».';
         }
         renderApp();
       } catch (err) {
-        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка чтения из облака' };
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage = err.message || 'Ошибка чтения из облака';
         renderApp();
       }
     });
@@ -2284,20 +2361,18 @@ function attachEvents() {
   const btnForcePush = document.getElementById('btn-force-push-cloud');
   if (btnForcePush) {
     btnForcePush.addEventListener('click', async () => {
-      readCloudInputsIntoConfig();
+      const cfg = readCloudInputsIntoConfig();
       try {
-        cloudSyncStatus = { state: 'syncing', message: 'Выгрузка прогресса в облачную БД...' };
+        state.cloudSyncStatus = 'syncing';
+        state.cloudSyncMessage = 'Выгрузка прогресса в облачную БД...';
         renderApp();
-        state.updatedAt = Date.now();
-        saveState({ skipCloud: true });
-        await pushStateToCloud(state, cloudConfig);
-        cloudSyncStatus = {
-          state: 'ok',
-          message: `Прогресс этого браузера успешно отправлен в облако (${new Date().toLocaleTimeString('ru-RU')})!`,
-        };
+        await pushStateToCloud(state, cfg);
+        state.cloudSyncStatus = 'ok';
+        state.cloudSyncMessage = `✅ Прогресс этого браузера успешно отправлен в облако (${new Date().toLocaleTimeString('ru-RU')})!`;
         renderApp();
       } catch (err) {
-        cloudSyncStatus = { state: 'error', message: err.message || 'Ошибка записи в облако' };
+        state.cloudSyncStatus = 'error';
+        state.cloudSyncMessage = err.message || 'Ошибка записи в облако';
         renderApp();
       }
     });
@@ -2306,16 +2381,18 @@ function attachEvents() {
   const btnDisconnectCloud = document.getElementById('btn-disconnect-cloud');
   if (btnDisconnectCloud) {
     btnDisconnectCloud.addEventListener('click', () => {
-      cloudConfig = {
-        enabled: false,
-        provider: 'firebase',
+      saveCloudConfig({
+        provider: 'supabase',
+        supabaseUrl: '',
+        supabaseAnonKey: '',
         firebaseUrl: '',
         syncKey: 'grachia-ags-2627',
         githubToken: '',
         gistId: '',
-      };
-      saveCloudConfig(cloudConfig);
-      cloudSyncStatus = { state: 'idle', message: 'Облачная синхронизация отключена.' };
+        autoSync: false,
+      });
+      state.cloudSyncStatus = 'idle';
+      state.cloudSyncMessage = 'Облачная синхронизация отключена.';
       renderApp();
     });
   }
@@ -2323,13 +2400,13 @@ function attachEvents() {
   const btnCopyMagicLink = document.getElementById('btn-copy-magic-link');
   if (btnCopyMagicLink) {
     btnCopyMagicLink.addEventListener('click', async () => {
-      const url = buildMagicSyncUrl(cloudConfig);
+      const cfg = readCloudInputsIntoConfig();
+      const url = buildMagicSyncUrl(cfg);
       try {
         await navigator.clipboard.writeText(url);
-        cloudSyncStatus = {
-          state: 'ok',
-          message: '📲 Ссылка скопирована в буфер обмена! Отправьте её себе в Telegram/WhatsApp и откройте на телефоне.',
-        };
+        state.cloudSyncStatus = 'ok';
+        state.cloudSyncMessage =
+          '📲 Ссылка скопирована в буфер обмена! Отправьте её себе в Telegram/WhatsApp и откройте на телефоне.';
         renderApp();
       } catch (e) {
         prompt('Скопируйте ссылку для входа на телефоне:', url);
@@ -2884,7 +2961,7 @@ syncFromCloudOnStartup();
 
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && isCloudConfigured(cloudConfig)) {
+    if (document.visibilityState === 'visible' && isCloudConfigured(loadCloudConfig())) {
       syncFromCloudOnStartup();
     }
   });

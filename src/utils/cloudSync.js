@@ -1,16 +1,25 @@
 // Универсальный модуль облачной синхронизации прогресса между устройствами и браузерами
-// Поддерживает:
-// 1. Firebase Realtime Database (REST API — работает мгновенно без тяжёлых SDK, достаточно URL базы)
+// Поддерживает 3 провайдера без тяжёлых SDK:
+// 1. Supabase (PostgreSQL REST API / PostgREST — работает через Project URL + anon key)
 // 2. GitHub Gist Cloud Storage (через GitHub API + Personal Access Token)
-// 3. Автоматическую передачу настроек на телефон / другой браузер через Magic-ссылку (?cloudUrl=...&syncKey=...)
+// 3. Firebase Realtime Database (REST API — через URL базы)
+// А также автоматическую передачу настроек на телефон / другой браузер через Magic-ссылку!
 
 const CLOUD_CONFIG_KEY = 'ags_study_hub_cloud_config_v1';
 
-// Если пользователь пришлёт свой Firebase URL, его можно прописать сюда по умолчанию:
+export const SUPABASE_SETUP_SQL = `create table if not exists public.ags_study_hub_sync (
+  sync_key text primary key,
+  updated_at timestamptz default now(),
+  payload jsonb not null
+);
+alter table public.ags_study_hub_sync disable row level security;`;
+
 const DEFAULT_CLOUD_CONFIG = {
-  provider: 'firebase', // 'firebase' | 'gist'
+  provider: 'supabase', // 'supabase' | 'gist' | 'firebase'
+  supabaseUrl: '', // например: https://xyzcompany.supabase.co
+  supabaseAnonKey: '', // публичный anon key (eyJ... или sb_publishable_...)
   firebaseUrl: '', // например: https://ags-study-hub-default-rtdb.europe-west1.firebasedatabase.app
-  syncKey: 'grachia-ags-2627', // ключ профиля в базе
+  syncKey: 'grachia-ags-2627', // ключ вашего профиля в базе
   gistId: '',
   githubToken: '',
   autoSync: true,
@@ -37,21 +46,32 @@ export function saveCloudConfig(cfg) {
   }
 }
 
-// Проверяет URL страницы на наличие параметров быстрого подключения (?cloudUrl=...&syncKey=... или ?gistId=...&ghToken=...)
-// Это позволяет открыть 1 раз ссылку на телефоне, чтобы телефон автоматически подключился к той же базе данных!
+// Проверяет URL страницы на наличие параметров быстрого подключения (Magic-ссылка для телефона / второго браузера)
 export function consumeUrlCloudParams() {
   try {
+    if (typeof window === 'undefined' || !window.location || !window.location.href) {
+      return { connectedFromUrl: false, config: loadCloudConfig() };
+    }
     const url = new URL(window.location.href);
     const params = url.searchParams;
     let updated = false;
     const cfg = loadCloudConfig();
 
+    const sbUrl = params.get('sbUrl');
+    const sbKey = params.get('sbKey');
     const fbUrl = params.get('cloudUrl') || params.get('firebaseUrl');
     const syncKey = params.get('syncKey');
     const gistId = params.get('gistId');
     const ghToken = params.get('ghToken');
 
-    if (fbUrl) {
+    if (sbUrl && sbKey) {
+      cfg.provider = 'supabase';
+      cfg.supabaseUrl = sbUrl.trim().replace(/\/+$/, '');
+      cfg.supabaseAnonKey = sbKey.trim();
+      if (syncKey) cfg.syncKey = syncKey.trim();
+      cfg.autoSync = true;
+      updated = true;
+    } else if (fbUrl) {
       cfg.provider = 'firebase';
       cfg.firebaseUrl = fbUrl.trim().replace(/\/+$/, '');
       if (syncKey) cfg.syncKey = syncKey.trim();
@@ -67,7 +87,8 @@ export function consumeUrlCloudParams() {
 
     if (updated) {
       saveCloudConfig(cfg);
-      // Очищаем чувствительные параметры из адресной строки после сохранения
+      params.delete('sbUrl');
+      params.delete('sbKey');
       params.delete('cloudUrl');
       params.delete('firebaseUrl');
       params.delete('syncKey');
@@ -85,6 +106,15 @@ export function consumeUrlCloudParams() {
 }
 
 export function isCloudConfigured(cfg = loadCloudConfig()) {
+  if (!cfg) return false;
+  if (cfg.provider === 'supabase') {
+    return Boolean(
+      cfg.supabaseUrl &&
+        cfg.supabaseUrl.startsWith('https://') &&
+        cfg.supabaseAnonKey &&
+        cfg.supabaseAnonKey.trim().length > 10
+    );
+  }
   if (cfg.provider === 'firebase') {
     return Boolean(cfg.firebaseUrl && cfg.firebaseUrl.startsWith('https://'));
   }
@@ -95,9 +125,14 @@ export function isCloudConfigured(cfg = loadCloudConfig()) {
 }
 
 export function buildMagicSyncUrl(cfg = loadCloudConfig()) {
-  const baseUrl = window.location.origin + window.location.pathname;
+  if (typeof window === 'undefined' || !window.location) return '';
+  const baseUrl = (window.location.origin || '') + (window.location.pathname || '/');
   const params = new URLSearchParams();
-  if (cfg.provider === 'firebase' && cfg.firebaseUrl) {
+  if (cfg.provider === 'supabase' && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+    params.set('sbUrl', cfg.supabaseUrl.trim().replace(/\/+$/, ''));
+    params.set('sbKey', cfg.supabaseAnonKey.trim());
+    params.set('syncKey', (cfg.syncKey || 'grachia-ags-2627').trim());
+  } else if (cfg.provider === 'firebase' && cfg.firebaseUrl) {
     params.set('cloudUrl', cfg.firebaseUrl.trim().replace(/\/+$/, ''));
     params.set('syncKey', (cfg.syncKey || 'grachia-ags-2627').trim());
   } else if (cfg.provider === 'gist' && cfg.gistId && cfg.githubToken) {
@@ -119,9 +154,10 @@ export async function pushStateToCloud(stateObj, cfg = loadCloudConfig()) {
     throw new Error('Облачная база данных ещё не настроена.');
   }
 
+  const nowIso = new Date().toISOString();
   const payload = {
-    updatedAt: new Date().toISOString(),
-    deviceAgent: navigator.userAgent.slice(0, 80),
+    updatedAt: nowIso,
+    deviceAgent: typeof navigator !== 'undefined' && navigator.userAgent ? navigator.userAgent.slice(0, 80) : 'web',
     state: {
       theme: stateObj.theme,
       selectedDate: stateObj.selectedDate,
@@ -140,6 +176,37 @@ export async function pushStateToCloud(stateObj, cfg = loadCloudConfig()) {
     },
   };
 
+  if (cfg.provider === 'supabase') {
+    const base = cfg.supabaseUrl.trim().replace(/\/+$/, '');
+    const key = cfg.supabaseAnonKey.trim();
+    const syncKey = (cfg.syncKey || 'grachia-ags-2627').trim();
+    const endpoint = `${base}/rest/v1/ags_study_hub_sync?on_conflict=sync_key`;
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify({
+        sync_key: syncKey,
+        updated_at: nowIso,
+        payload,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(
+        `Ошибка Supabase (${res.status}): убедитесь, что вы выполнили SQL-команду создания таблицы ags_study_hub_sync в SQL Editor. ${errText.slice(0, 120)}`
+      );
+    }
+    saveCloudConfig({ ...cfg, lastSyncedAt: nowIso });
+    return { ok: true, updatedAt: nowIso };
+  }
+
   if (cfg.provider === 'firebase') {
     const endpoint = getFirebaseEndpoint(cfg);
     const res = await fetch(endpoint, {
@@ -150,7 +217,6 @@ export async function pushStateToCloud(stateObj, cfg = loadCloudConfig()) {
     if (!res.ok) {
       throw new Error(`Ошибка Firebase (${res.status}): проверьте URL базы и Rules (.read/.write: true)`);
     }
-    const nowIso = payload.updatedAt;
     saveCloudConfig({ ...cfg, lastSyncedAt: nowIso });
     return { ok: true, updatedAt: nowIso };
   }
@@ -175,7 +241,6 @@ export async function pushStateToCloud(stateObj, cfg = loadCloudConfig()) {
     if (!res.ok) {
       throw new Error(`Ошибка GitHub Gist (${res.status}): проверьте Gist ID и токен с правом gist`);
     }
-    const nowIso = payload.updatedAt;
     saveCloudConfig({ ...cfg, lastSyncedAt: nowIso });
     return { ok: true, updatedAt: nowIso };
   }
@@ -187,6 +252,42 @@ export async function pushStateToCloud(stateObj, cfg = loadCloudConfig()) {
 export async function pullStateFromCloud(cfg = loadCloudConfig()) {
   if (!isCloudConfigured(cfg)) {
     throw new Error('Облачная база данных ещё не настроена.');
+  }
+
+  if (cfg.provider === 'supabase') {
+    const base = cfg.supabaseUrl.trim().replace(/\/+$/, '');
+    const key = cfg.supabaseAnonKey.trim();
+    const syncKey = encodeURIComponent((cfg.syncKey || 'grachia-ags-2627').trim());
+    const endpoint = `${base}/rest/v1/ags_study_hub_sync?sync_key=eq.${syncKey}&select=payload,updated_at`;
+
+    const res = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        Accept: 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(
+        `Ошибка чтения Supabase (${res.status}): проверьте URL, anon key и наличие таблицы ags_study_hub_sync. ${errText.slice(0, 120)}`
+      );
+    }
+
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0 || !rows[0]?.payload) {
+      return { empty: true, state: null, updatedAt: null };
+    }
+
+    const row = rows[0];
+    const parsedPayload = row.payload;
+    const stateData = parsedPayload.state || parsedPayload;
+    const updatedAt = row.updated_at || parsedPayload.updatedAt || new Date().toISOString();
+    saveCloudConfig({ ...cfg, lastSyncedAt: updatedAt });
+    return { empty: false, state: stateData, updatedAt };
   }
 
   if (cfg.provider === 'firebase') {
