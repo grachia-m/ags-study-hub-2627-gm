@@ -1,0 +1,781 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lengua U1–U2: Cuadro de Morfología, Objetos (CD/CI) y Sintaxis</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;600;700&family=STIX+Two+Text:ital@0;1&family=Unbounded:wght@600&display=swap"><style>:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#18202F; --muted:#586277; --line:#D9DFE8;
+  --accent:#2447D6; --accent-soft:#E7ECFF;
+  --warn:#A64B00; --warn-soft:#FFF3E3; --ok:#17744A; --ok-soft:#E4F5EA;
+  --err:#B42318; --err-soft:#FDECEA;
+  --subj:#C0265F; --subj-soft:#FDE8EF;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+    --accent:#8FA7FF; --accent-soft:#1D2848;
+    --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+    --err:#FF8A80; --err-soft:#3A1917;
+    --subj:#FF8DB5; --subj-soft:#3B1726;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131A; --surface:#171C26; --ink:#E4E8EF; --muted:#9AA3B5; --line:#2A3242;
+  --accent:#8FA7FF; --accent-soft:#1D2848;
+  --warn:#F2A45E; --warn-soft:#352415; --ok:#6CD49B; --ok-soft:#14301F;
+  --err:#FF8A80; --err-soft:#3A1917;
+  --subj:#FF8DB5; --subj-soft:#3B1726;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.62 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:820px;margin:0 auto}
+a{color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px 8px;font-size:14px;color:var(--muted)}
+.top a{text-decoration:none;font-weight:600}
+.hero{padding-block:18px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:600 12px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--subj)}
+h1{font:600 clamp(24px,4.5vw,34px)/1.18 var(--f-display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:68ch;margin:0 0 14px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.toc a{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;text-decoration:none;color:var(--ink)}
+.toc a:hover{border-color:var(--subj)}
+section{padding-block:22px 10px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font:600 21px/1.25 var(--f-display);margin:6px 0 12px;text-wrap:balance}
+h3{font:700 17px/1.35 var(--f-body);margin:20px 0 8px}
+p,li{max-width:72ch}
+ul,ol{padding-left:1.25em}
+li{margin-block:4px}
+.week{display:inline-block;font:600 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--subj);background:var(--subj-soft);padding:5px 8px;border-radius:4px}
+.es{font-style:italic;color:var(--subj);font-weight:600}
+.eq{font-family:var(--f-body);font-size:17px;line-height:1.5;padding:12px 16px;margin:12px 0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow-x:auto;text-align:center}
+.eq small{display:block;font:13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.box{border:1px solid var(--line);border-left:4px solid var(--c,var(--accent));background:var(--surface);border-radius:6px;padding:12px 16px;margin:14px 0}
+.box>.lbl{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c,var(--accent));margin-bottom:8px;display:block}
+.box p:first-of-type{margin-top:0}
+.box p:last-child{margin-bottom:0}
+.ex{--c:var(--ok);background:var(--ok-soft)}
+.trap{--c:var(--warn);background:var(--warn-soft)}
+.errata{--c:var(--err);background:var(--err-soft)}
+.tip{--c:var(--accent);background:var(--accent-soft)}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.2px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11.5px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.pair{grid-template-columns:1fr}}
+details.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0;padding:0}
+details.q summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"?";display:inline-block;width:22px;height:22px;margin-right:10px;border-radius:50%;background:var(--subj-soft);color:var(--subj);text-align:center;font:600 12px/22px var(--f-mono)}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .a{padding:10px 14px 12px}
+.tag-var{display:inline-block;padding:2px 7px;border-radius:4px;font:600 11px/1.2 var(--f-mono);background:var(--ok-soft);color:var(--ok)}
+.tag-inv{display:inline-block;padding:2px 7px;border-radius:4px;font:600 11px/1.2 var(--f-mono);background:var(--warn-soft);color:var(--warn)}
+</style></head><body><div class="wrap">
+<div class="top"><a href="../">← Трекер</a><span>Lengua castellana · Конспект U1–U2 (Морфология и Синтаксис)</span></div>
+
+<header class="hero">
+  <div class="eyebrow">Lengua Castellana · Cuadro Morfología + Sintaxis y Objetos (U1–U2)</div>
+  <h1>Cuadro de Morfología, Objetos (CD / CI / Atributo) y Sintaxis</h1>
+  <p class="lede">Полная расшифровка таблиц преподавателя Сильвии Габарре (<i>CUADRO MORFOLOGÍA.pdf</i>, <i>EXPLICACIONES CLASE 26_10.pdf</i> и <i>UNIDAD 2</i>). Все слипшиеся слова и стрелки из оригинального PDF разобраны в понятные таблицы: сначала смысл по-русски, затем точная испанская формула для экзамена.</p>
+  <ul class="toc">
+    <li><a href="#morf-variables">1. Cuadro Morfología: Изменяемые слова</a></li>
+    <li><a href="#morf-det-pron">2. Главная путаница: Determinante vs Pronombre</a></li>
+    <li><a href="#morf-verbo-inv">3. Глагол и Неизменяемые слова</a></li>
+    <li><a href="#sintagmas">4. Пять типов синтагм (SN, SV, SAdj, SAdv, SPrep)</a></li>
+    <li><a href="#objetos">5. Объекты и дополнения: Sujeto, CD, CI, Atributo, C. Agente</a></li>
+    <li><a href="#pasivas">6. Activa, Pasiva perifrástica, Pasiva refleja e Impersonal</a></li>
+    <li><a href="#tema-propiedades">7. Как формулировать TEMA + Свойства текста и Жанры</a></li>
+    <li><a href="#test">8. Проверь себя (тренажёр экзамена)</a></li>
+  </ul>
+</header>
+
+<section id="morf-variables">
+  <span class="week">ЧАСТЬ 1 · CUADRO MORFOLOGÍA (СТР. 1 ОРИГИНАЛЬНОГО PDF)</span>
+  <h2>1. Análisis Morfológico: Изменяемые части речи (Palabras Variables)</h2>
+  <p><b>Морфологический разбор (<span class="es">análisis morfológico</span>)</b> отвечает на вопрос: <i>«Какая это часть речи и какая у неё форма?»</i> (не путать с синтаксисом, где мы ищем подлежащее и дополнение). Все слова делятся на <b>Variables</b> (изменяются по роду, числу или лицам) и <b>Invariables</b> (никогда не меняются).</p>
+
+  <h3>1.1. Sustantivo (Имя существительное) <span class="tag-var">VARIABLE</span></h3>
+  <p>Когда вам попадается существительное, в таблице преподавателя нужно назвать <b>4 пары признаков + род + число</b>:</p>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Шаг разбора (¿Cómo lo analizo?)</th>
+      <th>Вариант А (по-испански и по-русски)</th>
+      <th>Вариант Б (по-испански и по-русски)</th>
+    </tr>
+    <tr>
+      <td><b>1. Тип названия</b></td>
+      <td><span class="es">Común</span> (нарицательное — общий класс предметов: <i>perro, ciudad, corral</i>)</td>
+      <td><span class="es">Propio</span> (собственное — имя человека, страны, реки; пишется с заглавной буквы: <i>Antonio, Huesca, Ebro</i>). <b>Важно:</b> для имён собственных остальные 3 пункта ниже обычно не расписывают!</td>
+    </tr>
+    <tr>
+      <td><b>2. Осязаемость</b></td>
+      <td><span class="es">Concreto</span> (конкретное — можно увидеть, потрогать, услышать: <i>mesa, libro, lluvia</i>)</td>
+      <td><span class="es">Abstracto</span> (абстрактное — чувство, идея, понятие: <i>libertad, alegría, miedo, tiempo</i>)</td>
+    </tr>
+    <tr>
+      <td><b>3. Исчисляемость</b></td>
+      <td><span class="es">Contable</span> (исчисляемое — можно посчитать поштучно: <i>un coche, dos árboles</i>)</td>
+      <td><span class="es">No contable / Incontable</span> (неисчисляемое — вещество, жидкость: <i>agua, arena, dinero, sal</i>)</td>
+    </tr>
+    <tr>
+      <td><b>4. Единичность / собирательность</b> (для <i>contables</i>)</td>
+      <td><span class="es">Individual</span> (единичное — в ед. числе обозначает 1 предмет: <i>oveja</i> — овца, <i>soldado</i> — солдат, <i>árbol</i> — дерево)</td>
+      <td><span class="es">Colectivo</span> (собирательное — стоит в <b>единственном числе</b>, но обозначает <b>группу/множество</b>: <i>rebaño</i> — стадо, <i>ejército</i> — армия, <i>bosque</i> — лес, <i>alumnado</i>)</td>
+    </tr>
+    <tr>
+      <td><b>5. Род и число (Género y número)</b></td>
+      <td><span class="es">Masculino</span> (мужской род) или <span class="es">Femenino</span> (женский род)</td>
+      <td><span class="es">Singular</span> (единственное число) или <span class="es">Plural</span> (множественное число)</td>
+    </tr>
+  </table></div>
+
+  <div class="box ex">
+    <span class="lbl">Разбор примера из Cuadro Morfología: «El rebaño salió del corral de Antonio»</span>
+    <p><i>(В оригинальном PDF было слитно: «Elrebañosaliódelcorralde Antonio» — «Стадо вышло из загона Антонио»):</i></p>
+    <ul>
+      <li><b>Rebaño</b> (стадо): <span class="es">sustantivo común, concreto, contable, colectivo, masculino, singular</span> <i>(существительное нарицательное, конкретное, исчисляемое, собирательное [т.к. слово в ед. ч. означает группу овец], мужской род, ед. число)</i>.</li>
+      <li><b>Corral</b> (загон/двор): <span class="es">sustantivo común, concreto, contable, individual, masculino, singular</span> <i>(нарицательное, конкретное, исчисляемое, единичное, муж. род, ед. число)</i>.</li>
+      <li><b>Antonio</b> (Антонио): <span class="es">sustantivo propio, masculino, singular</span> <i>(имя собственное)</i>.</li>
+    </ul>
+  </div>
+
+  <h3>1.2. Adjetivo calificativo (Качественное прилагательное) <span class="tag-var">VARIABLE</span></h3>
+  <p>Обозначает признак предмета и всегда согласуется с существительным в роде и числе. Главное при разборе прилагательного — указать его <b>степень сравнения (<span class="es">grado del adjetivo</span>)</b>:</p>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Степень (Grado)</th>
+      <th>Что означает по-русски</th>
+      <th>Формула / маркеры в предложении</th>
+      <th>Пример из таблицы</th>
+    </tr>
+    <tr>
+      <td><b>1. Grado positivo</b></td>
+      <td>Обычная (положительная) степень — просто называет качество без сравнения</td>
+      <td>Само прилагательное без слов <i>más, menos, tan, muy, -ísimo</i></td>
+      <td><span class="es">malo, roja, grande</span></td>
+    </tr>
+    <tr>
+      <td><b>2. Grado comparativo de superioridad</b></td>
+      <td>Сравнительная степень превосходства («более …, чем»)</td>
+      <td><b>más</b> + прилагательное + <b>que</b> (или особые формы: <i>mejor que, peor que, mayor que</i>)</td>
+      <td><span class="es">más malo que</span> (более плохой, чем)</td>
+    </tr>
+    <tr>
+      <td><b>3. Grado comparativo de igualdad</b></td>
+      <td>Сравнительная степень равенства («такой же …, как»)</td>
+      <td><b>tan</b> + прилагательное + <b>como</b> (или <i>igual de … que</i>)</td>
+      <td><span class="es">tan malo como</span> (такой же плохой, как)</td>
+    </tr>
+    <tr>
+      <td><b>4. Grado comparativo de inferioridad</b></td>
+      <td>Сравнительная степень меньшей меры («менее …, чем»)</td>
+      <td><b>menos</b> + прилагательное + <b>que</b></td>
+      <td><span class="es">menos malo que</span> (менее плохой, чем)</td>
+    </tr>
+    <tr>
+      <td><b>5. Grado superlativo</b></td>
+      <td>Превосходная степень («самый …» или «очень / в высшей степени …»)</td>
+      <td>
+        • <b>Relativo</b> (относительный): <span class="es">el/la más + adj.</span> («самый…»)<br/>
+        • <b>Absoluto</b> (абсолютный): <span class="es">muy + adj.</span> или суффикс <span class="es">-ísimo/-a</span>
+      </td>
+      <td><span class="es">malísimo, muy malo, el más malo, la más bonita</span></td>
+    </tr>
+  </table></div>
+
+  <div class="box ex">
+    <span class="lbl">Разбор примера из Cuadro Morfología: «La libreta roja es la más bonita»</span>
+    <p><i>(В PDF слитно: «Lalibretarojaeslamásbonita» — «Красная тетрадь — самая красивая»):</i></p>
+    <ul>
+      <li><b>Roja</b> (красная): <span class="es">adjetivo calificativo, grado positivo, femenino, singular</span>.</li>
+      <li><b>Bonita</b> (в составе <i>la más bonita</i> — самая красивая): <span class="es">adjetivo calificativo, grado superlativo, femenino, singular</span>.</li>
+    </ul>
+  </div>
+
+  <h3>1.3. Artículo (Артикль) <span class="tag-var">VARIABLE</span></h3>
+  <p>Стоит перед существительным и указывает его род и число:</p>
+  <ul>
+    <li><b>Artículos determinados</b> (определённые): <span class="es">el</span> (муж. ед.), <span class="es">la</span> (жен. ед.), <span class="es">los</span> (муж. мн.), <span class="es">las</span> (жен. мн.), <span class="es">lo</span> (средний род для субстантивации прилагательных: <i>lo bueno</i>).</li>
+    <li><b>Artículos indeterminados</b> (неопределённые): <span class="es">un, una, unos, unas</span>.</li>
+    <li><b>Artículos contractos</b> (слитные артикли — <b>очень часто спрашивают на экзамене!</b>):
+      <ul>
+        <li><b>AL</b> = предлог <span class="es">a</span> + артикль <span class="es">el</span> → пишем: <span class="es">artículo contracto (preposición «a» + artículo masculino singular «el»)</span>.</li>
+        <li><b>DEL</b> = предлог <span class="es">de</span> + артикль <span class="es">el</span> → пишем: <span class="es">artículo contracto (preposición «de» + artículo masculino singular «el»)</span>.</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section id="morf-det-pron">
+  <span class="week">ЧАСТЬ 2 · CUADRO MORFOLOGÍA (СТР. 2 ОРИГИНАЛЬНОГО PDF — САМОЕ ВАЖНОЕ!)</span>
+  <h2>2. Почему в таблице перекрещены линии: Determinantes vs Pronombres</h2>
+  <p>На второй странице <i>CUADRO MORFOLOGÍA.pdf</i> нарисованы косые перекрещивающиеся линии между словами <b>PRONOMBRE</b> и <b>DETERMINANTES</b>. Что этим хотела показать преподаватель?</p>
+
+  <div class="box trap">
+    <span class="lbl">Золотое правило: как за 2 секунды отличить Determinante от Pronombre</span>
+    <p>Одни и те же слова (<span class="es">este, ese, aquel, mi, nuestro, algún, muchos, dos, qué, quién…</span>) могут быть <b>либо определителем (Determinante / Adjetivo determinativo)</b>, <b>либо местоимением (Pronombre)</b>!</p>
+    <ul>
+      <li>👉 <b>DETERMINANTE (Acompaña al sustantivo — сопровождает существительное):</b> если <b>сразу после слова стоит существительное</b>. Например: <i>«<b>Este</b> libro»</i> (Эта книга), <i>«<b>Algún</b> niño»</i> (Какой-то ребёнок), <i>«<b>Tres</b> días»</i> (Три дня).</li>
+      <li>👉 <b>PRONOMBRE (Sustituye al sustantivo — заменяет существительное):</b> если <b>существительного рядом нет</b> (слово стоит само по себе вместо предмета/человека). Например: <i>«<b>Este</b> es mío»</i> (Этот — мой), <i>«<b>Alguno</b> vendrá»</i> (Кто-нибудь придёт), <i>«Quiero <b>dos</b>»</i> (Хочу два).</li>
+    </ul>
+  </div>
+
+  <h3>Полная расшифровка всех 7 разрядов со страницы 2 Cuadro Morfología</h3>
+  <div class="tbl"><table>
+    <tr>
+      <th>Разряд (Clase)</th>
+      <th>Когда это DETERMINANTE (рядом с существительным)</th>
+      <th>Когда это PRONOMBRE (вместо существительного)</th>
+      <th>Как писать разбор (¿Cómo lo analizo?) + Примеры из PDF</th>
+    </tr>
+    <tr>
+      <td><b>1. PERSONALES</b><br/>(Личные — бывают <b>только местоимениями!</b>)</td>
+      <td>— <i>(Не бывают determinantes)</i></td>
+      <td><span class="es">yo, mí, me, conmigo; tú, ti, te, contigo, usted; él, ella, ello, sí, se, consigo, lo, la, le; nosotros/as, nos; vosotros/as, os, ustedes; ellos/as, los, las, les</span></td>
+      <td>
+        Указываем: <b>1ª, 2ª o 3ª persona + singular o plural (+ род, если виден)</b>.<br/>
+        • Пример из PDF: <i>«<b>Yo lo</b> diré»</i> (Я это скажу):<br/>
+        — <b>Yo</b>: <span class="es">pronombre personal, 1ª persona, singular</span>.<br/>
+        — <b>Lo</b>: <span class="es">pronombre personal, 3ª persona, masculino/neutro, singular</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>2. RELATIVOS</b><br/>(Относительные — связывают придаточное предложение с главным)</td>
+      <td><span class="es">cuyo, cuya, cuyos, cuyas</span> (чей/чья/чьё — всегда стоит перед существительным!)</td>
+      <td><span class="es">que, quien, quienes, el cual, la cual, los cuales, las cuales</span> (который, кто)</td>
+      <td>
+        • <i>«El libro <b>que</b> leeremos es muy divertido»</i> → <b>Que</b>: <span class="es">pronombre relativo</span> (заменяет слово <i>el libro</i>).<br/>
+        • <i>«No sé <b>quiénes</b> vendrán»</i> → <b>Quiénes</b>: <span class="es">pronombre relativo / interrogativo, plural</span>.<br/>
+        • <i>«<b>Cuyo</b> libro es precioso»</i> → <b>Cuyo</b>: <span class="es">determinante relativo, masculino, singular</span> (стоит перед <i>libro</i>!).
+      </td>
+    </tr>
+    <tr>
+      <td><b>3. DEMOSTRATIVOS</b><br/>(Указательные — указывают расстояние)</td>
+      <td>Стоит перед сущ.:<br/><i><b>este</b> coche, <b>esa</b> mesa, <b>aquellos</b> años</i></td>
+      <td>Стоит без сущ.:<br/><i><b>Este</b> es nuestro libro, prefiero <b>aquella</b>, <b>eso</b> no me gusta</i></td>
+      <td>
+        Обязательно указываем <b>дистанцию</b>:<br/>
+        • <b>Proximidad</b> (близко к говорящему): <span class="es">este, esta, estos, estas, esto</span><br/>
+        • <b>Distancia media</b> (средняя дистанция): <span class="es">ese, esa, esos, esas, eso</span><br/>
+        • <b>Lejanía</b> (далеко): <span class="es">aquel, aquella, aquellos, aquellas, aquello</span><br/>
+        + род и число.<br/>
+        • Пример из PDF: <i>«<b>Este</b> es nuestro libro»</i> → <b>Este</b>: <span class="es">pronombre demostrativo de proximidad, masculino, singular</span> (стоит без существительного перед глаголом <i>es</i>!).
+      </td>
+    </tr>
+    <tr>
+      <td><b>4. POSESIVOS</b><br/>(Притяжательные — чей предмет?)</td>
+      <td>Стоит при сущ.:<br/><i><b>mi</b> casa, <b>tu</b> perro, <b>su</b> idea, <b>nuestro</b> libro, <b>vuestras</b> notas</i></td>
+      <td>Стоит вместо сущ. (обычно с артиклем или после <i>ser</i>):<br/><i>El <b>mío</b>, la <b>tuya</b>, los <b>nuestros</b></i></td>
+      <td>
+        Указываем: <b>1ª, 2ª o 3ª persona + un poseedor (1 владелец: mi, tu, su) или varios poseedores (несколько владельцев: nuestro, vuestro, su) + род и число предмета</b>.<br/>
+        • Пример из PDF: <i>«Este es <b>nuestro</b> libro»</i> → <b>Nuestro</b>: <span class="es">determinante (adjetivo determinativo) posesivo, 1ª persona, varios poseedores, masculino, singular</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>5. INDEFINIDOS</b><br/>(Неопределённые — неточное количество)</td>
+      <td>Стоит перед сущ.:<br/><i><b>algún</b> niño, <b>muchos</b> problemas, <b>otro</b> día, <b>varias</b> personas</i></td>
+      <td>Стоит без сущ.:<br/><i><b>Alguien</b> llamó, <b>nadie</b> vino, <b>muchos</b> aprobaron, <b>nada</b></i></td>
+      <td>
+        Указываем: <b>género y número</b> (род и число).<br/>
+        • Пример из PDF: <i>«<b>Algún</b> niño ganará el tercer premio»</i> → <b>Algún</b>: <span class="es">determinante (adjetivo determinativo) indefinido, masculino, singular</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>6. NUMERALES</b><br/>(Числительные — точное число или порядок)</td>
+      <td>Стоит перед сущ.:<br/><i><b>dos</b> horas, el <b>tercer</b> premio, <b>veinte</b> euros</i></td>
+      <td>Стоит без сущ.:<br/><i>Llegaron <b>dos</b>, vive en el <b>segundo</b></i></td>
+      <td>
+        Обязательно делим на 2 подтипа:<br/>
+        • <b>Cardinal</b> (количественное — сколько?): <span class="es">uno, dos, tres, cien…</span><br/>
+        • <b>Ordinal</b> (порядковое — который по счёту?): <span class="es">primero, segundo, tercer(o), cuarto…</span><br/>
+        • Пример из PDF: <i>«Algún niño ganará el <b>tercer</b> premio»</i> → <b>Tercer</b>: <span class="es">determinante (adj. determ.) numeral ordinal, masculino, singular</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>7. INTERROGATIVOS / EXCLAMATIVOS</b><br/>(Вопросительные и восклицательные — всегда с графическим ударением <b>tilde</b>!)</td>
+      <td>Стоит перед сущ.:<br/><i>¡<b>Qué</b> alegría!, ¿<b>Cuántos</b> años tienes?, ¿<b>Qué</b> libro lees?</i></td>
+      <td>Стоит без сущ.:<br/><i>¿<b>Qué</b> quieres?, ¿<b>Quién</b> llama?, ¿<b>Cuánto</b> cuesta?</i></td>
+      <td>
+        Указываем: <b>interrogativo o exclamativo (+ род и число, если изменяется)</b>.<br/>
+        • Пример из PDF: <i>«¡<b>Qué</b> alegría!»</i> → <b>Qué</b>: <span class="es">determinante (adj. determ.) exclamativo</span> (стоит перед сущ. <i>alegría</i>).
+      </td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="morf-verbo-inv">
+  <span class="week">ЧАСТЬ 3 · ГЛАГОЛ И НЕИЗМЕНЯЕМЫЕ ЧАСТИ РЕЧИ</span>
+  <h2>3. Verbo (Глагол) и Palabras Invariables (Неизменяемые слова)</h2>
+
+  <h3>3.1. Verbo (Глагол) <span class="tag-var">VARIABLE</span></h3>
+  <p>При разборе любой глагольной формы нужно указать строго <b>7 характеристик по списку из таблицы</b>:</p>
+  <div class="eq">
+    <b>Persona (1ª, 2ª, 3ª)</b> + <b>Número (sing. / pl.)</b> + <b>Tiempo</b> + <b>Modo (indicativo / subjuntivo / imperativo)</b> + <b>Infinitivo</b> + <b>Conjugación (1ª -ar / 2ª -er / 3ª -ir)</b> + <b>Voz (activa / pasiva)</b>
+  </div>
+  <div class="box ex">
+    <span class="lbl">Пример из Cuadro Morfología: «Cantamos»</span>
+    <p><b>Cantamos</b>: <span class="es">verbo, 1ª persona del plural, presente (или pretérito perfecto simple) de indicativo, del verbo «cantar», 1ª conjugación (-ar), voz activa</span>.</p>
+    <p><i>Другой пример (в пассиве):</i> <b>Fue aprobado</b> → <span class="es">verbo, 3ª persona del singular, pretérito perfecto simple de indicativo, del verbo «aprobar», 1ª conjugación, voz pasiva</span>.</p>
+  </div>
+
+  <h3>3.2. Неизменяемые части речи (Palabras Invariables) <span class="tag-inv">INVARIABLES</span></h3>
+  <p>Эти слова <b>не имеют ни рода, ни числа, ни лица</b>. Для них нужно только назвать категорию и подтип:</p>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Категория</th>
+      <th>Как разбирать (¿Cómo lo analizo?) и все разряды для экзамена</th>
+      <th>Пример из Cuadro Morfología</th>
+    </tr>
+    <tr>
+      <td><b>1. ADVERBIO</b><br/>(Наречие — отвечает на вопросы «где? когда? как? насколько?»)</td>
+      <td>
+        Указываем один из <b>7 разрядов по значению</b>:<br/>
+        • <b>De lugar</b> (места — <i>¿dónde?</i>): <span class="es">aquí, ahí, allí, cerca, lejos, dentro, fuera, arriba, abajo</span><br/>
+        • <b>De tiempo</b> (времени — <i>¿cuándo?</i>): <span class="es">hoy, ayer, mañana, ahora, antes, después, tarde, pronto, siempre, nunca, ya, todavía</span><br/>
+        • <b>De modo</b> (образа действия — <i>¿cómo?</i>): <span class="es">bien, mal, así, despacio, deprisa</span> + все слова на <b>-mente</b> (<span class="es">rápidamente, fácilmente</span>)<br/>
+        • <b>De cantidad</b> (количества/степени — <i>¿cuánto?</i>): <span class="es">muy, mucho, poco, bastante, demasiado, más, menos, tan, casi, nada</span><br/>
+        • <b>De afirmación</b> (утверждения): <span class="es">sí, también, ciertamente, claro, efectivamente</span><br/>
+        • <b>De negación</b> (отрицания): <span class="es">no, nunca, jamás, tampoco</span><br/>
+        • <b>De duda</b> (сомнения): <span class="es">quizá(s), acaso, tal vez, probablemente, posiblemente</span>
+      </td>
+      <td>
+        <i>«Llegó <b>tarde</b>»</i> (Пришёл поздно):<br/>
+        <b>Tarde</b>: <span class="es">adverbio de tiempo (invariable)</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>2. PREPOSICIÓN</b><br/>(Предлог — связывает слова в словосочетании)</td>
+      <td>
+        Просто пишем <span class="es">preposición (invariable)</span>. Полный список испанских предлогов (учится как считалочка по алфавиту):<br/>
+        <span class="es">a, ante, bajo, cabe, con, contra, de, desde, durante, en, entre, hacia, hasta, mediante, para, por, según, sin, so, sobre, tras, versus, vía</span>.
+      </td>
+      <td>
+        <b>A</b>: <span class="es">preposición</span>.<br/>
+        <b>De</b>: <span class="es">preposición</span>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>3. CONJUNCIÓN</b><br/>(Союз — связывает слова или части сложного предложения)</td>
+      <td>
+        Указываем разряд союза:<br/>
+        • <b>Copulativas</b> (соединительные — «и, ни»): <span class="es">y, e, ni</span><br/>
+        • <b>Disyuntivas</b> (разделительные — «или»): <span class="es">o, u</span><br/>
+        • <b>Adversativas</b> (противительные — «но, однако, а»): <span class="es">pero, mas, sino, aunque, sin embargo</span><br/>
+        • <b>Causales</b> (причинные — «потому что, так как»): <span class="es">porque, ya que, puesto que, como</span><br/>
+        • <b>Condicionales</b> (условные — «если»): <span class="es">si, como, a condición de que</span><br/>
+        • <b>Concesivas</b> (уступительные — «хотя, несмотря на то что»): <span class="es">aunque, a pesar de que</span>
+      </td>
+      <td>
+        <b>Y</b>: <span class="es">conjunción copulativa</span>.<br/>
+        <b>Pero</b>: <span class="es">conjunción adversativa</span>.<br/>
+        <b>Porque</b>: <span class="es">conjunción causal</span>.<br/>
+        <b>Si</b>: <span class="es">conjunción condicional</span>.<br/>
+        <b>Aunque</b>: <span class="es">conjunción concesiva</span>.
+      </td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="sintagmas">
+  <span class="week">ЧАСТЬ 4 · СИНТАКСИС (UNIDAD 2 §2)</span>
+  <h2>4. Пять типов синтагм (Tipos de Sintagmas)</h2>
+  <p><b>Синтагма (<span class="es">sintagma / grupo sintáctico</span>)</b> — это слово или группа слов, объединённых вокруг главного слова — <b>ядра (<span class="es">Núcleo — N</span>)</b>. Какая часть речи является ядром, так и называется вся синтагма!</p>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Тип синтагмы</th>
+      <th>Что является главным словом (Núcleo — N)</th>
+      <th>Из чего состоит (структура)</th>
+      <th>Примеры из Unidad 2 (ядро выделено жирным)</th>
+    </tr>
+    <tr>
+      <td><b>1. Sintagma Nominal (SN)</b><br/>Именная (существительная)</td>
+      <td>Существительное (<span class="es">sustantivo</span>) или местоимение (<span class="es">pronombre</span>)</td>
+      <td>(Determinante) + <b>Núcleo</b> + (Adjetivo / SPrep)</td>
+      <td>
+        • <i>Los <b>libros</b> nuevos</i><br/>
+        • <i>Aquellos tres <b>alumnos</b> de la clase</i><br/>
+        • <i>Los viejos <b>amigos</b> de mi padre</i>
+      </td>
+    </tr>
+    <tr>
+      <td><b>2. Sintagma Adjetival (SAdj)</b><br/>Адъективная (прилагательная)</td>
+      <td>Прилагательное (<span class="es">adjetivo calificativo</span>)</td>
+      <td>(Adverbio cuantificador: <i>muy, tan, bastante, sumamente</i>) + <b>Núcleo (Adjetivo)</b> + (SPrep)</td>
+      <td>
+        • <i>Muy <b>contento</b> con el resultado</i><br/>
+        • <i>Sumamente <b>orgulloso</b> de su logro</i><br/>
+        • <i>Muy <b>feliz</b> con la noticia</i>
+      </td>
+    </tr>
+    <tr>
+      <td><b>3. Sintagma Adverbial (SAdv)</b><br/>Наречная</td>
+      <td>Наречие (<span class="es">adverbio</span>)</td>
+      <td>(Adverbio cuantificador: <i>muy, bastante, increíblemente</i>) + <b>Núcleo (Adverbio)</b> + (SPrep)</td>
+      <td>
+        • <i>Bastante <b>lejos</b> de casa</i><br/>
+        • <i>Bastante <b>tarde</b></i><br/>
+        • <i>Increíblemente <b>despacio</b></i>
+      </td>
+    </tr>
+    <tr>
+      <td><b>4. Sintagma Preposicional (SPrep)</b><br/>Предложная</td>
+      <td>Начинается с <b>предлога (<span class="es">preposición</span>)</b>!</td>
+      <td><b>Preposición (Enlace / Núcleo)</b> + Sintagma Nominal (Término)</td>
+      <td>
+        • <i><b>Desde</b> la ventana</i><br/>
+        • <i><b>En</b> el parque de la ciudad</i><br/>
+        • <i><b>Hacia</b> el río</i>
+      </td>
+    </tr>
+    <tr>
+      <td><b>5. Sintagma Verbal (SV)</b><br/>Глагольная (всегда является сказуемым — <i>Predicado</i>)</td>
+      <td>Глагол (<span class="es">verbo</span>)</td>
+      <td><b>Núcleo (Verbo)</b> + все дополнения и обстоятельства (CD, CI, CC, Atributo)</td>
+      <td>
+        • <i><b>Compró</b> frutas en el mercado</i><br/>
+        • <i><b>Llegaron</b> cansados a la meta</i><br/>
+        • <i><b>Ha explicado</b> la lección claramente</i>
+      </td>
+    </tr>
+  </table></div>
+
+  <div class="box trap">
+    <span class="lbl">Ловушка на экзамене: как не перепутать SAdj и SAdv, если оба начинаются на «muy / bastante»?</span>
+    <p>Смотрите на <b>второе слово (ядро)</b>! В <i>«Bastante <b>tarde</b>»</i> главное слово <i>tarde</i> (поздно — наречие, не изменяется) → значит, это <b>SAdv</b>. А в <i>«Muy <b>contento</b>»</i> главное слово <i>contento</i> (довольный — прилагательное, можно сказать <i>contenta / contentos</i>) → значит, это <b>SAdj</b>!</p>
+  </div>
+</section>
+
+<section id="objetos">
+  <span class="week">ЧАСТЬ 5 · ОБЪЕКТЫ И ЧЛЕНЫ ПРЕДЛОЖЕНИЯ (SUJETO, CD, CI, ATRIBUTO, AGENTE)</span>
+  <h2>5. Все объекты в испанском предложении: как их найти без ошибок</h2>
+  <p>В испанском языке предложение (<span class="es">oración</span>) делится на две главные части: <b>Sujeto (Подлежащее)</b> и <b>Predicado (Сказуемое — это всегда Sintagma Verbal)</b>. Внутри сказуемого вокруг глагола стоят <b>объекты (дополнения)</b>.</p>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Член предложения (Испанский / Русский)</th>
+      <th>Что обозначает</th>
+      <th>Безошибочный тест (как проверить за 5 секунд!)</th>
+      <th>Примеры</th>
+    </tr>
+    <tr>
+      <td><b>1. SUJETO (Suj.)</b><br/>Подлежащее</td>
+      <td>Кто совершает действие (в активе) или над кем оно совершается (в пассиве — <i>Sujeto paciente</i>). <b>Никогда не начинается с предлога!</b></td>
+      <td>
+        <b>Тест согласования:</b> поменяйте число глагола (с ед. на мн. ч.). То слово, которое <b>обязано поменяться вместе с глаголом</b>, и есть <i>Sujeto</i>!<br/>
+        <i>El niño corre → Los niños corren.</i>
+      </td>
+      <td>
+        • <i><b>Pedro</b> encontró un coche.</i><br/>
+        • <i><b>Los estudiantes</b> respondieron las preguntas.</i><br/>
+        • Если подлежащее пропущено (<i>Comimos temprano</i>) → пишем <b>Sujeto omitido / elíptico: nosotros</b>.
+      </td>
+    </tr>
+    <tr>
+      <td><b>2. COMPLEMENTO DIRECTO (CD)</b><br/>Прямое дополнение (Прямой объект)</td>
+      <td>Предмет или человек, на который <b>напрямую переходит действие</b> переходного глагола (кого? что?).<br/>⚠️ <i>Если это одушевлённый человек, перед CD ставится предлог <b>«a»</b> (Busco <b>a Luis</b>), для предметов предлога нет (Lee <b>un libro</b>).</i></td>
+      <td>
+        <b>Два железных теста:</b><br/>
+        1. Заменяется местоимениями <b>LO, LA, LOS, LAS</b> перед глаголом:<br/>
+        <i>Lee <b>un libro</b> → <b>Lo</b> lee.</i><br/>
+        <i>Operó <b>a Juan</b> → <b>Lo</b> operó.</i><br/>
+        2. При переводе в пассив (<i>ser + participio</i>) <b>CD становится подлежащим (Sujeto paciente)</b>:<br/>
+        <i><b>Un libro</b> es leído. <b>Juan</b> fue operado.</i>
+      </td>
+      <td>
+        • <i>Pedro encontró <b>un coche abandonado</b></i> (→ Pedro <b>lo</b> encontró).<br/>
+        • <i>El médico operó <b>a Juan</b></i> (→ El médico <b>lo</b> operó / <b>Juan</b> fue operado).<br/>
+        • <i>Respondieron <b>todas las preguntas</b></i> (→ <b>Las</b> respondieron).
+      </td>
+    </tr>
+    <tr>
+      <td><b>3. COMPLEMENTO INDIRECTO (CI)</b><br/>Косвенное дополнение (Косвенный объект)</td>
+      <td>Кому? Для кого? (получатель выгоды или адресат действия). Всегда начинается с предлога <b>«a»</b> (или местоимения <i>me, te, le, nos, os, les, se</i>).</td>
+      <td>
+        <b>Тест замены:</b> заменяется местоимениями <b>LE / LES</b> (а если рядом стоит ещё и <i>lo/la</i>, то <i>le</i> превращается в <b>SE</b>: <i>Se lo di</i>):<br/>
+        <i>Escribí una carta <b>a mi madre</b> → <b>Le</b> escribí una carta.</i><br/>
+        В пассиве CI <b>не становится</b> подлежащим!
+      </td>
+      <td>
+        • <i>Entregué el informe <b>al director</b></i> (→ <b>Le</b> entregué el informe).<br/>
+        • <i><b>Me</b> gusta el café</i> (здесь <i>el café</i> — Sujeto, а <b>me</b> — CI!).
+      </td>
+    </tr>
+    <tr>
+      <td><b>4. ATRIBUTO (Atr.)</b><br/>Именная часть составного сказуемого</td>
+      <td>Появляется <b>ТОЛЬКО после 3 глаголов-связок (verbos copulativos): SER, ESTAR, PARECER</b> (быть, находиться, казаться). Называет свойство или состояние подлежащего. Всё такое сказуемое называется <b>Predicado Nominal (Copulativo)</b>.</td>
+      <td>
+        <b>Тест замены:</b> всегда заменяется на неизменяемое местоимение среднего рода <b>LO</b> (даже если само слово женского рода или во мн. числе!):<br/>
+        <i>La habitación parecía <b>limpia</b> → La habitación <b>lo</b> parecía.</i><br/>
+        <i>Carmen está <b>muy feliz</b> → Carmen <b>lo</b> está.</i>
+      </td>
+      <td>
+        • <i>La libreta roja es <b>la más bonita</b></i> (<i>es</i> = verbo copulativo → <i>la más bonita</i> = <b>Atributo</b>).<br/>
+        • <i>La habitación parecía <b>limpia</b></i> (<b>Atributo</b>).
+      </td>
+    </tr>
+    <tr>
+      <td><b>5. COMPLEMENTO AGENTE (C. Ag.)</b><br/>Дополнение агента действия (кем совершено?)</td>
+      <td>Появляется <b>ТОЛЬКО в страдательном залоге (Voz Pasiva)</b>! Называет того, кто реально совершил действие, и всегда начинается с предлога <b>POR</b> («кем?»).</td>
+      <td>
+        При переводе предложения обратно в активный залог <b>C. Agente превращается в подлежащее (Sujeto)</b>!
+      </td>
+      <td>
+        • <i>Un coche fue encontrado <b>por Pedro</b></i> (<i>por Pedro</i> = <b>C. Agente</b>).<br/>
+        • <i>Juan fue operado <b>por el médico</b></i> (<i>por el médico</i> = <b>C. Agente</b>).
+      </td>
+    </tr>
+    <tr>
+      <td><b>6. COMPLEMENTO CIRCUNSTANCIAL (CC)</b><br/>Обстоятельство</td>
+      <td>Указывает место, время, образ действия, причину, цель, инструмент.</td>
+      <td>
+        Отвечает на вопросы:<br/>
+        • <b>CCL (Lugar — где?):</b> <i>en el parque, hacia el río</i><br/>
+        • <b>CCT (Tiempo — когда?):</b> <i>ayer, por la mañana</i><br/>
+        • <b>CCM (Modo — как?):</b> <i>claramente, despacio</i><br/>
+        • <b>CCCant (Cantidad — сколько?):</b> <i>mucho, diez kilómetros</i>
+      </td>
+      <td>
+        • <i>La profesora explicó la lección <b>claramente</b> (CCM).</i><br/>
+        • <i>El perro corrió <b>hacia el río</b> (CCL).</i>
+      </td>
+    </tr>
+  </table></div>
+
+  <div class="box ex">
+    <span class="lbl">Разбор упражнения из Unidad 2 (стр. 6): Predicado Copulativo vs Predicativo</span>
+    <ol>
+      <li><i>«Aquella decisión fue sumamente aceptada por parte del equipo.»</i> → <b>Predicado Copulativo</b> (если <i>aceptada</i> как прилагательное с <i>sumamente</i> → Atributo) или пассив с агентом <i>por parte del equipo</i>.</li>
+      <li><i>«El atleta corrió diez kilómetros a través del campo.»</i> → <b>Predicado Predicativo</b> (глагол <i>correr</i> полнозначный, не <i>ser/estar/parecer</i>).</li>
+      <li><i>«La habitación parecía limpia tras el trabajo de la mañana.»</i> → <b>Predicado Copulativo</b> (глагол-связка <i>parecía</i> + <b>Atributo:</b> <i>«limpia»</i>).</li>
+      <li><i>«Los estudiantes respondieron todas las preguntas del examen.»</i> → <b>Predicado Predicativo</b> (глагол <i>respondieron</i> + <b>CD:</b> <i>«todas las preguntas del examen»</i>).</li>
+    </ol>
+  </div>
+</section>
+
+<section id="pasivas">
+  <span class="week">ЧАСТЬ 6 · КОНСПЕКТ ФАЙЛА «EXPLICACIONES CLASE 26_10.pdf»</span>
+  <h2>6. Как превращать объекты при смене залога: Activa, Pasiva Perifrástica, Pasiva Refleja e Impersonal</h2>
+  <p>В файле <i>EXPLICACIONES CLASE 26_10.pdf</i> преподаватель показала главную схему трансформации объектов, которая обязательно будет на экзамене 1ª Evaluación:</p>
+
+  <div class="eq">
+    <b>ORACIÓN ACTIVA:</b> [Sujeto] + [Verbo activo] + [Complemento Directo — CD]<br/>
+    ⬇️ <i>Крест-накрест меняем местами:</i> ⬇️<br/>
+    <b>PASIVA PERIFRÁSTICA:</b> [Sujeto Paciente (бывший CD)] + [SER + Participio] + [por + C. Agente (бывший Sujeto)]
+  </div>
+
+  <div class="tbl"><table>
+    <tr>
+      <th>Тип конструкции</th>
+      <th>Структура и грамматическое правило</th>
+      <th>Примеры преподавателя из файла 26_10</th>
+      <th>Зачем используется в тексте?</th>
+    </tr>
+    <tr>
+      <td><b>1. Oración Activa</b><br/>(Активный залог)</td>
+      <td><b>Sujeto</b> сам совершает действие и согласуется с глаголом, а действие падает на <b>CD</b>.</td>
+      <td>
+        • <i><b>Pedro</b> (Suj.) encontró <b>un coche abandonado</b> (CD).</i><br/>
+        • <i><b>El médico</b> (Suj.) operó <b>a Juan</b> (CD).</i><br/>
+        • <i><b>Pedro Sánchez</b> (Suj.) aprueba <b>una ley contra la especulación inmobiliaria</b> (CD).</i>
+      </td>
+      <td>Привлекает внимание к тому, <b>кто</b> совершил действие (<i>el sujeto llama la atención</i>).</td>
+    </tr>
+    <tr>
+      <td><b>2. Pasiva Perifrástica</b><br/>(Перифрастический пассив с глаголом <i>ser</i>)</td>
+      <td>
+        Бывший <b>CD</b> становится <b>Sujeto paciente</b>.<br/>
+        Глагол ставится в форму <b>SER (в том же времени!) + PARTICIPIO (-ado/-ido, согласованное в роде и числе!)</b>.<br/>
+        Бывший Sujeto становится <b>Complemento Agente (por + …)</b>.
+      </td>
+      <td>
+        • <i><b>Un coche abandonado</b> (Suj. pac.) <b>fue encontrado</b> por Pedro (C. Ag.).</i><br/>
+        • <i><b>Juan</b> (Suj. pac.) <b>fue operado</b> por el médico (C. Ag.).</i><br/>
+        • <i><b>Una ley…</b> (Suj. pac.) <b>ha sido aprobada</b> por Pedro Sánchez (C. Ag.).</i>
+      </td>
+      <td>Переносит фокус с исполнителя на сам результат/событие.</td>
+    </tr>
+    <tr>
+      <td><b>3. Pasiva Refleja</b><br/>(Возвратный пассив с частицей <i>SE</i>)</td>
+      <td>
+        Формула: <b>SE + глагол в 3-м лице ед. или мн. числа + Sujeto paciente (предмет)</b>.<br/>
+        ⚠️ <b>ГЛАВНЫЙ ПРИЗНАК:</b> у предложения <b>ЕСТЬ подлежащее</b> (предмет после глагола), и глагол <b>обязан согласовываться с ним в числе</b> (ед. ч. → мн. ч.)! Исполнитель (<i>por…</i>) не указывается.
+      </td>
+      <td>
+        • <i><b>Se cometió</b> un crimen horrible en esa ciudad</i> (ед. ч., т.к. <i>un crimen</i>; во мн. ч. было бы: <i>Se cometieron crímenes</i>).<br/>
+        • <i><b>Se aprobó</b> una ley contra la especulación…</i> (ед. ч. — <i>una ley</i>).<br/>
+        • <i><b>Se aprobaron</b> unas leyes contra la especulación…</i> (мн. ч. — <i>unas leyes</i>!).
+      </td>
+      <td>Скрывает автора/исполнителя для максимальной <b>объективности</b> (<i>menor peso en el sujeto</i>).</td>
+    </tr>
+    <tr>
+      <td><b>4. Oración Impersonal con «SE»</b><br/>(Безличное с частицей <i>SE</i>)</td>
+      <td>
+        Формула: <b>SE + глагол ТОЛЬКО в 3-м лице ЕДИНСТВЕННОГО числа (3ª persona singular)</b>.<br/>
+        ⚠️ <b>ГЛАВНЫЙ ПРИЗНАК:</b> в предложении <b>НЕТ И НЕ МОЖЕТ БЫТЬ ПОДЛЕЖАЩЕГО (NUNCA VA A HABER SUJETO)</b>! После глагола стоит наречие, предлог (<i>en, de, a</i>) или вообще ничего.
+      </td>
+      <td>
+        • <i><b>Se come</b> muy bien en esa cadena de restaurantes.</i> (Кто ест? Все вообще. Подлежащего нет, глагол всегда в 3 л. ед. ч.!).<br/>
+        • <i><b>Se habla</b> de un nuevo acuerdo.</i><br/>
+        • <i><b>Se recibió</b> a los embajadores.</i> (с предлогом <i>a</i> перед людьми — тоже impersonal!).
+      </td>
+      <td>Обобщение и полная безличность (высшая степень объективности).</td>
+    </tr>
+  </table></div>
+
+  <div class="box trap">
+    <span class="lbl">Супер-шпаргалка для экзамена: как отличить Pasiva Refleja от Impersonal con «SE»?</span>
+    <p>Обе начинаются на <b>«Se + глагол в 3 л. ед. ч.»</b>. Например:<br/>
+    1) <i>«Se cometió un crimen horrible»</i> vs 2) <i>«Se come muy bien en ese restaurante»</i>.<br/>
+    <b>Что делать?</b> Попробуйте поставить существительное после глагола во <b>множественное число</b>:<br/>
+    • <i>Un crimen → Dos crímenes</i>: нужно ли менять глагол на <i>«Se cometier<b>on</b> dos crímenes»</i>? <b>Да!</b> Значит, <i>un crimen</i> — это подлежащее, а предложение — <b>PASIVA REFLEJA</b>.<br/>
+    • В <i>«Se come muy bien en esos restaurantes»</i> глагол <i>se come</i> остаётся в единственном числе, потому что после него нет существительного без предлога. Подлежащего нет → значит, это <b>IMPERSONAL</b>!</p>
+  </div>
+</section>
+
+<section id="tema-propiedades">
+  <span class="week">ЧАСТЬ 7 · КАК ПИСАТЬ «TEMA» ТЕКСТА + UNIDAD 2 (ТЕКСТ И ЛИТЕРАТУРА)</span>
+  <h2>7. Правило формулировки TEMA (из файла 26_10) и теория Unidad 2</h2>
+
+  <h3>7.1. Как правильно сформулировать TEMA текста на экзамене (3 жёстких правила преподавателя)</h3>
+  <p>На второй странице <i>EXPLICACIONES CLASE 26_10.pdf</i> Сильвия дала точный шаблон ответа для анализа текста и 3 правила для <b>TEMA</b>:</p>
+  <div class="box errata">
+    <span class="lbl">3 обязательных правила для TEMA (за нарушение снимают баллы!)</span>
+    <ol>
+      <li><b>Sintagma Nominal (Именная синтагма) — ЗАПРЕЩЕНО использовать глагол (no puede llevar verbo)!</b> Начинайте с существительного с артиклем: <i>«El uso de…», «La importancia de…», «El impacto de…», «La crítica a…», «El aumento de…»</i>.</li>
+      <li><b>Menos de 12 palabras (Короче 12 слов)!</b> Тема — это одна ёмкая фраза в 6–10 слов, а не пересказ текста.</li>
+      <li><b>No mostrar la opinión del autor en el tema (Не писать мнение автора внутри самой темы):</b> мнение автора пишется в следующем предложении, когда вы обосновываете субъективность!</li>
+    </ol>
+  </div>
+
+  <div class="box ex">
+    <span class="lbl">Готовый эталонный шаблон из класса 26_10 (выучить наизусть для экзамена!)</span>
+    <p><i>«El texto propuesto es <b>humanístico</b> ya que trata <b>el uso del tiempo en las redes sociales en la actualidad</b> [← это TEMA: именная синтагма без глагола, 10 слов], por lo que reflexiona sobre un tema social. El texto es <b>subjetivo</b> porque se puede apreciar la opinión del emisor, quien <b>critica la pérdida de tiempo que suponen las redes sociales hoy en día</b> [← а здесь уже указываем позицию автора].»</i></p>
+  </div>
+
+  <h3>7.2. Шесть функций языка (Las 6 Funciones del Lenguaje — Unidad 2 §1)</h3>
+  <div class="tbl"><table>
+    <tr>
+      <th>Функция (Función)</th>
+      <th>На каком элементе коммуникации фокус?</th>
+      <th>Смысл по-русски и маркеры в тексте</th>
+      <th>Пример из Unidad 2</th>
+    </tr>
+    <tr>
+      <td><b>1. Referencial (o representativa)</b></td>
+      <td>Contexto / Realidad (Реальность, факты)</td>
+      <td>Передать объективную информацию без эмоций. Маркеры: 3-е лицо, indicativo, enunciativas, цифры.</td>
+      <td><i>«La reunión comenzará mañana a las 10:00 en la sala principal.»</i></td>
+    </tr>
+    <tr>
+      <td><b>2. Expresiva (o emotiva)</b></td>
+      <td>Emisor (Отправитель)</td>
+      <td>Выразить чувства, эмоции, жалобу или субъективное мнение говорящего. Маркеры: 1-е лицо, восклицания <i>¡…!</i>, оценочные прилагательные.</td>
+      <td><i>«¡Estoy verdaderamente harto de esta situación!»</i></td>
+    </tr>
+    <tr>
+      <td><b>3. Apelativa (o conativa)</b></td>
+      <td>Receptor (Получатель)</td>
+      <td>Побудить собеседника к действию, приказу или ответу. Маркеры: <b>imperativo</b>, обращение по имени (vocativo), прямые вопросы <i>¿…?</i>.</td>
+      <td><i>«Por favor, cierra la ventana y siéntate en tu sitio.»</i></td>
+    </tr>
+    <tr>
+      <td><b>4. Fática (o de contacto)</b></td>
+      <td>Canal (Канал связи)</td>
+      <td>Проверить, работает ли связь, начать/поддержать/закончить разговор.</td>
+      <td><i>«¿Me oyes bien o se corta la llamada?», «Hola, ¿sí?, dígame…»</i></td>
+    </tr>
+    <tr>
+      <td><b>5. Metalingüística</b></td>
+      <td>Código (Сам испанский язык)</td>
+      <td>Язык объясняет правила самого языка (определения грамматики, орфографии, значения слов).</td>
+      <td><i>«Los sustantivos son palabras que nombran personas, animales o cosas.»</i></td>
+    </tr>
+    <tr>
+      <td><b>6. Poética (o estética)</b></td>
+      <td>Mensaje (Форма сообщения)</td>
+      <td>Украсить речь, создать ритм, рифму, метафору (стихи, пословицы, рекламные слоганы).</td>
+      <td><i>«A caballo regalado no le mires el dentado.»</i></td>
+    </tr>
+  </table></div>
+
+  <h3>7.3. Денотация и Коннотация (Denotación y Connotación — Unidad 2 §4)</h3>
+  <ul>
+    <li><b>Denotación [D]:</b> прямое, буквальное, объективное словарное значение слова (<i>«Tengo el <b>corazón</b> sano»</i> — орган тела; <i>«El <b>buitre</b> volaba sobre las montañas»</i> — птица стервятник).</li>
+    <li><b>Connotación [C]:</b> переносное, образное, эмоциональное значение:
+      <ul>
+        <li><b>Connotación Positiva [C+]:</b> одобрение, похвала (<i>«Laura tiene un <b>corazón de oro</b>»</i>, <i>«María es un <b>ángel</b>»</i>, <i>ahorrador, orgulloso, curioso, líder</i>).</li>
+        <li><b>Connotación Negativa [C-]:</b> критика, презрение (<i>«Juan es un <b>buitre</b> en los negocios»</i>, <i>«Ese hombre es una <b>rata</b>»</i>, <i>tacaño, inflexible, entrometido, mangoneador</i>).</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>7.4. Три свойства текста (Propiedades del Texto) и Три литературных жанра (Géneros Literarios)</h3>
+  <div class="pair">
+    <div class="box tip">
+      <span class="lbl">3 свойства правильного текста (U2 §5)</span>
+      <ul>
+        <li><b>1. Adecuación (Уместность):</b> выбор правильного регистра — <b>registro formal</b> (для декана, суда, компании, науки) или <b>registro informal/coloquial</b> (для друзей в WhatsApp).</li>
+        <li><b>2. Coherencia (Логическая связность смысла):</b> единая тема, логический порядок абзацев и отсутствие противоречий.</li>
+        <li><b>3. Cohesión (Грамматическая связность слов):</b> союзы-коннекторы, знаки препинания, замена повторов местоимениями и синонимами.</li>
+      </ul>
+    </div>
+    <div class="box tip">
+      <span class="lbl">3 литературных жанра (U2 §6)</span>
+      <ul>
+        <li><b>1. Género Lírico (Лирика):</b> субъективные чувства поэта, обычно в стихах (<i>verso</i>), метафоры, ритм. Поджанры: <i>elegía, égloga, oda, sátira</i>.</li>
+        <li><b>2. Género Narrativo (Эпос / Проза):</b> рассказчик (<i>narrador</i> ≠ автор!) рассказывает историю в прозе. 5 элементов: <i>narrador, personajes, acción, espacio, tiempo</i>. (<i>Novela, cuento</i>).</li>
+        <li><b>3. Género Dramático (Драма / Театр):</b> прямые диалоги персонажей на сцене без рассказчика + авторские ремарки в скобках (<b>acotaciones</b>).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="test">
+  <h2>8. Проверь себя (тренажёр по Cuadro Morfología и Объектам)</h2>
+  <details class="q">
+    <summary>1. Сделай полный морфологический разбор слова «rebaño» и слова «algún» (в «Algún niño»).</summary>
+    <div class="a">
+      • <b>Rebaño:</b> <i>sustantivo común, concreto, contable, colectivo, masculino, singular</i>.<br/>
+      • <b>Algún:</b> так как стоит перед существительным <i>niño</i>, это <b>determinante (adjetivo determinativo) indefinido, masculino, singular</b>.
+    </div>
+  </details>
+  <details class="q">
+    <summary>2. В предложении «Este es nuestro libro» чем является «Este» и чем является «nuestro»?</summary>
+    <div class="a">
+      • <b>Este</b> стоит без существительного (перед глаголом <i>es</i>), значит это <b>pronombre demostrativo de proximidad, masculino, singular</b>.<br/>
+      • <b>Nuestro</b> стоит перед существительным <i>libro</i>, значит это <b>determinante posesivo, 1ª persona, varios poseedores, masculino, singular</b>.
+    </div>
+  </details>
+  <details class="q">
+    <summary>3. Найди Sujeto и CD в предложении «El médico operó a Juan» и переведи его в Pasiva Perifrástica.</summary>
+    <div class="a">
+      • В активном залоге: <b>El médico</b> = Sujeto; <b>a Juan</b> = Complemento Directo (CD, проверяем: <i>El médico <b>lo</b> operó</i>).<br/>
+      • В <b>Pasiva perifrástica</b>: <i>«<b>Juan</b> (Sujeto paciente) <b>fue operado</b> (verbo en voz pasiva) <b>por el médico</b> (Complemento Agente).»</i>
+    </div>
+  </details>
+  <details class="q">
+    <summary>4. В чём разница между «Se come muy bien en ese restaurante» и «Se aprobaron unas leyes»?</summary>
+    <div class="a">
+      • <i>«Se come muy bien…»</i> — это <b>Oración Impersonal</b>: в ней нет и не может быть подлежащего, глагол всегда в 3-м лице ед. числа.<br/>
+      • <i>«Se aprobaron unas leyes»</i> — это <b>Pasiva Refleja</b>: у неё есть подлежащее (<i>unas leyes</i>), с которым глагол согласуется во множественном числе (<i>se aprobó una ley → se aprobaron unas leyes</i>).
+    </div>
+  </details>
+  <details class="q">
+    <summary>5. Какая ошибка в формулировке темы: «TEMA: El autor piensa que los jóvenes usan demasiado el móvil»?</summary>
+    <div class="a">
+      Нарушены сразу два главных правила из <i>EXPLICACIONES CLASE 26_10.pdf</i>: 1) в теме есть личные глаголы (<i>piensa, usan</i>), а должен быть <b>Sintagma Nominal без глагола</b>; 2) в тему включено мнение автора (<i>El autor piensa que…</i>). Правильно: <b>«El uso excesivo del teléfono móvil entre los jóvenes»</b> (9 слов, именная синтагма без глагола).
+    </div>
+  </details>
+</section>
+
+</div></body></html>

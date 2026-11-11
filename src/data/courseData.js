@@ -59,9 +59,10 @@ export const SUBJECTS = [
         topics: 'Elementos de la comunicación, categorías gramaticales (sustantivo, adjetivo, determinante, pronombre, verbo, adverbio, preposición, conjunción), modo y tiempo verbal, objetividad vs subjetividad, modalidades oracionales, textos humanísticos y científico-técnicos, literatura.',
         guideUrl: './teoria/teoria-espanol-1.html',
         files: [
-          { name: 'Конспект теории U1 (HTML)', url: './teoria/teoria-espanol-1.html', type: 'html', isLocal: true },
+          { name: 'Конспект теории U1 + Cuadro Morfología (HTML · RU/ES)', url: './teoria/teoria-espanol-1.html', type: 'html', isLocal: true, isNew: true },
+          { name: '📊 Разбор Cuadro Morfología + Объекты (CD/CI/Atributo) и Пассив (HTML · RU/ES)', url: './teoria/teoria-espanol-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UNIDAD 1 - GRADO SUPERIOR - CON EJERCICIOS.pdf', id: '1CMfsn08DProNazQCyXB-qB3drbLWp_CD', type: 'pdf' },
-          { name: 'CUADRO MORFOLOGÍA.pdf', id: '1biFQYZpRXS_2OOKoYYDvcqlbRsInGY9b', type: 'pdf', isNew: true },
+          { name: 'CUADRO MORFOLOGÍA.pdf (оригинал PDF)', id: '1biFQYZpRXS_2OOKoYYDvcqlbRsInGY9b', type: 'pdf', isNew: true },
           { name: 'EXPLICACIONES CLASE 26_10.pdf (Pasivas, impersonales y TEMA)', id: '19EsZxcHv1my1QIUsRLrB5jUkPoVE8PvF', type: 'pdf', isNew: true },
           { name: 'SOLUCIONARIO U-1 AUTOCORRECCIÓN.pdf', id: '1QqSPYUfuGNhMQniXt_8ABZzHJf9_DxAs', type: 'sol', isNew: true },
         ],
@@ -69,9 +70,11 @@ export const SUBJECTS = [
       {
         num: 2,
         eval: 1,
-        title: 'Unidad 2: Funciones del Lenguaje, Sintaxis y Propiedades del Texto',
-        topics: 'Funciones del lenguaje (representativa, expresiva, apelativa, poética, fática, metalingüística), sintagmas, oración simple y compuesta, voz activa/pasiva perifrástica/pasiva refleja e impersonales, connotación/denotación, adecuación, coherencia y cohesión, géneros literarios.',
+        title: 'Unidad 2: Cuadro Morfología, Objetos (CD/CI/Atributo), Sintaxis y Texto',
+        topics: 'Análisis morfológico completo (Cuadro Morfología), sintagmas (SN, SV, SAdj, SAdv, SPrep), Sujeto, Complemento Directo (CD), Indirecto (CI), Atributo, Agente, voz activa/pasiva perifrástica/pasiva refleja e impersonales, formulación del TEMA (<12 palabras sin verbo), funciones del lenguaje, connotación/denotación, propiedades del texto y géneros literarios.',
+        guideUrl: './teoria/teoria-espanol-2.html',
         files: [
+          { name: 'Конспект U2: Cuadro Morfología + Объекты (CD/CI) и Синтаксис (HTML · RU/ES)', url: './teoria/teoria-espanol-2.html', type: 'html', isLocal: true, isNew: true },
           { name: 'UNIDAD 2 - AGS - CON EJERCICIOS.pdf', id: '1iUMFDBPOuzq1wx0suDz_fvW0727rW_wL', type: 'pdf' },
           { name: 'SOLUCIONARIO U-2 AUTOCORRECCIÓN.pdf', id: '1gPW-LEVcQqkt071CqnH84e1Bglxjl4qa', type: 'sol', isNew: true },
           { name: 'ACTIVIDAD DE ENVÍO 1º EVAL.docx (U1 + U2)', id: '1JyKoz6Su4YNK0hQdsjnoaaJGxgdlaEeK', type: 'envio', isNew: true },
